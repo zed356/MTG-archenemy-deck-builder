@@ -1,5 +1,5 @@
-interface Card {
+export interface ICard {
   name: string;
   multiverse_id: number;
-  img: string;
+  img: string | number;
 }
