@@ -1,26 +1,33 @@
-import { ActivityIndicator, StyleSheet, View, Text } from "react-native";
-import { cardList } from "@/constants/CardList";
+import { ActivityIndicator, StyleSheet, View, Text, ScrollView } from "react-native";
 import Card from "../Card";
 import { useState, useEffect } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { ScryfallCard } from "@scryfall/api-types";
 
 const STORAGE_KEY = "@scryfall_cards";
+const ARCHENEMEY_SCHEME_CARD_TOTAL_COUNT = 10;
 
 const DeckBuilder: React.FC = () => {
-  const [cards, setCards] = useState([]);
+  const [cards, setCards] = useState<ScryfallCard.Scheme[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<string | null>(null);
+  const [displayedCards, setDisplayedCards] = useState<ScryfallCard.Scheme[]>([]);
+
+  const [selectedCard, setSelectedCard] = useState<string | null>(null); // Track the selected card
+
+  const handleCardPress = (cardName: string) => {
+    setSelectedCard(cardName === selectedCard ? null : cardName); // Toggle card selection
+  };
 
   useEffect(() => {
     const fetchCards = async () => {
       try {
         const cachedCards = await AsyncStorage.getItem(STORAGE_KEY);
         if (cachedCards) {
-          // If cached data exists, use it
+          // Use cached data
           setCards(JSON.parse(cachedCards));
         } else {
-          // Fetch data from the API if no cached data
-          console.log("i fired API");
+          // Fetch data from API if no cached data
           const response = await fetch("https://api.scryfall.com/cards/search?q=s%3Aoarc");
           if (!response.ok) {
             throw new Error("Failed to fetch cards");
@@ -31,7 +38,6 @@ const DeckBuilder: React.FC = () => {
           await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(data.data));
         }
       } catch (error: any) {
-        // TODO: fix error type
         setError(error.message);
       } finally {
         setLoading(false);
@@ -41,6 +47,20 @@ const DeckBuilder: React.FC = () => {
     fetchCards();
   }, []);
 
+  useEffect(() => {
+    let count = 0;
+    const intervalId = setInterval(() => {
+      if (count < Math.min(cards.length, ARCHENEMEY_SCHEME_CARD_TOTAL_COUNT)) {
+        setDisplayedCards((prevCards) => [...prevCards, cards[count]]);
+        count++;
+      } else {
+        clearInterval(intervalId); // Stop the interval after displaying cards
+      }
+    }, 1000); // 1 second interval
+
+    return () => clearInterval(intervalId); // Cleanup on component unmount
+  }, [cards]); // Trigger this effect when `cards` changes
+
   if (loading) {
     return <ActivityIndicator size="large" color="#FFFFFF" />;
   }
@@ -49,24 +69,34 @@ const DeckBuilder: React.FC = () => {
     return <Text>Error: {error}</Text>;
   }
 
-  console.log(cards);
+  console.log(displayedCards);
 
-  const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      flexDirection: "row",
-      flexWrap: "wrap",
-      alignItems: "center",
-    },
-  });
   return (
-    <View style={styles.container}>
-      <ActivityIndicator size="large" color="#FFD700" />
-      {cardList.map((el) => (
-        <Card key={el.name} card={el} />
-      ))}
-    </View>
+    <ScrollView style={styles.scrollContainer} scrollEnabled={false}>
+      <View style={styles.container}>
+        {displayedCards.map((el) => (
+          <Card
+            key={el.name}
+            card={el}
+            isSelected={el.name === selectedCard}
+            onCardPress={() => handleCardPress(el.name)}
+          />
+        ))}
+      </View>
+    </ScrollView>
   );
 };
 
 export default DeckBuilder;
+
+const styles = StyleSheet.create({
+  scrollContainer: { flex: 1 },
+  container: {
+    flex: 1,
+    flexDirection: "row",
+    flexWrap: "wrap",
+    alignItems: "center",
+    justifyContent: "space-evenly",
+    marginTop: 40,
+  },
+});
