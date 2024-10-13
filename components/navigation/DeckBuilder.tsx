@@ -1,4 +1,4 @@
-import { ActivityIndicator, StyleSheet, View, Text, ScrollView } from "react-native";
+import { ActivityIndicator, StyleSheet, View, Text, ScrollView, Pressable } from "react-native";
 import Card from "../Card";
 import { useState, useEffect } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -12,12 +12,6 @@ const DeckBuilder: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [displayedCards, setDisplayedCards] = useState<ScryfallCard.Scheme[]>([]);
-
-  const [selectedCard, setSelectedCard] = useState<string | null>(null); // Track the selected card
-
-  const handleCardPress = (cardName: string) => {
-    setSelectedCard(cardName === selectedCard ? null : cardName); // Toggle card selection
-  };
 
   useEffect(() => {
     const fetchCards = async () => {
@@ -49,6 +43,7 @@ const DeckBuilder: React.FC = () => {
 
   useEffect(() => {
     let count = 0;
+    setDisplayedCards([]);
     const intervalId = setInterval(() => {
       if (count < Math.min(cards.length, ARCHENEMEY_SCHEME_CARD_TOTAL_COUNT)) {
         setDisplayedCards((prevCards) => [...prevCards, cards[count]]);
@@ -69,18 +64,20 @@ const DeckBuilder: React.FC = () => {
     return <Text>Error: {error}</Text>;
   }
 
-  console.log(displayedCards);
-
   return (
-    <ScrollView style={styles.scrollContainer} scrollEnabled={false}>
+    <ScrollView style={styles.scrollContainer}>
       <View style={styles.container}>
+        <Pressable
+          style={styles.clearCacheButton}
+          onPress={() => {
+            console.log("cache clearedeedd");
+            AsyncStorage.clear();
+          }}
+        >
+          <Text>CLEAR CACHE</Text>
+        </Pressable>
         {displayedCards.map((el) => (
-          <Card
-            key={el.name}
-            card={el}
-            isSelected={el.name === selectedCard}
-            onCardPress={() => handleCardPress(el.name)}
-          />
+          <Card key={el.name} card={el} />
         ))}
       </View>
     </ScrollView>
@@ -90,6 +87,12 @@ const DeckBuilder: React.FC = () => {
 export default DeckBuilder;
 
 const styles = StyleSheet.create({
+  clearCacheButton: {
+    borderWidth: 2,
+    width: 100,
+    borderColor: "gold",
+    color: "white",
+  },
   scrollContainer: { flex: 1 },
   container: {
     flex: 1,
