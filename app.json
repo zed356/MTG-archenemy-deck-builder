@@ -24,7 +24,7 @@
     "web": {
       "bundler": "metro",
       "output": "static",
-      "favicon": "./assets/images/Archenemy_600x.webp"
+      "favicon": "./assets/images/favicon.jpg"
     },
     "plugins": ["expo-router"],
     "experiments": {
