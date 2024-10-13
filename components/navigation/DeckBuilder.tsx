@@ -3,9 +3,10 @@ import Card from "../Card";
 import { useState, useEffect } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { ScryfallCard } from "@scryfall/api-types";
+import { useLoadAPIData } from "@/hooks/useLoadAPIData";
 
 const STORAGE_KEY = "@scryfall_cards";
-const ARCHENEMEY_SCHEME_CARD_TOTAL_COUNT = 10;
+const ARCHENEMEY_SCHEME_CARD_TOTAL_COUNT = 8;
 
 const DeckBuilder: React.FC = () => {
   const [cards, setCards] = useState<ScryfallCard.Scheme[]>([]);
@@ -13,33 +14,23 @@ const DeckBuilder: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [displayedCards, setDisplayedCards] = useState<ScryfallCard.Scheme[]>([]);
 
-  useEffect(() => {
-    const fetchCards = async () => {
-      try {
-        const cachedCards = await AsyncStorage.getItem(STORAGE_KEY);
-        if (cachedCards) {
-          // Use cached data
-          setCards(JSON.parse(cachedCards));
-        } else {
-          // Fetch data from API if no cached data
-          const response = await fetch("https://api.scryfall.com/cards/search?q=s%3Aoarc");
-          if (!response.ok) {
-            throw new Error("Failed to fetch cards");
-          }
-          const data = await response.json();
-          setCards(data.data);
-          // Cache the fetched data
-          await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(data.data));
-        }
-      } catch (error: any) {
-        setError(error.message);
-      } finally {
-        setLoading(false);
-      }
-    };
+  // checks if card data exists in local storage. If not, send API request and cache it.
 
-    fetchCards();
-  }, []);
+  const data = useLoadAPIData(
+    STORAGE_KEY,
+    "https://api.scryfall.com/cards/search?q=s%3Aoarc",
+    setError,
+    setLoading
+  );
+
+  // Update cards only when data changes
+  useEffect(() => {
+    if (data.length > 0) {
+      setCards(data);
+    }
+  }, [data]); // Run this effect only when `data` changes
+
+  // displayes 1 card per set interval.
 
   useEffect(() => {
     let count = 0;
@@ -51,7 +42,7 @@ const DeckBuilder: React.FC = () => {
       } else {
         clearInterval(intervalId); // Stop the interval after displaying cards
       }
-    }, 1000); // 1 second interval
+    }, 300); // 0.3 second interval per card. CHANGE THIS FOR QUICKER / SLOWER LOAD
 
     return () => clearInterval(intervalId); // Cleanup on component unmount
   }, [cards]); // Trigger this effect when `cards` changes
@@ -66,16 +57,16 @@ const DeckBuilder: React.FC = () => {
 
   return (
     <ScrollView style={styles.scrollContainer}>
+      <Pressable
+        style={styles.clearCacheButton}
+        onPress={() => {
+          console.log("cache clearedd");
+          AsyncStorage.clear();
+        }}
+      >
+        <Text style={styles.clearCacheButtonText}>CLEAR CACHE</Text>
+      </Pressable>
       <View style={styles.container}>
-        <Pressable
-          style={styles.clearCacheButton}
-          onPress={() => {
-            console.log("cache clearedeedd");
-            AsyncStorage.clear();
-          }}
-        >
-          <Text>CLEAR CACHE</Text>
-        </Pressable>
         {displayedCards.map((el) => (
           <Card key={el.name} card={el} />
         ))}
@@ -88,10 +79,22 @@ export default DeckBuilder;
 
 const styles = StyleSheet.create({
   clearCacheButton: {
+    width: 140,
+    height: 40,
+    maxHeight: 40,
     borderWidth: 2,
-    width: 100,
+    alignSelf: "center",
+    marginTop: 40,
     borderColor: "gold",
-    color: "white",
+    backgroundColor: "grey",
+    borderRadius: 10,
+  },
+  clearCacheButtonText: {
+    fontSize: 15,
+    color: "black",
+    fontWeight: "bold",
+    textAlign: "center",
+    lineHeight: 35,
   },
   scrollContainer: { flex: 1 },
   container: {
