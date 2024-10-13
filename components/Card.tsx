@@ -7,11 +7,9 @@ import { ScryfallCard } from "@scryfall/api-types";
 
 interface InputProps {
   card: ScryfallCard.Scheme;
-  isSelected: boolean;
-  onCardPress: () => void;
 }
 
-const Card: React.FC<CardProps> = ({ card, isSelected, onCardPress }) => {
+const Card: React.FC<InputProps> = ({ card }) => {
   const [loading, setLoading] = useState(true);
 
   const handleImageLoadEnd = () => {
@@ -20,19 +18,19 @@ const Card: React.FC<CardProps> = ({ card, isSelected, onCardPress }) => {
 
   const styles = StyleSheet.create({
     container: {
-      opacity: isSelected ? 1 : 0.8, // 20% less opacity for unselected cards
+      opacity: 1, // 20% less opacity for unselected cards
       paddingTop: 0,
     },
     card: {
-      width: isSelected ? 240 : 160, // 50% larger if selected
-      height: isSelected ? 345 : 230,
+      width: 160, // 50% larger if selected
+      height: 230,
       marginBottom: 10,
       borderRadius: 11,
     },
   });
 
   return (
-    <TouchableWithoutFeedback onPress={onCardPress}>
+    <TouchableWithoutFeedback>
       <View style={styles.container}>
         {loading && <ActivityIndicator size="large" color="#FFD700" />}
         <Image
