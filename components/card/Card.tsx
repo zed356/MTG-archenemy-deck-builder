@@ -1,53 +1,49 @@
 import { View, StyleSheet, ActivityIndicator, Pressable, Text, Modal } from "react-native";
 import { Image } from "expo-image";
-import { Dispatch, Fragment, useState } from "react";
+import { Fragment, useState } from "react";
 import { ScryfallCard } from "@scryfall/api-types";
-import { NewDeckAction, NewDeckActionKind } from "@/reducers/newDeckReducer";
+import { useNewDeckStore } from "@/store/store";
+import { defaultColors } from "@/styles/styles";
 
 interface InputProps {
   card: ScryfallCard.Scheme;
   size: "small" | "normal" | "large";
-  handleCardInNewDeck: Dispatch<NewDeckAction>;
   border?: boolean;
-  addedToDeck?: boolean;
+  isOpacityControlled?: boolean;
 }
 
-const Card: React.FC<InputProps> = ({
-  card,
-  size,
-  handleCardInNewDeck,
-  border = true,
-  addedToDeck = false,
-}) => {
+const Card: React.FC<InputProps> = ({ card, size, border = true, isOpacityControlled }) => {
   const [loading, setLoading] = useState(true);
   const [isSelected, setIsSelected] = useState(false);
-  const [isAddedToDeck, setIsAddedToDeck] = useState(addedToDeck);
+  const { cardsInNewDeck, addCardToNewDeck, removeCardFromNewDeck } = useNewDeckStore();
+
+  const existsInNewDeck = cardsInNewDeck.find((el) => el.name === card.name);
+  const displayPlusMinusCardButton = !existsInNewDeck ? "+" : "-";
 
   let cardSize;
+  let operatorSize;
+  if (size == "small") {
+    cardSize = { width: 100, height: 150 };
+    operatorSize = { fontSize: 50 };
+  } else if (size == "normal") {
+    cardSize = { width: 160, height: 230 };
+    operatorSize = { fontSize: 50 };
+  } else if (size == "large") {
+    cardSize = { width: 350, height: 500 };
+    operatorSize = { fontSize: 80 };
+  }
 
   const handleImageLoadEnd = () => {
     setLoading(false);
   };
 
-  if (size == "small") {
-    cardSize = { width: 100, height: 150 };
-  } else if (size == "normal") {
-    cardSize = { width: 160, height: 230 };
-  } else if (size == "large") {
-    cardSize = { width: 350, height: 500 };
-  }
-
-  const displayPlusMinusCardButton = !isAddedToDeck ? "+" : "-";
-
   const handleAddRemoveCardToNewDeck = () => {
-    if (isAddedToDeck) {
-      handleCardInNewDeck({ type: NewDeckActionKind.REMOVE, payload: card });
+    if (existsInNewDeck) {
+      removeCardFromNewDeck(card);
       setIsSelected(false);
-      setIsAddedToDeck(false);
-    } else if (!isAddedToDeck) {
-      handleCardInNewDeck({ type: NewDeckActionKind.ADD, payload: card });
+    } else if (!existsInNewDeck) {
+      addCardToNewDeck(card);
       setIsSelected(false);
-      setIsAddedToDeck(true);
     }
   };
 
@@ -57,8 +53,10 @@ const Card: React.FC<InputProps> = ({
       height: cardSize?.height,
       borderRadius: 11,
       marginBottom: 5,
-      borderWidth: isAddedToDeck ? 2 : 0,
-      borderColor: isAddedToDeck && border ? "green" : "",
+      borderWidth: existsInNewDeck && border ? 2 : 2,
+      borderColor: existsInNewDeck && border ? defaultColors.border : undefined,
+      opacity: existsInNewDeck && isOpacityControlled ? 0.25 : 1,
+      // backgroundColor: "rgba(22, 22, 1, 10)", // Optional: Add a semi-transparent background
     },
     containerIsSelected: {
       top: "25%",
@@ -67,9 +65,9 @@ const Card: React.FC<InputProps> = ({
     },
     cardIsSelected: {
       borderRadius: 20,
-
       width: 350,
       height: 500,
+      opacity: 1,
     },
     modalContainer: {
       flex: 1, // Make the modal take the full screen
@@ -84,9 +82,12 @@ const Card: React.FC<InputProps> = ({
       top: 5, // Pushed to the far right
       transform: [{ translateY: -42.5 }], // Half of font size (85 / 2)
     },
-    plusText: {
-      fontSize: 85,
-      color: !isAddedToDeck ? "green" : "red",
+    operatorText: {
+      position: "relative",
+      fontSize: operatorSize?.fontSize,
+      width: 30,
+      textAlign: "center",
+      color: !existsInNewDeck ? defaultColors.green : "red",
     },
   });
 
@@ -113,11 +114,11 @@ const Card: React.FC<InputProps> = ({
             style={[styles.plusButton, { top: 25 }]}
             onPress={handleAddRemoveCardToNewDeck}
           >
-            <Text style={[styles.plusText, { fontSize: 50 }]}>{displayPlusMinusCardButton}</Text>
+            <Text style={styles.operatorText}>{displayPlusMinusCardButton}</Text>
           </Pressable>
         </View>
       </Pressable>
-      <Modal visible={isSelected} animationType="fade" transparent={true}>
+      <Modal visible={isSelected} animationType="slide" transparent={true}>
         <View style={styles.modalContainer}>
           <Pressable onPress={() => setIsSelected((oldState) => !oldState)}>
             {loading && <ActivityIndicator size="large" color="#FFD700" />}
@@ -136,7 +137,9 @@ const Card: React.FC<InputProps> = ({
                 onLoadEnd={handleImageLoadEnd}
               />
               <Pressable style={styles.plusButton} onPress={handleAddRemoveCardToNewDeck}>
-                <Text style={styles.plusText}>{displayPlusMinusCardButton}</Text>
+                <Text style={[styles.operatorText, { fontSize: 85, right: 20, width: 30 }]}>
+                  {displayPlusMinusCardButton}
+                </Text>
               </Pressable>
             </View>
           </Pressable>

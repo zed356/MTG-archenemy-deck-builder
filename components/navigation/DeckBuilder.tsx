@@ -7,6 +7,7 @@ import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from
 import Card from "../card/Card";
 import NewDeck from "../card/NewDeck";
 import ErrorModal from "@/modals/ErrorModal";
+import { useNewDeckStore } from "@/store/store";
 
 const STORAGE_KEY = "@scryfall_cards";
 const ARCHENEMEY_SCHEME_CARD_TOTAL_COUNT = 10;
@@ -16,10 +17,7 @@ const DeckBuilder: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [displayedCards, setDisplayedCards] = useState<ScryfallCard.Scheme[]>([]);
-  const [currentCardsInNewDeck, dispatchCardsInNewDeck] = useReducer(
-    newDeckReducer,
-    initialReducerState
-  );
+  const { clearNewDeck } = useNewDeckStore();
 
   // checks if card data exists in local storage. If not, send API request and cache it.
   const data = useLoadAPIData(
@@ -70,24 +68,11 @@ const DeckBuilder: React.FC = () => {
       >
         <Text style={styles.clearCacheButtonText}>CLEAR CACHE</Text>
       </Pressable>
-      <Pressable
-        style={styles.clearCacheButton}
-        onPress={() => dispatchCardsInNewDeck({ type: NewDeckActionKind.CLEAR })}
-      >
-        <Text style={styles.clearCacheButtonText}>CLEAR DECK</Text>
-      </Pressable>
-      <NewDeck
-        cardsInNewDeck={currentCardsInNewDeck.newDeck}
-        handleCardInNewDeck={dispatchCardsInNewDeck}
-      />
+
+      <NewDeck />
       <View style={styles.container}>
         {displayedCards.map((el) => (
-          <Card
-            key={el.name}
-            card={el}
-            size={"normal"}
-            handleCardInNewDeck={dispatchCardsInNewDeck}
-          />
+          <Card key={el.name} card={el} size={"normal"} isOpacityControlled={true} />
         ))}
       </View>
     </ScrollView>
@@ -105,7 +90,7 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     marginTop: 40,
     borderColor: "gold",
-    backgroundColor: "grey",
+    backgroundColor: "gold",
     borderRadius: 10,
   },
   clearCacheButtonText: {
