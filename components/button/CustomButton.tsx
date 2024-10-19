@@ -1,7 +1,8 @@
 import { defaultColors } from "@/constants/Colors";
-import { defaultBorderRadius, globalStyles } from "@/styles/styles";
+import { globalStyles, defaultBorderRadius } from "@/constants/styles";
 import { LinearGradient } from "expo-linear-gradient";
-import { Pressable, StyleSheet, Text } from "react-native";
+import { useRef } from "react";
+import { Animated, Pressable, StyleSheet, Text } from "react-native";
 
 interface InputProps {
   text?: string;
@@ -24,6 +25,26 @@ const CustomButton: React.FC<InputProps> = ({
     }
   };
 
+  const scaleAnim = useRef(new Animated.Value(1)).current; // Initial scale value
+
+  // Function to handle press in
+  const handlePressIn = () => {
+    Animated.timing(scaleAnim, {
+      toValue: 0.95, // Scale down to 95%
+      duration: 150, // Animation duration
+      useNativeDriver: true, // Use native driver for better performance
+    }).start();
+  };
+
+  // Function to handle press out
+  const handlePressOut = () => {
+    Animated.timing(scaleAnim, {
+      toValue: 1, // Scale back to 100%
+      duration: 150,
+      useNativeDriver: true,
+    }).start();
+  };
+
   const getButtonColors = () => {
     if (disabled) return ["grey", defaultColors.grey]; // Disabled gradient
 
@@ -40,16 +61,20 @@ const CustomButton: React.FC<InputProps> = ({
   };
 
   return (
-    <Pressable
-      onPress={handleOnPress}
-      disabled={disabled}
-      accessibilityRole="button"
-      style={styles.container}
-    >
-      <LinearGradient colors={getButtonColors()} style={styles.gradientBackground}>
-        <Text style={globalStyles.text}>{text || children}</Text>
-      </LinearGradient>
-    </Pressable>
+    <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
+      <Pressable
+        onPress={handleOnPress}
+        onPressIn={handlePressIn}
+        onPressOut={handlePressOut}
+        disabled={disabled}
+        accessibilityRole="button"
+        style={styles.container}
+      >
+        <LinearGradient colors={getButtonColors()} style={styles.gradientBackground}>
+          <Text style={globalStyles.text}>{text || children}</Text>
+        </LinearGradient>
+      </Pressable>
+    </Animated.View>
   );
 };
 
