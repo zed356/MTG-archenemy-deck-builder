@@ -1,9 +1,12 @@
+import GradientBackground from "@/components/GradientBackground";
 import DeckBuilder from "@/components/navigation/DeckBuilder";
-import { Colors } from "@/constants/Colors";
-import { LinearGradient } from "expo-linear-gradient";
 
 const DeckBuilderScreen = () => {
-  return <DeckBuilder />;
+  return (
+    <GradientBackground>
+      <DeckBuilder />
+    </GradientBackground>
+  );
 };
 
 export default DeckBuilderScreen;

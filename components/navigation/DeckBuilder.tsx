@@ -4,10 +4,8 @@ import { ScryfallCard } from "@scryfall/api-types";
 import { useEffect, useState } from "react";
 import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import Card from "../card/Card";
-import NewDeck from "../card/NewDeck";
+import NewDeck from "../decks/NewDeck";
 import ErrorModal from "@/modals/ErrorModal";
-import { useNewDeckStore } from "@/store/store";
-import GradientBackground from "../GradientBackground";
 
 const STORAGE_KEY = "@scryfall_cards";
 const ARCHENEMEY_SCHEME_CARD_TOTAL_COUNT = 10;
@@ -17,7 +15,6 @@ const DeckBuilder: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [displayedCards, setDisplayedCards] = useState<ScryfallCard.Scheme[]>([]);
-  const { clearNewDeck } = useNewDeckStore();
 
   // checks if card data exists in local storage. If not, send API request and cache it.
   const data = useLoadAPIData(
@@ -59,25 +56,23 @@ const DeckBuilder: React.FC = () => {
   }
 
   return (
-    <GradientBackground>
-      <ScrollView style={styles.scrollContainer}>
-        <Pressable
-          style={styles.clearCacheButton}
-          onPress={() => {
-            AsyncStorage.clear();
-          }}
-        >
-          <Text style={styles.clearCacheButtonText}>CLEAR CACHE</Text>
-        </Pressable>
+    <ScrollView style={styles.scrollContainer}>
+      <Pressable
+        style={styles.clearCacheButton}
+        onPress={() => {
+          AsyncStorage.removeItem(STORAGE_KEY);
+        }}
+      >
+        <Text style={styles.clearCacheButtonText}>CLEAR CACHE</Text>
+      </Pressable>
 
-        <NewDeck />
-        <View style={styles.container}>
-          {displayedCards.map((el) => (
-            <Card key={el.name} card={el} size={"normal"} isOpacityControlled={true} />
-          ))}
-        </View>
-      </ScrollView>
-    </GradientBackground>
+      <NewDeck />
+      <View style={styles.container}>
+        {displayedCards.map((el) => (
+          <Card key={el.name} card={el} size={"normal"} isOpacityControlled={true} />
+        ))}
+      </View>
+    </ScrollView>
   );
 };
 

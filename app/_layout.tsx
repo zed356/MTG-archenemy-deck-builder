@@ -2,7 +2,6 @@ import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
-import { StyleSheet } from "react-native";
 import "react-native-reanimated";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
@@ -24,13 +23,6 @@ export default function RootLayout() {
     return null;
   }
 
-  const styles = StyleSheet.create({
-    background: {
-      flex: 1,
-      justifyContent: "center",
-      alignItems: "center",
-    },
-  });
   return (
     <Stack>
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />

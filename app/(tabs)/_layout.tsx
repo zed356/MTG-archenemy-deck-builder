@@ -1,13 +1,15 @@
 import GradientBackground from "@/components/GradientBackground";
 import { defaultColors } from "@/constants/Colors";
 import { FontAwesome } from "@expo/vector-icons";
-import { Image } from "expo-image";
 import { Tabs } from "expo-router";
 
 const TabsLayout = () => {
   return (
     <Tabs
       screenOptions={{
+        tabBarStyle: {
+          borderTopWidth: 0,
+        },
         headerTintColor: defaultColors.gold,
         headerBackground() {
           return <GradientBackground reversed={true} />;
@@ -44,7 +46,7 @@ const TabsLayout = () => {
           title: "Builder",
           tabBarIcon: ({ focused }) => (
             <FontAwesome
-              name="puzzle-piece"
+              name="credit-card-alt"
               size={30}
               color={focused ? defaultColors.gold : defaultColors.grey}
             />
