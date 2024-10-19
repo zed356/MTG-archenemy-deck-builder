@@ -1,6 +1,8 @@
 import { StyleSheet, Text, View } from "react-native";
 import { useNewDeckStore } from "@/store/store";
-import { defaultBorderRadius, defaultColors, globalStyles } from "@/styles/styles";
+import { defaultBorderRadius, globalStyles } from "@/styles/styles";
+import { defaultColors } from "@/constants/Colors";
+
 import Card from "./Card";
 import { Fragment } from "react";
 import CustomButton from "../button/CustomButton";

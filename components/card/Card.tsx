@@ -1,9 +1,9 @@
-import { View, StyleSheet, ActivityIndicator, Pressable, Text, Modal } from "react-native";
+import { useNewDeckStore } from "@/store/store";
+import { defaultColors } from "@/constants/Colors";
+import { ScryfallCard } from "@scryfall/api-types";
 import { Image } from "expo-image";
 import { Fragment, useState } from "react";
-import { ScryfallCard } from "@scryfall/api-types";
-import { useNewDeckStore } from "@/store/store";
-import { defaultColors } from "@/styles/styles";
+import { ActivityIndicator, Modal, Pressable, StyleSheet, Text, View } from "react-native";
 
 interface InputProps {
   card: ScryfallCard.Scheme;
@@ -13,7 +13,7 @@ interface InputProps {
 }
 
 const Card: React.FC<InputProps> = ({ card, size, border = true, isOpacityControlled }) => {
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [isSelected, setIsSelected] = useState(false);
   const { cardsInNewDeck, addCardToNewDeck, removeCardFromNewDeck } = useNewDeckStore();
 
@@ -34,7 +34,10 @@ const Card: React.FC<InputProps> = ({ card, size, border = true, isOpacityContro
   }
 
   const handleImageLoadEnd = () => {
-    setLoading(false);
+    // TODO: creates a 'bump' effect when adding a card to the newDeck.
+    // Due to loading spinner most likely.
+    // create options prop for card component to disable loading spinner + other configs
+    // setLoading(false);
   };
 
   const handleAddRemoveCardToNewDeck = () => {

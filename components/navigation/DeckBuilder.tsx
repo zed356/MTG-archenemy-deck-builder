@@ -1,13 +1,13 @@
 import { useLoadAPIData } from "@/hooks/useLoadAPIData";
-import { initialReducerState, NewDeckActionKind, newDeckReducer } from "@/reducers/newDeckReducer";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { ScryfallCard } from "@scryfall/api-types";
-import { useEffect, useReducer, useState } from "react";
+import { useEffect, useState } from "react";
 import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import Card from "../card/Card";
 import NewDeck from "../card/NewDeck";
 import ErrorModal from "@/modals/ErrorModal";
 import { useNewDeckStore } from "@/store/store";
+import GradientBackground from "../GradientBackground";
 
 const STORAGE_KEY = "@scryfall_cards";
 const ARCHENEMEY_SCHEME_CARD_TOTAL_COUNT = 10;
@@ -59,23 +59,25 @@ const DeckBuilder: React.FC = () => {
   }
 
   return (
-    <ScrollView style={styles.scrollContainer}>
-      <Pressable
-        style={styles.clearCacheButton}
-        onPress={() => {
-          AsyncStorage.clear();
-        }}
-      >
-        <Text style={styles.clearCacheButtonText}>CLEAR CACHE</Text>
-      </Pressable>
+    <GradientBackground>
+      <ScrollView style={styles.scrollContainer}>
+        <Pressable
+          style={styles.clearCacheButton}
+          onPress={() => {
+            AsyncStorage.clear();
+          }}
+        >
+          <Text style={styles.clearCacheButtonText}>CLEAR CACHE</Text>
+        </Pressable>
 
-      <NewDeck />
-      <View style={styles.container}>
-        {displayedCards.map((el) => (
-          <Card key={el.name} card={el} size={"normal"} isOpacityControlled={true} />
-        ))}
-      </View>
-    </ScrollView>
+        <NewDeck />
+        <View style={styles.container}>
+          {displayedCards.map((el) => (
+            <Card key={el.name} card={el} size={"normal"} isOpacityControlled={true} />
+          ))}
+        </View>
+      </ScrollView>
+    </GradientBackground>
   );
 };
 
