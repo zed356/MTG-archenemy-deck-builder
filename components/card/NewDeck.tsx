@@ -1,13 +1,22 @@
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 import { useNewDeckStore } from "@/store/store";
 import { defaultBorderRadius, defaultColors, globalStyles } from "@/styles/styles";
 import Card from "./Card";
 import { Fragment } from "react";
+import CustomButton from "../button/CustomButton";
 
 const NewDeck: React.FC = () => {
   const { cardsInNewDeck, clearNewDeck } = useNewDeckStore();
   const countOfCardsInNewDeck: number = cardsInNewDeck.length;
-  const isMinimumCardsInDeckReached: boolean = countOfCardsInNewDeck >= 10;
+  const isMinimumCardsInDeckReached: boolean = countOfCardsInNewDeck >= 1;
+
+  const handleClearNewDeck = () => {
+    clearNewDeck();
+  };
+
+  const handleSaveDeck = () => {
+    // TODO: add save logic
+  };
 
   const styles = StyleSheet.create({
     buttonContainer: {
@@ -39,21 +48,9 @@ const NewDeck: React.FC = () => {
   return (
     <Fragment>
       <View style={styles.buttonContainer}>
-        <Pressable style={globalStyles.neutralActionButton} onPress={() => clearNewDeck()}>
-          <Text style={globalStyles.text}>CLEAR DECK</Text>
-        </Pressable>
-        <Pressable
-          disabled={!isMinimumCardsInDeckReached}
-          style={[
-            globalStyles.positiveActionButton,
-            !isMinimumCardsInDeckReached && styles.invalidButton,
-          ]}
-          onPress={() => clearNewDeck()}
-        >
-          <Text style={globalStyles.text}>SAVE</Text>
-        </Pressable>
+        <CustomButton text="CLEAR DECK" type={"neutral"} onPress={handleClearNewDeck} />
+        <CustomButton text="SAVE DECK" type={"positive"} disabled={!isMinimumCardsInDeckReached} />
       </View>
-
       <View style={styles.newDeckContainer}>
         <Text style={[globalStyles.text, styles.text]}>{countOfCardsInNewDeck}/10</Text>
         <View style={styles.cards}>
