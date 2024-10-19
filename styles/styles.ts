@@ -1,12 +1,5 @@
 import { StyleSheet } from "react-native";
 
-export const defaultColors = {
-  border: "#FFC107",
-  green: "#42b883",
-  gold: "#FFC107",
-  red: "#FF5722",
-};
-
 export const defaultBorderRadius = 5;
 
 export const globalStyles = StyleSheet.create({

@@ -6,6 +6,15 @@
 const tintColorLight = "#0a7ea4";
 const tintColorDark = "#fff";
 
+export const defaultColors = {
+  border: "#FFC107",
+  green: "#42b883",
+  gold: "#FFC107",
+  red: "#FF5722",
+  grey: "#9E9E9E",
+  mainGradient: ["#2E0054", "#000000"],
+};
+
 export const Colors = {
   light: {
     text: "#11181C",
@@ -23,4 +32,5 @@ export const Colors = {
     tabIconDefault: "#9BA1A6",
     tabIconSelected: tintColorDark,
   },
+  mainBackGroundGradientColor: ["#2E0054", "#000000"],
 };

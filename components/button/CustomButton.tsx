@@ -1,15 +1,23 @@
+import { defaultColors } from "@/constants/Colors";
 import { defaultBorderRadius, globalStyles } from "@/styles/styles";
 import { LinearGradient } from "expo-linear-gradient";
-import { Pressable, StyleProp, StyleSheet, Text } from "react-native";
+import { Pressable, StyleSheet, Text } from "react-native";
 
 interface InputProps {
-  text: string;
+  text?: string;
   type: "positive" | "neutral" | "negative";
   onPress?: () => void;
   disabled?: boolean;
+  children?: React.ReactNode;
 }
 
-const CustomButton: React.FC<InputProps> = ({ text, type, onPress, disabled = false }) => {
+const CustomButton: React.FC<InputProps> = ({
+  text,
+  type,
+  onPress,
+  disabled = false,
+  children,
+}) => {
   const handleOnPress = () => {
     if (!disabled && onPress) {
       onPress();
@@ -17,7 +25,7 @@ const CustomButton: React.FC<InputProps> = ({ text, type, onPress, disabled = fa
   };
 
   const getButtonColors = () => {
-    if (disabled) return ["grey", "lightgrey"]; // Disabled gradient
+    if (disabled) return ["grey", defaultColors.grey]; // Disabled gradient
 
     switch (type) {
       case "positive":
@@ -32,15 +40,23 @@ const CustomButton: React.FC<InputProps> = ({ text, type, onPress, disabled = fa
   };
 
   return (
-    <Pressable onPress={handleOnPress} disabled={disabled} accessibilityRole="button">
+    <Pressable
+      onPress={handleOnPress}
+      disabled={disabled}
+      accessibilityRole="button"
+      style={styles.container}
+    >
       <LinearGradient colors={getButtonColors()} style={styles.gradientBackground}>
-        <Text style={globalStyles.text}>{text}</Text>
+        <Text style={globalStyles.text}>{text || children}</Text>
       </LinearGradient>
     </Pressable>
   );
 };
 
 const styles = StyleSheet.create({
+  container: {
+    maxWidth: 80,
+  },
   gradientBackground: {
     padding: 10,
     margin: 5,
