@@ -18,10 +18,6 @@ const SaveNewDeckModal: React.FC<InputProps> = ({ modalVisible, setVisible, conf
     }
   };
 
-  const handleInputChange = (text: string) => {
-    setUserInputValue(text);
-  };
-
   return (
     <View style={styles.centeredView}>
       <Modal
@@ -40,7 +36,7 @@ const SaveNewDeckModal: React.FC<InputProps> = ({ modalVisible, setVisible, conf
               maxLength={80}
               autoCorrect={false}
               autoFocus={true}
-              onChangeText={handleInputChange}
+              onChangeText={setUserInputValue}
             />
             <View style={styles.buttonContainer}>
               <CustomButton
