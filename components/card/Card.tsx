@@ -1,31 +1,35 @@
-import { useNewDeckStore } from "@/store/store";
 import { defaultColors } from "@/constants/Colors";
 import { ScryfallCard } from "@scryfall/api-types";
 import { Image } from "expo-image";
-import { Fragment, useState } from "react";
+import React, { Fragment, useState } from "react";
 import { ActivityIndicator, Modal, Pressable, StyleSheet, Text, View } from "react-native";
+import SelectedCardModal from "@/modals/SelectedCardModal";
 
 interface InputProps {
   card: ScryfallCard.Scheme;
   size: "small" | "normal" | "large";
   border?: boolean;
-  isOpacityControlled?: boolean;
-  addRemoveOperatorShown: boolean;
+  existsInDeck: boolean;
+  isOpacityControlled: boolean;
+  showAddRemoveOperator: boolean;
+  addToDeck?: (card: ScryfallCard.Scheme) => void;
+  removeFromDeck?: (card: ScryfallCard.Scheme) => void;
 }
 
 const Card: React.FC<InputProps> = ({
   card,
   size,
+  existsInDeck,
   border = true,
   isOpacityControlled,
-  addRemoveOperatorShown,
+  showAddRemoveOperator,
+  addToDeck,
+  removeFromDeck,
 }) => {
   const [loading, setLoading] = useState(false);
   const [isSelected, setIsSelected] = useState(false);
-  const { cardsInNewDeck, addCardToNewDeck, removeCardFromNewDeck } = useNewDeckStore();
 
-  const existsInNewDeck = cardsInNewDeck.find((el) => el.name === card.name);
-  const displayPlusMinusCardButton = !existsInNewDeck ? "+" : "-";
+  const displayPlusMinusCardButton = !existsInDeck ? "+" : "-";
 
   let cardSize;
   let operatorSize;
@@ -48,11 +52,11 @@ const Card: React.FC<InputProps> = ({
   };
 
   const handleAddRemoveCardToNewDeck = () => {
-    if (existsInNewDeck) {
-      removeCardFromNewDeck(card);
+    if (existsInDeck && removeFromDeck) {
+      removeFromDeck(card);
       setIsSelected(false);
-    } else if (!existsInNewDeck) {
-      addCardToNewDeck(card);
+    } else if (!existsInDeck && addToDeck) {
+      addToDeck(card);
       setIsSelected(false);
     }
   };
@@ -63,9 +67,9 @@ const Card: React.FC<InputProps> = ({
       height: cardSize?.height,
       borderRadius: 11,
       marginBottom: 5,
-      borderWidth: existsInNewDeck && border ? 2 : 2,
-      borderColor: existsInNewDeck && border ? defaultColors.border : undefined,
-      opacity: existsInNewDeck && isOpacityControlled ? 0.25 : 1,
+      borderWidth: existsInDeck && border ? 2 : undefined,
+      borderColor: existsInDeck && border ? defaultColors.border : undefined,
+      opacity: existsInDeck && isOpacityControlled ? 0.4 : 1,
       // backgroundColor: "rgba(22, 22, 1, 10)", // Optional: Add a semi-transparent background
     },
     containerIsSelected: {
@@ -97,7 +101,7 @@ const Card: React.FC<InputProps> = ({
       fontSize: operatorSize?.fontSize,
       width: 30,
       textAlign: "center",
-      color: !existsInNewDeck ? defaultColors.green : "red",
+      color: !existsInDeck ? defaultColors.green : "red",
     },
   });
 
@@ -124,41 +128,21 @@ const Card: React.FC<InputProps> = ({
             style={[styles.plusButton, { top: 25 }]}
             onPress={handleAddRemoveCardToNewDeck}
           >
-            {addRemoveOperatorShown && (
+            {showAddRemoveOperator && (
               <Text style={styles.operatorText}>{displayPlusMinusCardButton}</Text>
             )}
           </Pressable>
         </View>
       </Pressable>
-      <Modal visible={isSelected} animationType="slide" transparent={true}>
-        <View style={styles.modalContainer}>
-          <Pressable onPress={() => setIsSelected((oldState) => !oldState)}>
-            {loading && <ActivityIndicator size="large" color="#FFD700" />}
-            <View>
-              <Image
-                style={[styles.card, styles.cardIsSelected]}
-                source={
-                  typeof card.image_uris!.normal === "string"
-                    ? { uri: card.image_uris!.normal }
-                    : card.image_uris!.normal
-                }
-                contentFit="contain"
-                onError={() => {
-                  console.log("Error loading image: " + card.image_uris!.normal);
-                }}
-                onLoadEnd={handleImageLoadEnd}
-              />
-              <Pressable style={styles.plusButton} onPress={handleAddRemoveCardToNewDeck}>
-                {addRemoveOperatorShown && (
-                  <Text style={[styles.operatorText, { fontSize: 85, right: 20, width: 30 }]}>
-                    {displayPlusMinusCardButton}
-                  </Text>
-                )}
-              </Pressable>
-            </View>
-          </Pressable>
-        </View>
-      </Modal>
+      <SelectedCardModal
+        card={card}
+        existsInDeck={existsInDeck}
+        isSelected={isSelected}
+        setIsSelected={setIsSelected}
+        showAddRemoveOperator={showAddRemoveOperator}
+        addRemoveCardToDeck={handleAddRemoveCardToNewDeck}
+        displayPlusMinusCardButton={displayPlusMinusCardButton}
+      />
     </Fragment>
   );
 };
