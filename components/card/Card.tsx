@@ -2,7 +2,7 @@ import { defaultColors } from "@/constants/Colors";
 import { ScryfallCard } from "@scryfall/api-types";
 import { Image } from "expo-image";
 import React, { Fragment, useState } from "react";
-import { ActivityIndicator, Modal, Pressable, StyleSheet, Text, View } from "react-native";
+import { ActivityIndicator, Pressable, StyleSheet, Text, View } from "react-native";
 import SelectedCardModal from "@/modals/SelectedCardModal";
 
 interface InputProps {

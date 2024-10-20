@@ -1,6 +1,5 @@
 import { SavedDeck } from "@/store/store";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { ScryfallCard } from "@scryfall/api-types";
 
 export const saveDeckToStorage = async (deck: SavedDeck) => {
   try {

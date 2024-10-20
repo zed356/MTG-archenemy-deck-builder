@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Modal, Pressable, View, StyleSheet, Text, DevSettings } from "react-native";
+import { Modal, Pressable, View, StyleSheet, Text } from "react-native";
 import { reloadAppAsync } from "expo";
 
 interface InputProps {

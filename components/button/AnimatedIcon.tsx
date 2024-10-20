@@ -1,5 +1,3 @@
-import { globalStyles } from "@/constants/styles";
-import { LinearGradient } from "expo-linear-gradient";
 import { useRef } from "react";
 import { Animated, Pressable, StyleSheet } from "react-native";
 

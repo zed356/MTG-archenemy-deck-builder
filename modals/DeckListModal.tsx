@@ -142,9 +142,13 @@ const DeckListModal: React.FC<InputProps> = ({ modalVisible, setVisible, deck, u
               )}
               <CustomButton
                 type="negative"
-                text="CLOSE"
+                text={isEditing ? "CANCEL" : "CLOSE"}
                 onPress={() => {
-                  setVisible(false);
+                  if (isEditing) {
+                    setIsEditing(false);
+                  } else {
+                    setVisible(false);
+                  }
                 }}
               />
             </View>
