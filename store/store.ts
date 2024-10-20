@@ -1,6 +1,8 @@
 import { create } from "zustand";
 import { ScryfallCard } from "@scryfall/api-types";
 
+export type SavedDeck = { deckName: string; cards: ScryfallCard.Scheme[] };
+
 interface NewDeckState {
   cardsInNewDeck: ScryfallCard.Scheme[];
   addCardToNewDeck: (card: ScryfallCard.Scheme) => void;
@@ -9,10 +11,10 @@ interface NewDeckState {
 }
 
 interface SavedDeckState {
-  savedDecksInState: ScryfallCard.Scheme[][];
-  saveDeckToState: (deck: ScryfallCard.Scheme[]) => void;
-  removeDeckFromState: (deck: ScryfallCard.Scheme[]) => void;
-  loadDecksFromStorageIntoState: (decks: ScryfallCard.Scheme[][]) => void;
+  savedDecksInState: SavedDeck[];
+  saveDeckToState: (deck: SavedDeck) => void;
+  removeDeckFromState: (deck: SavedDeck) => void;
+  loadDecksFromStorageIntoState: (decks: SavedDeck[]) => void;
   clearDecks: () => void;
 }
 

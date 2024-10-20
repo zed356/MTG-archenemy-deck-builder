@@ -4,26 +4,30 @@ import { defaultBorderRadius, globalStyles } from "@/constants/styles";
 import { defaultColors } from "@/constants/Colors";
 
 import Card from "../card/Card";
-import { Fragment } from "react";
+import { Fragment, useState } from "react";
 import CustomButton from "../button/CustomButton";
-import { MINIMUM_CARDS_IN_DECK } from "@/constants/values";
+import { MINIMUM_CARDS_IN_NEW_DECK } from "@/constants/values";
 import { router } from "expo-router";
 import { saveDeckToStorage } from "@/helpers/savedDeckManager";
+import SaveNewDeckModal from "../../modals/SaveNewDeckModal";
 
 const NewDeck: React.FC = () => {
+  const [confirmationModalVisible, setConfirmationModalVisible] = useState(false);
   const { cardsInNewDeck, clearNewDeck } = useNewDeckStore();
-  const countOfCardsInNewDeck: number = cardsInNewDeck.length;
-  const isMinimumCardsInDeckReached: boolean = countOfCardsInNewDeck >= MINIMUM_CARDS_IN_DECK;
   const { saveDeckToState } = useSavedDeckStore();
+  const countOfCardsInNewDeck: number = cardsInNewDeck.length;
+  const isMinimumCardsInDeckReached: boolean = countOfCardsInNewDeck >= MINIMUM_CARDS_IN_NEW_DECK;
 
   const handleClearNewDeck = () => {
     clearNewDeck();
   };
 
-  const handleSaveDeck = () => {
-    saveDeckToStorage(cardsInNewDeck);
-    saveDeckToState(cardsInNewDeck);
+  const handleSaveDeck = (deckName: string) => {
+    const payload = { deckName, cards: cardsInNewDeck };
+    saveDeckToStorage(payload);
+    saveDeckToState(payload);
     clearNewDeck();
+    setConfirmationModalVisible(false);
     router.push("/(tabs)/");
   };
 
@@ -46,7 +50,7 @@ const NewDeck: React.FC = () => {
       padding: 5,
     },
     text: {
-      color: countOfCardsInNewDeck < MINIMUM_CARDS_IN_DECK ? defaultColors.red : "#42b883",
+      color: countOfCardsInNewDeck < MINIMUM_CARDS_IN_NEW_DECK ? defaultColors.red : "#42b883",
       fontSize: 18,
     },
     invalidButton: {
@@ -62,18 +66,29 @@ const NewDeck: React.FC = () => {
           text="SAVE DECK"
           type={"positive"}
           disabled={!isMinimumCardsInDeckReached}
-          onPress={handleSaveDeck}
+          onPress={() => setConfirmationModalVisible(true)}
         />
       </View>
       <View style={styles.newDeckContainer}>
         <Text style={[globalStyles.text, styles.text]}>
-          {countOfCardsInNewDeck}/{MINIMUM_CARDS_IN_DECK}
+          {countOfCardsInNewDeck}/{MINIMUM_CARDS_IN_NEW_DECK}
         </Text>
         <View style={styles.cards}>
           {cardsInNewDeck.map((el) => (
-            <Card key={el.name} card={el} size={"small"} border={false} />
+            <Card
+              key={el.name}
+              card={el}
+              size={"small"}
+              border={false}
+              addRemoveOperatorShown={true}
+            />
           ))}
         </View>
+        <SaveNewDeckModal
+          modalVisible={confirmationModalVisible}
+          setVisible={setConfirmationModalVisible}
+          confirmSaveDeck={handleSaveDeck}
+        />
       </View>
     </Fragment>
   );

@@ -1,9 +1,8 @@
+import { SavedDeck } from "@/store/store";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { ScryfallCard } from "@scryfall/api-types";
 
-type Deck = ScryfallCard.Scheme[];
-
-export const saveDeckToStorage = async (deck: Deck) => {
+export const saveDeckToStorage = async (deck: SavedDeck) => {
   try {
     const currentDecks = await loadDecksFromStorage();
     if (currentDecks != null) {

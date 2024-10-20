@@ -6,9 +6,7 @@ import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from
 import Card from "../card/Card";
 import NewDeck from "../decks/NewDeck";
 import ErrorModal from "@/modals/ErrorModal";
-
-const STORAGE_KEY = "@scryfall_cards";
-const ARCHENEMEY_SCHEME_CARD_TOTAL_COUNT = 10;
+import { API_DATA_STORAGE_KEY, ARCHENEMEY_SCHEME_CARD_TOTAL_COUNT } from "@/constants/values";
 
 const DeckBuilder: React.FC = () => {
   const [cards, setCards] = useState<ScryfallCard.Scheme[]>([]);
@@ -18,7 +16,7 @@ const DeckBuilder: React.FC = () => {
 
   // checks if card data exists in local storage. If not, send API request and cache it.
   const data = useLoadAPIData(
-    STORAGE_KEY,
+    API_DATA_STORAGE_KEY,
     "https://api.scryfall.com/cards/search?q=s%3Aoarc",
     setError,
     setLoading
@@ -57,19 +55,25 @@ const DeckBuilder: React.FC = () => {
 
   return (
     <ScrollView style={styles.scrollContainer}>
-      <Pressable
+      {/* <Pressable
         style={styles.clearCacheButton}
         onPress={() => {
-          AsyncStorage.removeItem(STORAGE_KEY);
+          AsyncStorage.removeItem(API_DATA_STORAGE_KEY);
         }}
       >
         <Text style={styles.clearCacheButtonText}>CLEAR CACHE</Text>
-      </Pressable>
+      </Pressable> */}
 
       <NewDeck />
       <View style={styles.container}>
         {displayedCards.map((el) => (
-          <Card key={el.name} card={el} size={"normal"} isOpacityControlled={true} />
+          <Card
+            key={el.name}
+            card={el}
+            size={"normal"}
+            isOpacityControlled={true}
+            addRemoveOperatorShown={true}
+          />
         ))}
       </View>
     </ScrollView>
@@ -97,13 +101,13 @@ const styles = StyleSheet.create({
     textAlign: "center",
     lineHeight: 35,
   },
-  scrollContainer: { flex: 1 },
+  scrollContainer: { flex: 1, marginTop: 70 },
   container: {
     flex: 1,
     flexDirection: "row",
     flexWrap: "wrap",
     alignItems: "center",
     justifyContent: "space-evenly",
-    marginTop: 40,
+    marginTop: 10,
   },
 });
