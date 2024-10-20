@@ -1,41 +1,26 @@
-import { useLoadAPIData } from "@/hooks/useLoadAPIData";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { ScryfallCard } from "@scryfall/api-types";
 import { useEffect, useState } from "react";
-import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { ActivityIndicator, ScrollView, StyleSheet, View } from "react-native";
 import Card from "../card/Card";
 import NewDeck from "../decks/NewDeck";
 import ErrorModal from "@/modals/ErrorModal";
-import { API_DATA_STORAGE_KEY, ARCHENEMEY_SCHEME_CARD_TOTAL_COUNT } from "@/constants/values";
+import { ARCHENEMEY_SCHEME_CARD_TOTAL_COUNT } from "@/constants/values";
+import { useCardStore, useNewDeckStore } from "@/store/store";
 
 const DeckBuilder: React.FC = () => {
-  const [cards, setCards] = useState<ScryfallCard.Scheme[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const { cardsInStore, loadCardsIntoStore, loading, error } = useCardStore();
   const [displayedCards, setDisplayedCards] = useState<ScryfallCard.Scheme[]>([]);
 
-  // checks if card data exists in local storage. If not, send API request and cache it.
-  const data = useLoadAPIData(
-    API_DATA_STORAGE_KEY,
-    "https://api.scryfall.com/cards/search?q=s%3Aoarc",
-    setError,
-    setLoading
-  );
-
-  // Update cards only when data changes
-  useEffect(() => {
-    if (data.length > 0) {
-      setCards(data);
-    }
-  }, [data]); // Run this effect only when `data` changes
+  const { cardsInNewDeck, addCardToNewDeck, removeCardFromNewDeck, clearNewDeck } =
+    useNewDeckStore();
 
   // displayes 1 card per set interval.
   useEffect(() => {
     let count = 0;
     setDisplayedCards([]);
     const intervalId = setInterval(() => {
-      if (count < Math.min(cards.length, ARCHENEMEY_SCHEME_CARD_TOTAL_COUNT)) {
-        setDisplayedCards((prevCards) => [...prevCards, cards[count]]);
+      if (count < Math.min(cardsInStore.length, ARCHENEMEY_SCHEME_CARD_TOTAL_COUNT)) {
+        setDisplayedCards((prevCards) => [...prevCards, cardsInStore[count]]);
         count++;
       } else {
         clearInterval(intervalId); // Stop the interval after displaying cards
@@ -43,7 +28,7 @@ const DeckBuilder: React.FC = () => {
     }, 300); // 0.3 second interval per card. CHANGE THIS FOR QUICKER / SLOWER LOAD
 
     return () => clearInterval(intervalId); // Cleanup on component unmount
-  }, [cards]); // Trigger this effect when `cards` changes
+  }, [cardsInStore]); // Trigger this effect when `cards` changes
 
   if (loading) {
     return <ActivityIndicator size="large" color="#FFFFFF" />;
@@ -72,7 +57,10 @@ const DeckBuilder: React.FC = () => {
             card={el}
             size={"normal"}
             isOpacityControlled={true}
-            addRemoveOperatorShown={true}
+            showAddRemoveOperator={true}
+            addToDeck={() => addCardToNewDeck(el)}
+            removeFromDeck={() => removeCardFromNewDeck(el)}
+            existsInDeck={cardsInNewDeck.find((card) => card.name === el.name) ? true : false}
           />
         ))}
       </View>
