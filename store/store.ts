@@ -25,7 +25,7 @@ interface SavedDeckState {
   saveDeckToState: (deck: SavedDeck) => void;
   removeDeckFromState: (deck: SavedDeck) => void;
   loadDecksFromStorageIntoState: (decks: SavedDeck[]) => void;
-  updateDeckInState: (deck: SavedDeck) => void;
+  updateDeckInState: (deck: SavedDeck, newDeckName?: string) => void;
   clearDecks: () => void;
 }
 
@@ -46,12 +46,24 @@ export const useSavedDeckStore = create<SavedDeckState>((set) => ({
     set((state) => ({ savedDecksInState: [...state.savedDecksInState, deck] })),
   removeDeckFromState: (deck) =>
     set((state) => ({ savedDecksInState: state.savedDecksInState.filter((el) => el !== deck) })),
-  updateDeckInState: (deck) =>
-    set((state) => ({
-      savedDecksInState: state.savedDecksInState.map((el) =>
-        el.deckName === deck.deckName ? deck : el
-      ),
-    })),
+  updateDeckInState: (deck, newDeckName) =>
+    set((state) => {
+      if (newDeckName && newDeckName.trim().length > 0) {
+        const updatedDeck = { deckName: newDeckName, cards: deck.cards };
+        return {
+          savedDecksInState: state.savedDecksInState.map((el) =>
+            el.deckName === deck.deckName ? updatedDeck : el
+          ),
+        };
+      } else {
+        return {
+          savedDecksInState: state.savedDecksInState.map((el) =>
+            el.deckName === deck.deckName ? deck : el
+          ),
+        };
+      }
+    }),
+
   clearDecks: () => set({ savedDecksInState: [] }),
 }));
 
