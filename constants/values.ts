@@ -1,3 +1,4 @@
+export const API_URL = "https://api.scryfall.com/cards/search?q=s%3Aoarc";
 export const MINIMUM_CARDS_IN_NEW_DECK = 3;
 export const SAVED_DECKS_STORAGE_KEY = "saved-decks";
 export const API_DATA_STORAGE_KEY = "@scryfall_cards";
