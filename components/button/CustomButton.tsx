@@ -71,7 +71,14 @@ const CustomButton: React.FC<InputProps> = ({
         style={styles.container}
       >
         <LinearGradient colors={getButtonColors()} style={styles.gradientBackground}>
-          <Text style={globalStyles.text}>{text || children}</Text>
+          <Text
+            style={[
+              globalStyles.text,
+              type == "positive" && !disabled && { color: defaultColors.gold },
+            ]}
+          >
+            {text || children}
+          </Text>
         </LinearGradient>
       </Pressable>
     </Animated.View>
