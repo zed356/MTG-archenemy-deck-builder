@@ -1,19 +1,33 @@
 import { defaultColors } from "@/constants/Colors";
-import { View, Text, Pressable } from "react-native";
-import { StyleSheet } from "react-native";
+import { View, Text, StyleSheet } from "react-native";
 import { globalStyles } from "@/constants/styles";
 import { Link } from "expo-router";
 import CustomButton from "../button/CustomButton";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useSavedDeckStore } from "@/store/store";
+import { SavedDeck, useSavedDeckStore } from "@/store/store";
 import { useEffect, useState } from "react";
-import { loadDecksFromStorage } from "@/helpers/savedDeckManager";
+import {
+  loadDecksFromStorage,
+  removeDeckFromStorage,
+  updateDeckInStorage,
+} from "@/helpers/savedDeckManager";
 import { FontAwesome6 } from "@expo/vector-icons";
+import AnimatedIcon from "../button/AnimatedIcon";
+import { SAVED_DECKS_PER_PAGE } from "@/constants/values";
+import DeckListModal from "@/modals/DeckListModal";
 
 const SavedDecks: React.FC = () => {
-  const { savedDecksInState, loadDecksFromStorageIntoState, clearDecks } = useSavedDeckStore();
+  const {
+    savedDecksInState,
+    loadDecksFromStorageIntoState,
+    removeDeckFromState,
+    updateDeckInState,
+    clearDecks,
+  } = useSavedDeckStore();
+  const [deckListModalIsVisible, setDeckListModalIsVisible] = useState(false);
+  const [selectedDeck, setSelectedDeck] = useState<SavedDeck | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const decksPerPage = 4;
+  const maxPages = Math.ceil(savedDecksInState.length / SAVED_DECKS_PER_PAGE);
 
   // load decks from local storage if any exist
   useEffect(() => {
@@ -32,7 +46,7 @@ const SavedDecks: React.FC = () => {
   };
 
   const handleNextPage = () => {
-    if (currentPage < Math.ceil(savedDecksInState.length / decksPerPage)) {
+    if (currentPage < maxPages) {
       setCurrentPage((prev) => prev + 1);
     }
   };
@@ -43,16 +57,54 @@ const SavedDecks: React.FC = () => {
     }
   };
 
+  const handleDeckListModal = (deck: SavedDeck) => {
+    setSelectedDeck(deck);
+    setDeckListModalIsVisible((prev) => !prev);
+  };
+
+  const handleDeleteDeck = (deck: SavedDeck) => {
+    removeDeckFromState(deck);
+    removeDeckFromStorage(deck);
+  };
+
+  const handleUpdateDeck = (deck: SavedDeck, newDeckName?: string) => {
+    updateDeckInState(deck, newDeckName);
+    updateDeckInStorage(deck, newDeckName);
+  };
+
   const deckContent =
     savedDecksInState.length > 0 ? (
       savedDecksInState.map((deck, index) => {
-        if (index < currentPage * decksPerPage && index >= (currentPage - 1) * decksPerPage) {
+        if (
+          index < currentPage * SAVED_DECKS_PER_PAGE &&
+          index >= (currentPage - 1) * SAVED_DECKS_PER_PAGE
+        ) {
           return (
-            <Text key={Math.random()} style={[globalStyles.text, styles.emptyDeckText]}>
-              Cards: {deck.length}
-            </Text>
+            <View key={Math.random()} style={styles.deckContainer}>
+              <DeckListModal
+                modalVisible={deckListModalIsVisible}
+                setVisible={() => setDeckListModalIsVisible(false)}
+                deck={selectedDeck}
+                updateDeck={handleUpdateDeck}
+              />
+              <CustomButton
+                type="neutral"
+                text={`${deck.deckName} : ${deck.cards.length}`}
+                onPress={() => {
+                  handleDeckListModal(deck);
+                }}
+              />
+              <CustomButton
+                type="negative"
+                text="Delete"
+                onPress={() => {
+                  handleDeleteDeck(deck);
+                }}
+              />
+            </View>
           );
         }
+        return null;
       })
     ) : (
       <Link href="/(tabs)/deckbuilder">
@@ -62,25 +114,25 @@ const SavedDecks: React.FC = () => {
 
   const paginationContent = (
     <View style={styles.paginationContainer}>
-      <Pressable onPress={handlePreviousPage}>
+      <AnimatedIcon onPress={handlePreviousPage} visible={currentPage > 1}>
         <FontAwesome6 name="chevron-left" size={24} color={defaultColors.gold} />
-      </Pressable>
+      </AnimatedIcon>
       <Text style={[globalStyles.text, styles.emptyDeckText]}>
-        {currentPage} / {Math.ceil(savedDecksInState.length / decksPerPage)}
+        {currentPage} / {maxPages}
       </Text>
-      <Pressable onPress={handleNextPage}>
+      <AnimatedIcon onPress={handleNextPage} visible={currentPage < maxPages}>
         <FontAwesome6 name="chevron-right" size={24} color={defaultColors.gold} />
-      </Pressable>
+      </AnimatedIcon>
     </View>
   );
 
   return (
     <View style={styles.container}>
+      <View style={styles.allDecksContainer}>{deckContent}</View>
+      {savedDecksInState.length > SAVED_DECKS_PER_PAGE && <View>{paginationContent}</View>}
       {savedDecksInState.length > 0 && (
         <CustomButton text="Clear decks" type="negative" onPress={handleClearDecks} />
       )}
-      <View style={styles.deckContainer}>{deckContent}</View>
-      {savedDecksInState.length > 0 && <View>{paginationContent}</View>}
     </View>
   );
 };
@@ -88,17 +140,24 @@ const SavedDecks: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "center",
     alignItems: "center",
+    justifyContent: "center",
   },
-  deckContainer: {
+  allDecksContainer: {
     width: "90%",
-    minHeight: "20%",
     borderColor: defaultColors.gold,
     borderRadius: 20,
     borderWidth: 1,
     padding: 10,
-    justifyContent: "space-between",
+    flex: 0.5,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  deckContainer: {
+    flex: 1,
+    flexDirection: "row",
+    marginBottom: 10,
+    justifyContent: "center",
     alignItems: "center",
   },
   paginationContainer: {
