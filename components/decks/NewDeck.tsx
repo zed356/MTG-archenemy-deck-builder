@@ -2,7 +2,6 @@ import { StyleSheet, Text, View } from "react-native";
 import { useNewDeckStore, useSavedDeckStore } from "@/store/store";
 import { defaultBorderRadius, globalStyles } from "@/constants/styles";
 import { defaultColors } from "@/constants/Colors";
-
 import Card from "../card/Card";
 import { Fragment, useState } from "react";
 import CustomButton from "../button/CustomButton";
@@ -13,7 +12,8 @@ import SaveNewDeckModal from "../../modals/SaveNewDeckModal";
 
 const NewDeck: React.FC = () => {
   const [confirmationModalVisible, setConfirmationModalVisible] = useState(false);
-  const { cardsInNewDeck, clearNewDeck } = useNewDeckStore();
+  const { cardsInNewDeck, addCardToNewDeck, removeCardFromNewDeck, clearNewDeck } =
+    useNewDeckStore();
   const { saveDeckToState } = useSavedDeckStore();
   const countOfCardsInNewDeck: number = cardsInNewDeck.length;
   const isMinimumCardsInDeckReached: boolean = countOfCardsInNewDeck >= MINIMUM_CARDS_IN_NEW_DECK;
@@ -80,7 +80,11 @@ const NewDeck: React.FC = () => {
               card={el}
               size={"small"}
               border={false}
-              addRemoveOperatorShown={true}
+              showAddRemoveOperator={true}
+              isOpacityControlled={false}
+              existsInDeck={true}
+              addToDeck={() => addCardToNewDeck(el)}
+              removeFromDeck={() => removeCardFromNewDeck(el)}
             />
           ))}
         </View>

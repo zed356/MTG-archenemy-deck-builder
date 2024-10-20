@@ -12,6 +12,7 @@ export const defaultColors = {
   gold: "#FFC107",
   red: "#FF5722",
   grey: "#9E9E9E",
+  purple: "#590080",
   mainGradient: ["#2E0054", "#000000"],
 };
 
