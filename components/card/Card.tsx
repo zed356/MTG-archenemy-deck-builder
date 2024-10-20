@@ -10,9 +10,16 @@ interface InputProps {
   size: "small" | "normal" | "large";
   border?: boolean;
   isOpacityControlled?: boolean;
+  addRemoveOperatorShown: boolean;
 }
 
-const Card: React.FC<InputProps> = ({ card, size, border = true, isOpacityControlled }) => {
+const Card: React.FC<InputProps> = ({
+  card,
+  size,
+  border = true,
+  isOpacityControlled,
+  addRemoveOperatorShown,
+}) => {
   const [loading, setLoading] = useState(false);
   const [isSelected, setIsSelected] = useState(false);
   const { cardsInNewDeck, addCardToNewDeck, removeCardFromNewDeck } = useNewDeckStore();
@@ -76,7 +83,7 @@ const Card: React.FC<InputProps> = ({ card, size, border = true, isOpacityContro
       flex: 1, // Make the modal take the full screen
       justifyContent: "center", // Center vertically
       alignItems: "center", // Center horizontally
-      backgroundColor: "rgba(0, 0, 0, 0.5)", // Optional: Add a semi-transparent background
+      // backgroundColor: "rgba(0, 0, 0, 0.5)", // Optional: Add a semi-transparent background
     },
     plusButton: {
       position: "absolute",
@@ -117,7 +124,9 @@ const Card: React.FC<InputProps> = ({ card, size, border = true, isOpacityContro
             style={[styles.plusButton, { top: 25 }]}
             onPress={handleAddRemoveCardToNewDeck}
           >
-            <Text style={styles.operatorText}>{displayPlusMinusCardButton}</Text>
+            {addRemoveOperatorShown && (
+              <Text style={styles.operatorText}>{displayPlusMinusCardButton}</Text>
+            )}
           </Pressable>
         </View>
       </Pressable>
@@ -140,9 +149,11 @@ const Card: React.FC<InputProps> = ({ card, size, border = true, isOpacityContro
                 onLoadEnd={handleImageLoadEnd}
               />
               <Pressable style={styles.plusButton} onPress={handleAddRemoveCardToNewDeck}>
-                <Text style={[styles.operatorText, { fontSize: 85, right: 20, width: 30 }]}>
-                  {displayPlusMinusCardButton}
-                </Text>
+                {addRemoveOperatorShown && (
+                  <Text style={[styles.operatorText, { fontSize: 85, right: 20, width: 30 }]}>
+                    {displayPlusMinusCardButton}
+                  </Text>
+                )}
               </Pressable>
             </View>
           </Pressable>
