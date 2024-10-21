@@ -25,6 +25,10 @@ const DeckListModal: React.FC<InputProps> = ({ modalVisible, setVisible, deck, u
     ? cardsInDeck >= MINIMUM_CARDS_IN_NEW_DECK
     : false;
 
+  const resetDeepCopyOfDeck = () => {
+    setDeepCopyOfDeck(JSON.parse(JSON.stringify(deck)));
+  };
+
   const handleAddCardToDeckWhileEditing = (card: ScryfallCard.Scheme) => {
     setDeepCopyOfDeck((prev) => {
       return { ...prev, cards: [...prev.cards, card] };
@@ -54,47 +58,44 @@ const DeckListModal: React.FC<InputProps> = ({ modalVisible, setVisible, deck, u
   };
 
   const styles = StyleSheet.create({
-    scrollContainer: { flex: 1, marginTop: 70 },
     centeredView: {
       flex: 1,
       justifyContent: "center",
       alignItems: "center",
-      marginTop: 22,
-      position: "absolute",
+      backgroundColor: "rgba(0,0,0,0.2)", // Optional: adds a backdrop
     },
-    modalView: {
-      flex: 1,
-      width: "90%",
-      margin: 20,
+    modalContainer: {
+      width: "97%", // Modal width
+      maxHeight: "80%", // Maximum height to prevent overflow
       backgroundColor: defaultColors.grey,
       borderRadius: 20,
-      padding: 35,
-      shadowColor: "#000",
-      shadowOffset: {
-        width: 0,
-        height: 2,
-      },
-      shadowOpacity: 0.25,
-      shadowRadius: 4,
+      // padding: 20,
       elevation: 5,
     },
-    buttonContainer: {
-      flex: 1,
-      flexDirection: "row",
+    contentContainer: {
       justifyContent: "center",
       alignItems: "center",
-      marginBottom: 15,
+      paddingBottom: 20, // Additional padding at the bottom if needed
     },
-    deckContainer: {
-      flex: 1,
+    modalView: {
+      width: "100%", // Modal width
+      backgroundColor: defaultColors.grey,
+      borderRadius: 20,
+      padding: 20,
+      alignItems: "center",
+    },
+    buttonContainer: {
       flexDirection: "row",
-      flexWrap: "wrap",
+      justifyContent: "space-between",
+      alignItems: "center",
+      marginBottom: 15,
+      width: "100%", // Ensure buttons take full width
     },
     cardCountText: {
       backgroundColor: defaultColors.purple,
       borderRadius: 10,
       paddingHorizontal: 5,
-      color: calcCorrectTextColor(),
+      color: calcCorrectTextColor(), // Assuming you want white text
       fontSize: 25,
       alignSelf: "center",
       marginBottom: 10,
@@ -108,89 +109,90 @@ const DeckListModal: React.FC<InputProps> = ({ modalVisible, setVisible, deck, u
       fontSize: 20,
       marginBottom: 10,
     },
+    deckContainer: {
+      flexDirection: "row",
+      flexWrap: "wrap",
+      justifyContent: "center",
+    },
   });
 
   const content = deck != null && (
-    <View style={styles.centeredView}>
-      <Modal
-        animationType="none"
-        transparent={true}
-        visible={modalVisible}
-        onRequestClose={() => {
-          setVisible(false);
-        }}
-      >
-        <ScrollView style={styles.scrollContainer}>
-          <View style={styles.modalView}>
-            <View style={styles.buttonContainer}>
-              {!isEditing && (
+    <Modal
+      animationType="none"
+      transparent={true}
+      visible={modalVisible}
+      onRequestClose={() => {
+        setVisible(false);
+      }}
+    >
+      <View style={styles.centeredView}>
+        <View style={styles.modalContainer}>
+          <ScrollView contentContainerStyle={styles.contentContainer}>
+            <View style={styles.modalView}>
+              <View style={styles.buttonContainer}>
+                {!isEditing && (
+                  <CustomButton type="neutral" text="EDIT" onPress={() => setIsEditing(true)} />
+                )}
+                {isEditing && (
+                  <CustomButton
+                    type="positive"
+                    text="SAVE"
+                    onPress={handleEditing}
+                    disabled={!correctAmountOfCardsInDeck}
+                  />
+                )}
                 <CustomButton
-                  type="neutral"
-                  text="EDIT"
+                  type="negative"
+                  text={isEditing ? "CANCEL" : "CLOSE"}
                   onPress={() => {
-                    setIsEditing(true);
+                    if (isEditing) {
+                      resetDeepCopyOfDeck();
+                      setIsEditing(false);
+                    } else {
+                      setVisible(false);
+                    }
                   }}
                 />
-              )}
+              </View>
+              <Text style={styles.cardCountText}>{`${cardsInDeck}${
+                isEditing ? ` / ${MINIMUM_CARDS_IN_NEW_DECK}` : ""
+              }`}</Text>
               {isEditing && (
-                <CustomButton
-                  type="positive"
-                  text="SAVE"
-                  onPress={handleEditing}
-                  disabled={!correctAmountOfCardsInDeck}
+                <TextInput
+                  style={styles.modalInput}
+                  value={newDeckName || deck.deckName}
+                  multiline={true}
+                  numberOfLines={4}
+                  maxLength={80}
+                  autoCorrect={false}
+                  onChangeText={setNewDeckName}
                 />
               )}
-              <CustomButton
-                type="negative"
-                text={isEditing ? "CANCEL" : "CLOSE"}
-                onPress={() => {
-                  if (isEditing) {
-                    setIsEditing(false);
-                  } else {
-                    setVisible(false);
+              <View style={styles.deckContainer}>
+                {cardsInStore.map((card) => {
+                  if (deepCopyOfDeck.cards.find((el) => el.name === card.name) || isEditing) {
+                    return (
+                      <Card
+                        key={card.name}
+                        card={card}
+                        size="small"
+                        showAddRemoveOperator={isEditing}
+                        border={isEditing}
+                        isOpacityControlled={isEditing}
+                        existsInDeck={!!deepCopyOfDeck.cards.find((el) => el.name === card.name)}
+                        addToDeck={handleAddCardToDeckWhileEditing}
+                        removeFromDeck={handleRemoveCardFromDeckWhileEditing}
+                      />
+                    );
                   }
-                }}
-              />
+                  return null; // Return null if the condition is not met
+                })}
+              </View>
             </View>
-            <Text style={styles.cardCountText}>{`${cardsInDeck}${
-              isEditing ? ` / ${MINIMUM_CARDS_IN_NEW_DECK}` : ""
-            }`}</Text>
-            {isEditing && (
-              <TextInput
-                style={styles.modalInput}
-                value={newDeckName || deck.deckName}
-                multiline={true}
-                numberOfLines={4}
-                maxLength={80}
-                autoCorrect={false}
-                onChangeText={setNewDeckName}
-              />
-            )}
-            <View style={styles.deckContainer}>
-              {cardsInStore.map((card) => {
-                if (deepCopyOfDeck.cards.find((el) => el.name === card.name) || isEditing) {
-                  return (
-                    <Card
-                      key={card.name}
-                      card={card}
-                      size="small"
-                      showAddRemoveOperator={isEditing}
-                      border={isEditing}
-                      isOpacityControlled={isEditing}
-                      existsInDeck={
-                        deepCopyOfDeck.cards.find((el) => el.name === card.name) ? true : false
-                      }
-                      addToDeck={handleAddCardToDeckWhileEditing}
-                      removeFromDeck={handleRemoveCardFromDeckWhileEditing}
-                    />
-                  );
-                }
-              })}
-            </View>
-          </View>
-        </ScrollView>
-      </Modal>
-    </View>
+          </ScrollView>
+        </View>
+      </View>
+    </Modal>
   );
 
   return <Fragment>{content}</Fragment>;
