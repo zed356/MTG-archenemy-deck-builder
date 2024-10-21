@@ -1,4 +1,4 @@
-import GradientBackground from "@/components/GradientBackground";
+import GradientBackground from "@/components/style-elements/GradientBackground";
 import DeckBuilder from "@/components/navigation/DeckBuilder";
 
 const DeckBuilderScreen = () => {

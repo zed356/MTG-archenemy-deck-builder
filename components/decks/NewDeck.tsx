@@ -61,13 +61,13 @@ const NewDeck: React.FC = () => {
   return (
     <Fragment>
       <View style={styles.buttonContainer}>
-        <CustomButton text="CLEAR DECK" type={"neutral"} onPress={handleClearNewDeck} />
         <CustomButton
           text="SAVE DECK"
           type={"positive"}
           disabled={!isMinimumCardsInDeckReached}
           onPress={() => setConfirmationModalVisible(true)}
         />
+        <CustomButton text="CLEAR DECK" type={"neutral"} onPress={handleClearNewDeck} />
       </View>
       <View style={styles.newDeckContainer}>
         <Text style={[globalStyles.text, styles.text]}>
