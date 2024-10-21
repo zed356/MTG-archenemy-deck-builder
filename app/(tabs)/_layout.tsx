@@ -1,7 +1,9 @@
-import GradientBackground from "@/components/GradientBackground";
+import GradientBackground from "@/components/style-elements/GradientBackground";
 import { defaultColors } from "@/constants/Colors";
 import { FontAwesome } from "@expo/vector-icons";
 import { Tabs } from "expo-router";
+import { Image } from "expo-image";
+import TabsIcon from "@/components/style-elements/TabsIcon";
 
 const TabsLayout = () => {
   return (
@@ -25,14 +27,31 @@ const TabsLayout = () => {
         name="index"
         options={{
           headerShown: false,
-          headerTitle: "Home",
           headerTitleAlign: "center",
-          title: "Home",
+          title: "Decks",
           tabBarIcon: ({ focused }) => (
-            <FontAwesome
-              name="home"
-              size={30}
-              color={focused ? defaultColors.gold : defaultColors.grey}
+            <TabsIcon
+              source={require("../../assets/tab-icons/decks-button.svg")}
+              focused={focused}
+              right={1.5}
+              width={35}
+              height={35}
+              top={2}
+            />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="playmode/index"
+        options={{
+          headerShown: false,
+          headerTitleAlign: "center",
+          title: "Play",
+          tabBarIcon: ({ focused }) => (
+            <TabsIcon
+              source={require("../../assets/tab-icons/play-button.svg")}
+              focused={focused}
+              right={1}
             />
           ),
         }}
@@ -41,14 +60,15 @@ const TabsLayout = () => {
         name="deckbuilder/index"
         options={{
           headerShown: false,
-          headerTitle: "Builder",
           headerTitleAlign: "center",
           title: "Builder",
           tabBarIcon: ({ focused }) => (
-            <FontAwesome
-              name="credit-card-alt"
-              size={30}
-              color={focused ? defaultColors.gold : defaultColors.grey}
+            <TabsIcon
+              source={require("../../assets/tab-icons/builder-button.svg")}
+              focused={focused}
+              height={45}
+              top={3}
+              right={2}
             />
           ),
         }}
