@@ -15,6 +15,7 @@ import { FontAwesome6 } from "@expo/vector-icons";
 import AnimatedIcon from "../button/AnimatedIcon";
 import { SAVED_DECKS_PER_PAGE } from "@/constants/values";
 import DeckListModal from "@/modals/DeckListModal";
+import ConfirmationModal from "@/modals/ConfirmationModal";
 
 const SavedDecks: React.FC = () => {
   const {
@@ -25,6 +26,7 @@ const SavedDecks: React.FC = () => {
     clearDecks,
   } = useSavedDeckStore();
   const [deckListModalIsVisible, setDeckListModalIsVisible] = useState(false);
+  const [confirmationModalVisible, setConfirmationModalVisible] = useState(false);
   const [selectedDeck, setSelectedDeck] = useState<SavedDeck | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const maxPages = Math.ceil(savedDecksInState.length / SAVED_DECKS_PER_PAGE);
@@ -65,6 +67,7 @@ const SavedDecks: React.FC = () => {
   const handleDeleteDeck = (deck: SavedDeck) => {
     removeDeckFromState(deck);
     removeDeckFromStorage(deck);
+    setConfirmationModalVisible(false);
   };
 
   const handleUpdateDeck = (deck: SavedDeck, newDeckName?: string) => {
@@ -98,8 +101,13 @@ const SavedDecks: React.FC = () => {
                 type="negative"
                 text="Delete"
                 onPress={() => {
-                  handleDeleteDeck(deck);
+                  setConfirmationModalVisible(true);
                 }}
+              />
+              <ConfirmationModal
+                isVisible={confirmationModalVisible}
+                onConfirm={() => handleDeleteDeck(deck)}
+                onCancel={() => setConfirmationModalVisible(false)}
               />
             </View>
           );
