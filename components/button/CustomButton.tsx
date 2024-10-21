@@ -31,7 +31,7 @@ const CustomButton: React.FC<InputProps> = ({
   const handlePressIn = () => {
     Animated.timing(scaleAnim, {
       toValue: 0.95, // Scale down to 95%
-      duration: 150, // Animation duration
+      duration: 100, // Animation duration
       useNativeDriver: true, // Use native driver for better performance
     }).start();
   };
@@ -40,7 +40,7 @@ const CustomButton: React.FC<InputProps> = ({
   const handlePressOut = () => {
     Animated.timing(scaleAnim, {
       toValue: 1, // Scale back to 100%
-      duration: 150,
+      duration: 100,
       useNativeDriver: true,
     }).start();
   };

@@ -16,6 +16,7 @@ import AnimatedIcon from "../button/AnimatedIcon";
 import { SAVED_DECKS_PER_PAGE } from "@/constants/values";
 import DeckListModal from "@/modals/DeckListModal";
 import ConfirmationModal from "@/modals/ConfirmationModal";
+import Spacer from "../style-elements/Spacer";
 
 const SavedDecks: React.FC = () => {
   const {
@@ -138,6 +139,7 @@ const SavedDecks: React.FC = () => {
     <View style={styles.container}>
       <View style={styles.allDecksContainer}>{deckContent}</View>
       {savedDecksInState.length > SAVED_DECKS_PER_PAGE && <View>{paginationContent}</View>}
+      <Spacer height={50} />
       {savedDecksInState.length > 0 && (
         <CustomButton text="Clear decks" type="negative" onPress={handleClearDecks} />
       )}
@@ -149,7 +151,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: "center",
-    justifyContent: "center",
+    justifyContent: "flex-end",
+    marginBottom: 70,
   },
   allDecksContainer: {
     width: "90%",

@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import GradientBackground from "@/components/GradientBackground";
+import GradientBackground from "@/components/style-elements/GradientBackground";
 import SavedDecks from "@/components/decks/SavedDecks";
 import { API_DATA_STORAGE_KEY, API_URL } from "@/constants/values";
 import { useLoadAPIData } from "@/hooks/useLoadAPIData";
