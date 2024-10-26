@@ -1,8 +1,6 @@
 import GradientBackground from "@/components/style-elements/GradientBackground";
 import { defaultColors } from "@/constants/Colors";
-import { FontAwesome } from "@expo/vector-icons";
 import { Tabs } from "expo-router";
-import { Image } from "expo-image";
 import TabsIcon from "@/components/style-elements/TabsIcon";
 
 const TabsLayout = () => {
@@ -24,7 +22,7 @@ const TabsLayout = () => {
       }}
     >
       <Tabs.Screen
-        name="index"
+        name="decks/index"
         options={{
           headerShown: false,
           headerTitleAlign: "center",

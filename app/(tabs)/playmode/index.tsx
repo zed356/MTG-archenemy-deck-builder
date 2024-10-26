@@ -1,5 +1,6 @@
-import { View } from "react-native";
 import { ImageBackground } from "expo-image";
+
+import GameController from "@/components/navigation/GameController";
 
 const PlayModeScreen = () => {
   return (
@@ -8,11 +9,7 @@ const PlayModeScreen = () => {
       style={{ width: "100%", height: "100%" }}
       contentFit="fill"
     >
-      <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
-        {/* <Text style={{ color: defaultColors.gold, backgroundColor: defaultColors.grey }}>
-          Play Mode
-        </Text> */}
-      </View>
+      <GameController />
     </ImageBackground>
   );
 };
