@@ -14,11 +14,21 @@ import {
 import { FontAwesome6 } from "@expo/vector-icons";
 import AnimatedIcon from "../button/AnimatedIcon";
 import { SAVED_DECKS_PER_PAGE } from "@/constants/values";
-import DeckListModal from "@/modals/DeckListModal";
-import ConfirmationModal from "@/modals/ConfirmationModal";
+import SavedDeckModal from "@/modals/specific-modals/SavedDeckModal";
+import ConfirmationModal from "@/modals/specific-modals/ConfirmationModal";
 import Spacer from "../style-elements/Spacer";
 
-const SavedDecks: React.FC = () => {
+interface SavedDecksProps {
+  canDeleteDeck?: boolean;
+  canClearDeckList?: boolean;
+  onDeckSelectedForPlay?: (deck: SavedDeck) => void;
+}
+
+const SavedDecks: React.FC<SavedDecksProps> = ({
+  canDeleteDeck = true,
+  canClearDeckList = true,
+  onDeckSelectedForPlay,
+}) => {
   const {
     savedDecksInState,
     loadDecksFromStorageIntoState,
@@ -85,12 +95,21 @@ const SavedDecks: React.FC = () => {
         ) {
           return (
             <View key={Math.random()} style={styles.deckContainer}>
-              <DeckListModal
+              <SavedDeckModal
                 modalVisible={deckListModalIsVisible}
                 setVisible={() => setDeckListModalIsVisible(false)}
                 deck={selectedDeck}
                 updateDeck={handleUpdateDeck}
               />
+              {!canDeleteDeck && (
+                <CustomButton
+                  type="positive"
+                  text="Select"
+                  onPress={() => {
+                    onDeckSelectedForPlay && onDeckSelectedForPlay(deck);
+                  }}
+                />
+              )}
               <CustomButton
                 type="neutral"
                 text={`${deck.deckName} : ${deck.cards.length}`}
@@ -98,13 +117,16 @@ const SavedDecks: React.FC = () => {
                   handleDeckListModal(deck);
                 }}
               />
-              <CustomButton
-                type="negative"
-                text="Delete"
-                onPress={() => {
-                  setConfirmationModalVisible(true);
-                }}
-              />
+
+              {canDeleteDeck && (
+                <CustomButton
+                  type="negative"
+                  text="Delete"
+                  onPress={() => {
+                    setConfirmationModalVisible(true);
+                  }}
+                />
+              )}
               <ConfirmationModal
                 isVisible={confirmationModalVisible}
                 onConfirm={() => handleDeleteDeck(deck)}
@@ -140,7 +162,7 @@ const SavedDecks: React.FC = () => {
       <View style={styles.allDecksContainer}>{deckContent}</View>
       {savedDecksInState.length > SAVED_DECKS_PER_PAGE && <View>{paginationContent}</View>}
       <Spacer height={50} />
-      {savedDecksInState.length > 0 && (
+      {savedDecksInState.length > 0 && canClearDeckList && (
         <CustomButton text="Clear decks" type="negative" onPress={handleClearDecks} />
       )}
     </View>
