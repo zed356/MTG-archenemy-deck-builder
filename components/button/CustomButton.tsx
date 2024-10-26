@@ -88,6 +88,7 @@ const CustomButton: React.FC<InputProps> = ({
 const styles = StyleSheet.create({
   container: {
     maxWidth: 800,
+    minHeight: 45,
   },
   gradientBackground: {
     padding: 10,

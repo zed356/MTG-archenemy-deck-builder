@@ -3,7 +3,7 @@ import { ScryfallCard } from "@scryfall/api-types";
 import { Image } from "expo-image";
 import React, { Fragment, useState } from "react";
 import { ActivityIndicator, Pressable, StyleSheet, Text, View } from "react-native";
-import SelectedCardModal from "@/modals/SelectedCardModal";
+import SelectedCardModal from "@/modals/specific-modals/SelectedCardModal";
 
 interface InputProps {
   card: ScryfallCard.Scheme;

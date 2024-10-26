@@ -2,9 +2,11 @@ import { defaultColors } from "@/constants/Colors";
 import { Modal, View, ScrollView, StyleSheet, ModalProps } from "react-native";
 
 interface CustomModalProps extends ModalProps {
+  visible: boolean;
   setVisible: (value: boolean) => void;
   children: React.ReactNode;
   scrollEnabled?: boolean;
+  transparentBackground?: boolean;
 }
 
 const CustomModal: React.FC<CustomModalProps> = (props) => {
@@ -18,10 +20,10 @@ const CustomModal: React.FC<CustomModalProps> = (props) => {
     modalContainer: {
       width: "97%", // Modal width
       maxHeight: "80%", // Maximum height to prevent overflow
-      backgroundColor: defaultColors.grey,
+      backgroundColor: !props.transparentBackground ? defaultColors.grey : "none",
       borderRadius: 20,
-      // padding: 20,
       elevation: 5,
+      // padding: 20,
     },
     contentContainer: {
       justifyContent: "center",
@@ -30,9 +32,10 @@ const CustomModal: React.FC<CustomModalProps> = (props) => {
     },
     modalView: {
       width: "100%", // Modal width
-      backgroundColor: defaultColors.grey,
-      borderRadius: 20,
-      padding: 20,
+      // backgroundColor: defaultColors.grey,
+      // borderWidth: 2,
+      // borderRadius: 20,
+      // padding: 20,
       alignItems: "center",
     },
   });

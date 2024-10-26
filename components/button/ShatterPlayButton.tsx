@@ -9,7 +9,13 @@ import Animated, {
   Easing,
 } from "react-native-reanimated";
 
-const ShatterPlayButton = () => {
+interface ShatterPlayButtonProps {
+  onPlayPress: () => void;
+}
+
+const SHATTER_ANIMATION_DURATION = 850;
+
+const ShatterPlayButton: React.FC<ShatterPlayButtonProps> = ({ onPlayPress }) => {
   const [shattered, setShattered] = useState(false);
   const scale = useSharedValue(1);
 
@@ -25,7 +31,7 @@ const ShatterPlayButton = () => {
         { translateY: shattered ? withTiming(randomY, { duration: 650 }) : 0 },
         { rotate: shattered ? withTiming(`${rotation}deg`, { duration: 650 }) : "0deg" },
       ],
-      opacity: shattered ? withTiming(0, { duration: 850 }) : 1,
+      opacity: shattered ? withTiming(0, { duration: SHATTER_ANIMATION_DURATION }) : 1,
     }));
   });
 
@@ -36,12 +42,26 @@ const ShatterPlayButton = () => {
     ],
   }));
 
-  const handlePress = () => {
-    scale.value = 0.9;
-    setTimeout(() => {
-      scale.value = 1;
-      setShattered(true);
-    }, 100);
+  const handlePress = async () => {
+    // wait for the scale animation to finish
+    await new Promise((resolve) => {
+      scale.value = 0.9;
+      setTimeout(() => {
+        scale.value = 1;
+        setShattered(true);
+        resolve(true);
+      }, 100);
+    });
+
+    // wait for the shatter animation to finish
+    await new Promise((resolve) => {
+      setTimeout(() => {
+        resolve(true);
+      }, SHATTER_ANIMATION_DURATION);
+    });
+
+    // call the parent component's function after animations are done
+    onPlayPress();
   };
 
   return (
