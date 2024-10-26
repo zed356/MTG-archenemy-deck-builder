@@ -72,31 +72,6 @@ const SelectedCardModal: React.FC<InputProps> = ({
   });
 
   return (
-    // <Modal visible={isSelected} animationType="slide" transparent={true}>
-    //   <View style={styles.modalContainer}>
-    //     <Pressable onPress={() => setIsSelected(false)}>
-    //       {/* {loading && <ActivityIndicator size="large" color="#FFD700" />} */}
-    //       <View>
-    //         <Image
-    //           style={[styles.card, styles.cardIsSelected]}
-    //           source={
-    //             typeof card.image_uris!.normal === "string"
-    //               ? { uri: card.image_uris!.normal }
-    //               : card.image_uris!.normal
-    //           }
-    //           contentFit="contain"
-    //         />
-    //         <Pressable style={styles.plusButton} onPress={() => addRemoveCardToDeck()}>
-    //           {showAddRemoveOperator && (
-    //             <Text style={[styles.operatorText, { fontSize: 85, right: 20, width: 30 }]}>
-    //               {displayPlusMinusCardButton}
-    //             </Text>
-    //           )}
-    //         </Pressable>
-    //       </View>
-    //     </Pressable>
-    //   </View>
-    // </Modal>
     <CustomModal visible={isSelected} setVisible={setIsSelected} transparentBackground={true}>
       <Pressable onPress={() => setIsSelected(false)}>
         <View>
