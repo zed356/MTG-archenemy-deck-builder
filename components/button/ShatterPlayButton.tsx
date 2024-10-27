@@ -64,6 +64,10 @@ const ShatterPlayButton: React.FC<ShatterPlayButtonProps> = ({ onPlayPress }) =>
     onPlayPress();
   };
 
+  const generateRandomLetterFromInput = (input: string) => {
+    return input[Math.floor(Math.random() * input.length)];
+  };
+
   return (
     <View style={styles.container}>
       {!shattered ? (
@@ -76,7 +80,7 @@ const ShatterPlayButton: React.FC<ShatterPlayButtonProps> = ({ onPlayPress }) =>
         <View style={styles.piecesContainer}>
           {piecesStyles.map((style, index) => (
             <Animated.View key={index} style={[styles.piece, style]}>
-              <Text style={styles.pieceText}>P</Text>
+              <Text style={styles.pieceText}>{generateRandomLetterFromInput("Play")}</Text>
             </Animated.View>
           ))}
         </View>
