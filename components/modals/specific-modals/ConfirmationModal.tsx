@@ -1,19 +1,20 @@
 import CustomButton from "@/components/button/CustomButton";
 import { defaultColors } from "@/constants/Colors";
-import { Button, Modal, Text, StyleSheet, View } from "react-native";
+import { Modal, Text, StyleSheet, View } from "react-native";
 
 interface InputProps {
   isVisible: boolean;
+  text: string;
   onConfirm: () => void;
   onCancel: () => void;
 }
 
-const ConfirmationModal: React.FC<InputProps> = ({ isVisible, onConfirm, onCancel }) => {
+const ConfirmationModal: React.FC<InputProps> = ({ isVisible, text, onConfirm, onCancel }) => {
   return (
     <Modal visible={isVisible} transparent={true} animationType="fade">
       <View style={styles.centeredView}>
         <View style={styles.modalContainer}>
-          <Text style={styles.text}>Are you sure you want to delete this deck?</Text>
+          <Text style={styles.text}>{text}</Text>
           <View style={styles.buttonContainer}>
             <CustomButton type="positive" text="CONFIRM" onPress={onConfirm} />
             <CustomButton type="negative" text="CANCEL" onPress={onCancel} />

@@ -24,7 +24,6 @@ const SelectedCardModal: React.FC<InputProps> = ({
   existsInDeck,
   setIsSelected,
   cardSize,
-  operatorSize,
   border,
   displayPlusMinusCardButton,
   showAddRemoveOperator,
@@ -38,21 +37,18 @@ const SelectedCardModal: React.FC<InputProps> = ({
     card: {
       width: cardSize?.width,
       height: cardSize?.height,
-      borderRadius: 11,
-      marginBottom: 5,
       borderWidth: existsInDeck && border ? 2 : undefined,
       borderColor: existsInDeck && border ? defaultColors.border : undefined,
     },
     cardIsSelected: {
-      borderRadius: 20,
-      width: 350,
-      height: 500,
+      width: 335,
+      height: 490,
       opacity: 1,
     },
     plusButton: {
       position: "absolute",
       backgroundColor: "rgba(0, 0, 0, 0.65)",
-      borderRadius: 8,
+      // borderRadius: 8,
     },
   });
 
@@ -63,9 +59,10 @@ const SelectedCardModal: React.FC<InputProps> = ({
           <Image
             style={[styles.card, styles.cardIsSelected]}
             source={
-              typeof card.image_uris!.normal === "string"
-                ? { uri: card.image_uris!.normal }
-                : card.image_uris!.normal
+              // typeof card.image_uris!.normal === "string"
+              //   ? { uri: card.image_uris!.normal }
+              //   : card.image_uris!.normal
+              card.image_uris?.border_crop
             }
             contentFit="contain"
           />
@@ -75,7 +72,7 @@ const SelectedCardModal: React.FC<InputProps> = ({
                 name={displayPlusMinusCardButton === "plus" ? "plus" : "minus"} // does not work on its own..
                 size={45}
                 color={!existsInDeck ? defaultColors.green : "red"}
-                style={{ borderRadius: 20 }}
+                style={{ borderRadius: 0 }}
               />
             )}
           </Pressable>

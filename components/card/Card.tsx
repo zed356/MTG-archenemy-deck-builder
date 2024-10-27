@@ -2,7 +2,7 @@ import { defaultColors } from "@/constants/Colors";
 import { ScryfallCard } from "@scryfall/api-types";
 import { Image } from "expo-image";
 import React, { Fragment, useState } from "react";
-import { ActivityIndicator, Pressable, StyleSheet, Text, View } from "react-native";
+import { ActivityIndicator, Dimensions, Pressable, StyleSheet, View } from "react-native";
 import SelectedCardModal from "../modals//specific-modals/SelectedCardModal";
 import { FontAwesome } from "@expo/vector-icons";
 
@@ -11,26 +11,39 @@ interface InputProps {
   size: "small" | "normal" | "large";
   border?: boolean;
   existsInDeck: boolean;
-  isOpacityControlled: boolean;
+  showLoadingSpinner?: boolean;
   showAddRemoveOperator: boolean;
+  isOpacityControlled: boolean;
+  isInPlayDeck?: boolean;
+  alignFlexEnd?: boolean;
+  showAddRemoveOperatorOnSelectedCard?: boolean;
+  position?: "relative" | "absolute" | "static";
   addToDeck?: (card: ScryfallCard.Scheme) => void;
   removeFromDeck?: (card: ScryfallCard.Scheme) => void;
+  onCardInPlayPress?: () => void;
 }
 
 const Card: React.FC<InputProps> = ({
   card,
   size,
   existsInDeck,
+  showLoadingSpinner = false,
+  isInPlayDeck = false,
+  position = "static",
   border = true,
   isOpacityControlled,
   showAddRemoveOperator,
+  alignFlexEnd = true,
+  showAddRemoveOperatorOnSelectedCard = false,
   addToDeck,
   removeFromDeck,
+  onCardInPlayPress,
 }) => {
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [isSelected, setIsSelected] = useState(false);
 
   const displayPlusMinusCardButton = !existsInDeck ? "plus" : "minus";
+  const { width, height } = Dimensions.get("window");
 
   let cardSize;
   let operatorSize;
@@ -41,7 +54,7 @@ const Card: React.FC<InputProps> = ({
     cardSize = { width: 160, height: 230 };
     operatorSize = { fontSize: 25 };
   } else if (size == "large") {
-    cardSize = { width: 350, height: 500 };
+    cardSize = { width: width * 0.9, height: height * 0.625 };
     operatorSize = { fontSize: 30 };
   }
 
@@ -49,7 +62,7 @@ const Card: React.FC<InputProps> = ({
     // TODO: creates a 'bump' effect when adding a card to the newDeck.
     // Due to loading spinner most likely.
     // create options prop for card component to disable loading spinner + other configs
-    // setLoading(false);
+    setLoading(false);
   };
 
   const handleAddRemoveCardToNewDeck = () => {
@@ -64,13 +77,17 @@ const Card: React.FC<InputProps> = ({
 
   const styles = StyleSheet.create({
     imageContainer: {
-      position: "relative",
-      alignItems: "flex-end",
+      position: position,
+      alignItems: alignFlexEnd ? "flex-end" : "baseline",
+    },
+    isInPlayDeckStyle: {
+      top: "0%",
+      left: "50%",
+      transform: [{ translateX: -cardSize!.width / 2 }, { translateY: cardSize!.height / 2 }],
     },
     card: {
       width: cardSize?.width,
       height: cardSize?.height,
-      borderRadius: 11,
       marginBottom: 5,
       borderWidth: existsInDeck && border ? 2 : undefined,
       borderColor: existsInDeck && border ? defaultColors.border : undefined,
@@ -80,46 +97,66 @@ const Card: React.FC<InputProps> = ({
     plusButton: {
       position: "absolute",
       backgroundColor: "rgba(0, 0, 0, 0.65)",
-      borderRadius: 8,
+      // borderRadius: 8,
+    },
+    loadingSpinner: {
+      position: "absolute", // To position it over the image
+      top: "50%",
+      left: "50%",
+      transform: [{ translateX: -25 }, { translateY: -25 }], // Adjust this based on the spinner size
     },
   });
 
   return (
     <Fragment>
-      <Pressable onPress={() => setIsSelected((oldState) => !oldState)}>
-        {loading && <ActivityIndicator size="large" color="#FFD700" />}
-        <View style={styles.imageContainer}>
+      {/* <Pressable
+        onPress={() => {
+          console.log("i fire");
+          setIsSelected((oldState) => !oldState);
+        }}
+      > */}
+      <View style={[styles.imageContainer, isInPlayDeck && styles.isInPlayDeckStyle]}>
+        {loading && showLoadingSpinner && (
+          <ActivityIndicator style={styles.loadingSpinner} size="large" color="#FFD700" />
+        )}
+        <Pressable
+          onPress={() => {
+            if (onCardInPlayPress) {
+              onCardInPlayPress();
+            } else {
+              setIsSelected((oldState) => !oldState);
+            }
+          }}
+        >
           <Image
             style={styles.card}
-            source={
-              typeof card.image_uris!.normal === "string"
-                ? { uri: card.image_uris!.normal }
-                : card.image_uris!.normal
-            }
+            source={card.image_uris?.border_crop}
             contentFit="contain"
-            transition={500}
+            onLoadStart={() => setLoading(true)} // Set loading to true when the image starts loading
+            onLoadEnd={handleImageLoadEnd} // Handle when the image loading ends
             onError={() => {
-              console.log("Error loading image: " + card.image_uris!.normal);
+              console.log("Error loading image: " + card.image_uris?.normal);
+              setLoading(false); // Ensure loading is set to false on error as well
             }}
-            onLoadEnd={handleImageLoadEnd}
           />
-          <Pressable style={[styles.plusButton]} onPress={handleAddRemoveCardToNewDeck}>
-            {showAddRemoveOperator && (
-              <FontAwesome
-                name={displayPlusMinusCardButton}
-                size={operatorSize?.fontSize}
-                color={!existsInDeck ? defaultColors.green : "red"}
-              />
-            )}
-          </Pressable>
-        </View>
-      </Pressable>
+        </Pressable>
+        <Pressable style={styles.plusButton} onPress={handleAddRemoveCardToNewDeck}>
+          {showAddRemoveOperator && (
+            <FontAwesome
+              name={displayPlusMinusCardButton}
+              size={operatorSize?.fontSize}
+              color={!existsInDeck ? defaultColors.green : "red"}
+            />
+          )}
+        </Pressable>
+      </View>
+      {/* </Pressable> */}
       <SelectedCardModal
         card={card}
         existsInDeck={existsInDeck}
-        isSelected={isSelected}
+        isSelected={isSelected && !isInPlayDeck}
         setIsSelected={setIsSelected}
-        showAddRemoveOperator={showAddRemoveOperator}
+        showAddRemoveOperator={showAddRemoveOperator || showAddRemoveOperatorOnSelectedCard}
         addRemoveCardToDeck={handleAddRemoveCardToNewDeck}
         displayPlusMinusCardButton={displayPlusMinusCardButton}
       />
