@@ -2,7 +2,7 @@ import { API_DATA_STORAGE_KEY, API_URL } from "@/constants/values";
 import { useLoadAPIData } from "@/hooks/useLoadAPIData";
 import { useCardStore } from "@/store/store";
 import { useFonts } from "expo-font";
-import { Stack } from "expo-router";
+import { Redirect, Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
 import "react-native-reanimated";
@@ -28,18 +28,24 @@ export default function RootLayout() {
     }
   }, [data]); // Run this effect only when `data` changes
 
+  // show splashscreen for 2s before hiding
   useEffect(() => {
-    if (loaded) {
-      SplashScreen.hideAsync();
-    }
+    setTimeout(() => {
+      if (loaded) {
+        SplashScreen.hideAsync();
+      }
+    }, 2000);
   }, [loaded]);
 
   if (!loaded) {
     return null;
   }
+
   return (
     <Stack>
-      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+      <Stack.Screen name="index" options={{ headerShown: false, animation: "fade" }} />
+      <Stack.Screen name="(tabs)" options={{ headerShown: false, animation: "fade" }} />
+      <Stack.Screen name="gamescreen/index" options={{ headerShown: false, animation: "fade" }} />
     </Stack>
   );
 }
