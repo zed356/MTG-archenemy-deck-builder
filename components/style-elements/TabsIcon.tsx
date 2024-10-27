@@ -1,6 +1,6 @@
 import { defaultColors } from "@/constants/Colors";
-import { View, StyleSheet, StyleProp, ViewStyle } from "react-native";
-import { Image, ImageStyle } from "expo-image";
+import { View, StyleSheet } from "react-native";
+import { Image } from "expo-image";
 
 interface InputProps {
   source: string;

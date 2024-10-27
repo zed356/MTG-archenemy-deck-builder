@@ -1,6 +1,6 @@
 import { defaultColors } from "@/constants/Colors";
 import { globalStyles } from "@/constants/styles";
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { View, Text, Pressable, StyleSheet } from "react-native";
 import Animated, {
   useSharedValue,
@@ -9,13 +9,14 @@ import Animated, {
   Easing,
 } from "react-native-reanimated";
 
-interface ShatterPlayButtonProps {
+interface ShatterButtonProps {
+  buttonName: string;
   onPlayPress: () => void;
 }
 
 const SHATTER_ANIMATION_DURATION = 850;
 
-const ShatterPlayButton: React.FC<ShatterPlayButtonProps> = ({ onPlayPress }) => {
+const ShatterButton: React.FC<ShatterButtonProps> = ({ buttonName, onPlayPress }) => {
   const [shattered, setShattered] = useState(false);
   const scale = useSharedValue(1);
 
@@ -73,14 +74,14 @@ const ShatterPlayButton: React.FC<ShatterPlayButtonProps> = ({ onPlayPress }) =>
       {!shattered ? (
         <Pressable onPress={handlePress}>
           <Animated.View style={[styles.button, scaleStyle]}>
-            <Text style={styles.buttonText}>Play</Text>
+            <Text style={styles.buttonText}>{buttonName}</Text>
           </Animated.View>
         </Pressable>
       ) : (
         <View style={styles.piecesContainer}>
           {piecesStyles.map((style, index) => (
             <Animated.View key={index} style={[styles.piece, style]}>
-              <Text style={styles.pieceText}>{generateRandomLetterFromInput("Play")}</Text>
+              <Text style={styles.pieceText}>{generateRandomLetterFromInput(buttonName)}</Text>
             </Animated.View>
           ))}
         </View>
@@ -89,7 +90,7 @@ const ShatterPlayButton: React.FC<ShatterPlayButtonProps> = ({ onPlayPress }) =>
   );
 };
 
-export default ShatterPlayButton;
+export default ShatterButton;
 
 const styles = StyleSheet.create({
   container: {

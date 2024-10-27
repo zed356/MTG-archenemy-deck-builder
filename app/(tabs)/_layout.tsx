@@ -6,8 +6,13 @@ import TabsIcon from "@/components/style-elements/TabsIcon";
 const TabsLayout = () => {
   return (
     <Tabs
+      initialRouteName="playmode"
       screenOptions={{
         tabBarStyle: {
+          position: "absolute",
+          bottom: 0,
+          left: 0,
+          right: 0,
           borderTopWidth: 0,
         },
         headerTintColor: defaultColors.gold,

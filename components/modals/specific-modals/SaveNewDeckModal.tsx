@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { Modal, StyleSheet, View, TextInput } from "react-native";
-import CustomButton from "../../components/button/CustomButton";
-import CustomModal from "../CustomModal";
+import CustomButton from "../../button/CustomButton";
 
 interface InputProps {
   modalVisible: boolean;

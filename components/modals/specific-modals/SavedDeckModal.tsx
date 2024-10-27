@@ -6,7 +6,6 @@ import { ScryfallCard } from "@scryfall/api-types";
 import { Fragment, useState } from "react";
 import { View, Modal, StyleSheet, ScrollView, Text, TextInput } from "react-native";
 import { MINIMUM_CARDS_IN_NEW_DECK } from "@/constants/values";
-import CustomModal from "../CustomModal";
 
 interface InputProps {
   modalVisible: boolean;

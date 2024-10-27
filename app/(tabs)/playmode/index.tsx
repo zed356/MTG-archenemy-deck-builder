@@ -1,15 +1,18 @@
 import { ImageBackground } from "expo-image";
-
-import GameController from "@/components/navigation/GameController";
+import { router } from "expo-router";
+import ShatterButton from "@/components/button/ShatterButton";
 
 const PlayModeScreen = () => {
+  const handlePlayPress = () => {
+    router.push("/gamescreen"); // Navigate to the game screen
+  };
   return (
     <ImageBackground
       source={require("../../../assets/images/Nicol-Bolas-Dragon-God-War-of-the-Spark-Art-819x1024.webp")}
-      style={{ width: "100%", height: "100%" }}
-      contentFit="fill"
+      style={{ flex: 1 }}
+      contentFit="cover"
     >
-      <GameController />
+      <ShatterButton onPlayPress={handlePlayPress} buttonName="Battle" />
     </ImageBackground>
   );
 };

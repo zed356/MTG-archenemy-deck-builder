@@ -1,4 +1,4 @@
-import SavedDecks from "@/components/decks/SavedDecks";
+import SavedDecks from "@/components/navigation/SavedDecks";
 import GradientBackground from "@/components/style-elements/GradientBackground";
 
 const SavedDecksScreen = () => {

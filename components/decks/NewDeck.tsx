@@ -6,9 +6,8 @@ import Card from "../card/Card";
 import { Fragment, useState } from "react";
 import CustomButton from "../button/CustomButton";
 import { MINIMUM_CARDS_IN_NEW_DECK } from "@/constants/values";
-import { router } from "expo-router";
 import { saveDeckToStorage } from "@/helpers/savedDeckManager";
-import SaveNewDeckModal from "../../modals/specific-modals/SaveNewDeckModal";
+import SaveNewDeckModal from "../modals/specific-modals/SaveNewDeckModal";
 
 const NewDeck: React.FC = () => {
   const [confirmationModalVisible, setConfirmationModalVisible] = useState(false);

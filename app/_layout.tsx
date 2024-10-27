@@ -2,7 +2,7 @@ import { API_DATA_STORAGE_KEY, API_URL } from "@/constants/values";
 import { useLoadAPIData } from "@/hooks/useLoadAPIData";
 import { useCardStore } from "@/store/store";
 import { useFonts } from "expo-font";
-import { Redirect, Stack } from "expo-router";
+import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
 import "react-native-reanimated";

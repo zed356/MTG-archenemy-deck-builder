@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { ActivityIndicator, ScrollView, StyleSheet, View } from "react-native";
 import Card from "../card/Card";
 import NewDeck from "../decks/NewDeck";
-import ErrorModal from "@/modals/ErrorModal";
+import ErrorModal from "../modals/specific-modals/ErrorModal";
 import { ARCHENEMEY_SCHEME_CARD_TOTAL_COUNT } from "@/constants/values";
 import { useCardStore, useNewDeckStore } from "@/store/store";
 
@@ -61,6 +61,7 @@ const DeckBuilder: React.FC = () => {
             addToDeck={() => addCardToNewDeck(el)}
             removeFromDeck={() => removeCardFromNewDeck(el)}
             existsInDeck={cardsInNewDeck.find((card) => card.name === el.name) ? true : false}
+            showLoadingSpinner={true}
           />
         ))}
       </View>
