@@ -1,5 +1,5 @@
 import { SavedDeck } from "@/store/store";
-import { StyleSheet, View } from "react-native";
+import { ScrollView, StyleSheet, View } from "react-native";
 import { useState } from "react";
 import SavedDecks from "./SavedDecks";
 import FadeIn from "../style-elements/FadeIn";
@@ -39,9 +39,6 @@ const GameController: React.FC<GameControllerProps> = ({}) => {
       if (discardCard) {
         setDiscardedCards((prevDiscardedCards) => [...prevDiscardedCards, card]);
       }
-      if (newShuffledDeck.length === 0) {
-        console.log(newShuffledDeck.length);
-      }
     }
   };
 
@@ -62,28 +59,33 @@ const GameController: React.FC<GameControllerProps> = ({}) => {
   };
 
   const handleResetGame = () => {
-    console.log(selectedDeck?.cards.length);
     if (discardedCards.length > 0 && selectedDeck) {
       const newDeck: SavedDeck = { deckName: selectedDeck.deckName, cards: [...discardedCards] };
-      discardedCards && handleShuffleDeck(newDeck);
+      handleShuffleDeck(newDeck);
     }
+    // clear discarded cards after reshuffle
+    setDiscardedCards([]);
   };
 
   const onGoingSchemesContent = (
     <View style={styles.onGoingSchemeContainer}>
-      {onGoingSchemes.map((card) => (
-        <Card
-          key={card.name}
-          card={card}
-          alignFlexEnd={true}
-          existsInDeck={true}
-          isOpacityControlled={false}
-          showAddRemoveOperator={false}
-          showAddRemoveOperatorOnSelectedCard={true}
-          size="small"
-          removeFromDeck={handleRemoveOnGoingScheme}
-        />
-      ))}
+      <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
+        {onGoingSchemes.map((card) => (
+          <View key={card.name} style={styles.onGoingSchemeCard}>
+            <Card
+              card={card}
+              alignFlexEnd={true}
+              existsInDeck={true}
+              border={false}
+              isOpacityControlled={false}
+              showAddRemoveOperator={false}
+              showAddRemoveOperatorOnSelectedCard={true}
+              size="small"
+              removeFromDeck={handleRemoveOnGoingScheme}
+            />
+          </View>
+        ))}
+      </ScrollView>
     </View>
   );
 
@@ -137,12 +139,16 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: defaultColors.gold,
     borderRadius: 10,
-    padding: 10,
-    margin: 10,
     width: "95%",
+    paddingVertical: 10,
+    marginTop: 30,
     position: "absolute",
     flexDirection: "row",
     alignSelf: "center",
+    overflow: "hidden",
+  },
+  onGoingSchemeCard: {
+    marginHorizontal: 5,
   },
 });
 
