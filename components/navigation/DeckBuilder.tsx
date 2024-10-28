@@ -1,6 +1,6 @@
 import { ScryfallCard } from "@scryfall/api-types";
 import { useEffect, useState } from "react";
-import { ActivityIndicator, ScrollView, StyleSheet, View } from "react-native";
+import { ActivityIndicator, FlatList, ScrollView, StyleSheet, View } from "react-native";
 import Card from "../card/Card";
 import NewDeck from "../decks/NewDeck";
 import ErrorModal from "../modals/specific-modals/ErrorModal";
@@ -38,38 +38,93 @@ const DeckBuilder: React.FC = () => {
     return <ErrorModal errorMessage={error} />;
   }
 
-  return (
-    <ScrollView style={styles.scrollContainer}>
-      {/* <Pressable
-        style={styles.clearCacheButton}
-        onPress={() => {
-          AsyncStorage.removeItem(API_DATA_STORAGE_KEY);
-        }}
-      >
-        <Text style={styles.clearCacheButtonText}>CLEAR CACHE</Text>
-      </Pressable> */}
+  const renderItem = ({ item }: { item: ScryfallCard.Scheme }) => (
+    <View style={styles.cardWrapper}>
+      <Card
+        card={item}
+        size={"normal"}
+        isOpacityControlled={true}
+        showAddRemoveOperator={true}
+        addToDeck={() => addCardToNewDeck(item)}
+        removeFromDeck={() => removeCardFromNewDeck(item)}
+        existsInDeck={cardsInNewDeck.some((card) => card.name === item.name)} // Check if the card exists in the new deck
+        showLoadingSpinner={true}
+      />
+    </View>
+  );
 
-      <NewDeck />
-      <View style={styles.container}>
-        {displayedCards.map((el) => (
-          <Card
-            key={el.name}
-            card={el}
-            size={"normal"}
-            isOpacityControlled={true}
-            showAddRemoveOperator={true}
-            addToDeck={() => addCardToNewDeck(el)}
-            removeFromDeck={() => removeCardFromNewDeck(el)}
-            existsInDeck={cardsInNewDeck.find((card) => card.name === el.name) ? true : false}
-            showLoadingSpinner={true}
-          />
-        ))}
-      </View>
-    </ScrollView>
+  return (
+    <View style={styles.scrollContainer}>
+      <FlatList
+        ListHeaderComponent={<NewDeck />}
+        data={displayedCards}
+        renderItem={renderItem}
+        keyExtractor={(item) => item.name} // Assuming `name` is unique
+        numColumns={2} // This sets the number of columns to 2
+        contentContainerStyle={{ justifyContent: "flex-start", width: "100%" }} // Apply your existing styles
+        initialNumToRender={4} // Reduce the number of items to render initially
+        windowSize={5}
+        maxToRenderPerBatch={4}
+      />
+    </View>
+    // <ScrollView style={styles.scrollContainer}>
+    //   <NewDeck />
+    //   <View style={styles.container}>
+    //     {displayedCards.map((el) => (
+    //       <View style={styles.cardWrapper} key={el.name}>
+    //         <Card
+    //           card={el}
+    //           size={"normal"}
+    //           isOpacityControlled={true}
+    //           showAddRemoveOperator={true}
+    //           addToDeck={() => addCardToNewDeck(el)}
+    //           removeFromDeck={() => removeCardFromNewDeck(el)}
+    //           existsInDeck={cardsInNewDeck.find((card) => card.name === el.name) ? true : false}
+    //           showLoadingSpinner={true}
+    //         />
+    //       </View>
+    //     ))}
+    //   </View>
+    // </ScrollView>
   );
 };
 
 export default DeckBuilder;
+
+// const styles = StyleSheet.create({
+//   clearCacheButton: {
+//     width: 140,
+//     height: 40,
+//     maxHeight: 40,
+//     borderWidth: 2,
+//     alignSelf: "center",
+//     marginTop: 40,
+//     borderColor: "gold",
+//     backgroundColor: "gold",
+//     borderRadius: 10,
+//   },
+//   clearCacheButtonText: {
+//     fontSize: 15,
+//     color: "black",
+//     fontWeight: "bold",
+//     textAlign: "center",
+//     lineHeight: 35,
+//   },
+//   scrollContainer: { flex: 1, marginTop: 70 },
+//   container: {
+//     flex: 1,
+//     flexDirection: "row",
+//     // flexWrap: "wrap",
+//     alignItems: "center",
+//     justifyContent: "space-evenly",
+//     marginTop: 10,
+//   },
+//   cardWrapper: {
+//     marginVertical: 10,
+//   },
+// });
+
+// ------------------------------------------------------------
 
 const styles = StyleSheet.create({
   clearCacheButton: {
@@ -93,10 +148,16 @@ const styles = StyleSheet.create({
   scrollContainer: { flex: 1, marginTop: 70 },
   container: {
     flex: 1,
-    flexDirection: "row",
-    flexWrap: "wrap",
-    alignItems: "center",
     justifyContent: "space-evenly",
     marginTop: 10,
+  },
+  cardWrapper: {
+    flex: 1,
+    marginVertical: 10,
+    marginHorizontal: 5, // Add some horizontal margin for spacing
+    alignItems: "center", // Center the columns
+  },
+  columnWrapper: {
+    justifyContent: "space-between", // Optional: to evenly space columns
   },
 });
