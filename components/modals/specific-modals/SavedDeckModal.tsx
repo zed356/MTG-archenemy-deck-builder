@@ -62,7 +62,7 @@ const SavedDeckModal: React.FC<InputProps> = ({ modalVisible, setVisible, deck, 
       flex: 1,
       justifyContent: "center",
       alignItems: "center",
-      backgroundColor: "rgba(0,0,0,0.2)", // Optional: adds a backdrop
+      backgroundColor: "rgba(0,0,0,0.6)", // Optional: adds a backdrop
     },
     modalContainer: {
       width: "97%", // Modal width

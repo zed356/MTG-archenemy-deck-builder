@@ -88,16 +88,13 @@ const Card: React.FC<InputProps> = ({
     card: {
       width: cardSize?.width,
       height: cardSize?.height,
-      marginBottom: 5,
       borderWidth: existsInDeck && border ? 2 : undefined,
       borderColor: existsInDeck && border ? defaultColors.border : undefined,
       opacity: existsInDeck && isOpacityControlled ? 0.4 : 1,
-      // backgroundColor: "rgba(22, 22, 1, 10)", // Optional: Add a semi-transparent background
     },
     plusButton: {
       position: "absolute",
       backgroundColor: "rgba(0, 0, 0, 0.65)",
-      // borderRadius: 8,
     },
     loadingSpinner: {
       position: "absolute", // To position it over the image
@@ -109,12 +106,6 @@ const Card: React.FC<InputProps> = ({
 
   return (
     <Fragment>
-      {/* <Pressable
-        onPress={() => {
-          console.log("i fire");
-          setIsSelected((oldState) => !oldState);
-        }}
-      > */}
       <View style={[styles.imageContainer, isInPlayDeck && styles.isInPlayDeckStyle]}>
         {loading && showLoadingSpinner && (
           <ActivityIndicator style={styles.loadingSpinner} size="large" color="#FFD700" />
@@ -150,7 +141,6 @@ const Card: React.FC<InputProps> = ({
           )}
         </Pressable>
       </View>
-      {/* </Pressable> */}
       <SelectedCardModal
         card={card}
         existsInDeck={existsInDeck}

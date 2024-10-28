@@ -46,6 +46,10 @@ const NewDeck: React.FC = () => {
       flexDirection: "row",
       flexWrap: "wrap",
       padding: 5,
+      justifyContent: "center",
+    },
+    cardWrapper: {
+      padding: 5,
     },
     text: {
       color: countOfCardsInNewDeck < MINIMUM_CARDS_IN_NEW_DECK ? defaultColors.red : "#42b883",
@@ -73,17 +77,18 @@ const NewDeck: React.FC = () => {
         </Text>
         <View style={styles.cards}>
           {cardsInNewDeck.map((el) => (
-            <Card
-              key={el.name}
-              card={el}
-              size={"small"}
-              border={false}
-              showAddRemoveOperator={true}
-              isOpacityControlled={false}
-              existsInDeck={true}
-              addToDeck={() => addCardToNewDeck(el)}
-              removeFromDeck={() => removeCardFromNewDeck(el)}
-            />
+            <View style={styles.cardWrapper} key={el.name}>
+              <Card
+                card={el}
+                size={"small"}
+                border={false}
+                showAddRemoveOperator={true}
+                isOpacityControlled={false}
+                existsInDeck={true}
+                addToDeck={() => addCardToNewDeck(el)}
+                removeFromDeck={() => removeCardFromNewDeck(el)}
+              />
+            </View>
           ))}
         </View>
         <SaveNewDeckModal

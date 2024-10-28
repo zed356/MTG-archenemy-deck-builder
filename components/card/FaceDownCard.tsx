@@ -5,7 +5,7 @@ import { Dimensions, Pressable, StyleSheet, View } from "react-native";
 interface InputProps {
   size?: "small" | "normal" | "large";
   isInPlayDeck?: boolean;
-  revealCard: () => void;
+  revealCard?: () => void;
 }
 
 const FaceDownCard: React.FC<InputProps> = ({
@@ -47,7 +47,7 @@ const FaceDownCard: React.FC<InputProps> = ({
 
   return (
     <Fragment>
-      <Pressable onPressOut={() => revealCard()}>
+      <Pressable onPressOut={() => revealCard && revealCard()}>
         <View style={[styles.imageContainer, isInPlayDeck && styles.isInPlayDeckStyle]}>
           <Image
             style={styles.card}

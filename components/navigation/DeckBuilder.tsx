@@ -61,7 +61,6 @@ const DeckBuilder: React.FC = () => {
         renderItem={renderItem}
         keyExtractor={(item) => item.name} // Assuming `name` is unique
         numColumns={2} // This sets the number of columns to 2
-        contentContainerStyle={{ justifyContent: "flex-start", width: "100%" }} // Apply your existing styles
         initialNumToRender={4} // Reduce the number of items to render initially
         windowSize={5}
         maxToRenderPerBatch={4}
@@ -145,7 +144,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
     lineHeight: 35,
   },
-  scrollContainer: { flex: 1, marginTop: 70 },
+  scrollContainer: { flex: 1, marginVertical: 70 },
   container: {
     flex: 1,
     justifyContent: "space-evenly",
