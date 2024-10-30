@@ -28,6 +28,9 @@ export const useLoadAPIData = (
             if (cachedCards === null || JSON.parse(cachedCards).length < apiData.data.length) {
               await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(apiData.data));
               setCards(apiData.data);
+            } else {
+              // Use cached data
+              setCards(JSON.parse(cachedCards));
             }
           }
         } else if (cachedCards) {
