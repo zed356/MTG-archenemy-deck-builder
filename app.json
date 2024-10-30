@@ -18,7 +18,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/splash.png",
+        "foregroundImage": "./assets/images/ic_launcher.png",
         "backgroundColor": "#C2B280"
       },
       "package": "com.ztamoa.mtgarchenemydeckbuilder"

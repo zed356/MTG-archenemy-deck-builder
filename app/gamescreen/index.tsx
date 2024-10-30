@@ -3,15 +3,19 @@ import { ImageBackground } from "expo-image";
 import { router, useNavigation } from "expo-router";
 import GameController from "@/components/navigation/GameController";
 import ConfirmationModal from "@/components/modals/specific-modals/ConfirmationModal";
+import { useSavedDeckStore } from "@/store/store";
 
 const GameScreen = () => {
   const navigation = useNavigation();
   const [isModalVisible, setModalVisible] = useState(false);
+  const { savedDecksInState } = useSavedDeckStore();
 
   useEffect(() => {
     const unsubscribe = navigation.addListener("beforeRemove", (e) => {
       e.preventDefault(); // Prevent default back behavior
-      setModalVisible(true); // Show the quit confirmation modal
+      if (savedDecksInState.length > 0) {
+        setModalVisible(true); // Show the quit confirmation modal if more than 1 deck is saved. otherwise quitting wont allow to press Play later. struggling with router.
+      }
     });
     return unsubscribe;
   }, [navigation]);

@@ -1,4 +1,4 @@
-import { SavedDeck } from "@/store/store";
+import { SavedDeck, useSavedDeckStore } from "@/store/store";
 import { ScrollView, StyleSheet, View } from "react-native";
 import { useState } from "react";
 import SavedDecks from "./SavedDecks";
@@ -10,14 +10,14 @@ import Card from "../card/Card";
 import { defaultColors } from "@/constants/Colors";
 import ShatterButton from "../button/ShatterButton";
 
-interface GameControllerProps {}
-
 const GAME_STATES = {
   DECK_SELECTION: "DECK_SELECTION",
   GAME_START: "GAME_START",
 };
 
-const GameController: React.FC<GameControllerProps> = ({}) => {
+interface GameControllerProps {}
+
+const GameController: React.FC<GameControllerProps> = () => {
   const [gameState, setGameState] = useState(GAME_STATES.DECK_SELECTION);
   const [selectedDeck, setSelectedDeck] = useState<SavedDeck | null>(null);
   const [shuffledDeck, setShuffledDeck] = useState<SavedDeck | null>(null);
