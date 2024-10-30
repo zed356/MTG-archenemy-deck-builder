@@ -14,22 +14,29 @@ export const useLoadAPIData = (
   useEffect(() => {
     const fetchCards = async () => {
       try {
-        const cachedCards = await AsyncStorage.getItem(STORAGE_KEY);
+        let apiData;
         const networkState = await Network.getNetworkStateAsync();
-        console.log(networkState.isConnected);
-        if (cachedCards) {
+        const cachedCards = await AsyncStorage.getItem(STORAGE_KEY);
+        if (networkState.isInternetReachable === true) {
+          {
+            // Fetch data from API if no cached data
+            const response = await fetch(API_URL);
+            if (!response.ok) {
+              throw new Error("Failed to fetch cards");
+            }
+            apiData = await response.json();
+            if (cachedCards === null || JSON.parse(cachedCards).length < apiData.data.length) {
+              await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(apiData.data));
+              setCards(apiData.data);
+            }
+          }
+        } else if (cachedCards) {
           // Use cached data
           setCards(JSON.parse(cachedCards));
         } else {
-          // Fetch data from API if no cached data
-          const response = await fetch(API_URL);
-          if (!response.ok) {
-            throw new Error("Failed to fetch cards");
-          }
-          const data = await response.json();
-          setCards(data.data);
-          // Cache the fetched data
-          await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(data.data));
+          throw new Error(
+            "No internet connection and no cached data. Please connect to the internet."
+          );
         }
       } catch (error: any) {
         setError(error.message);
