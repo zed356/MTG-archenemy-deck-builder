@@ -1,7 +1,7 @@
 import { defaultColors } from "@/constants/Colors";
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, Pressable } from "react-native";
 import { globalStyles } from "@/constants/styles";
-import { Link } from "expo-router";
+import { Link, router } from "expo-router";
 import CustomButton from "../button/CustomButton";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { SavedDeck, useSavedDeckStore } from "@/store/store";
@@ -145,9 +145,11 @@ const SavedDecks: React.FC<SavedDecksProps> = ({
         return null;
       })
     ) : (
-      <Link href="/(tabs)/deckbuilder">
+      // <Link href="/(tabs)/deckbuilder">
+      <Pressable onPress={() => router.push("/(tabs)/deckbuilder")}>
         <Text style={[globalStyles.text, styles.emptyDeckText]}>Create a new deck</Text>
-      </Link>
+      </Pressable>
+      // </Link>
     );
 
   const paginationContent = (

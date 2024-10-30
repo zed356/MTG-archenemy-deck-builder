@@ -16,7 +16,7 @@ export default function HomeScreen() {
   // }, [data]); // Run this effect only when `data` changes
 
   //// TODO ///
-  // 1. PLAY MODE!!!
+  // 1. Play mode gestures to reveal / discard cards!!
   // 3. gamescreen/index goes back using router.push which doesnt reset stack. router.replace does not work..
   // 4. helper funcs to handle state/storage updates in one go,
   //    rather than having to call multiple functions
@@ -25,6 +25,7 @@ export default function HomeScreen() {
   // 7. change splash background color, shows white briefly.
   // 8. CHANGE AMOUNT OF CARDS LOADED!!! currently 10...
   // 9. app icon head is cut off... :(
+  // 10. DeckBuilder -- FlatList -- potential performance issues re: rendering
 
   return (
     <GradientBackground>

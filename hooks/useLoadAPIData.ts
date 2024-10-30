@@ -1,6 +1,7 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { ScryfallCard } from "@scryfall/api-types";
 import { useEffect, useState } from "react";
+import * as Network from "expo-network";
 
 export const useLoadAPIData = (
   STORAGE_KEY: string,
@@ -14,6 +15,8 @@ export const useLoadAPIData = (
     const fetchCards = async () => {
       try {
         const cachedCards = await AsyncStorage.getItem(STORAGE_KEY);
+        const networkState = await Network.getNetworkStateAsync();
+        console.log(networkState.isConnected);
         if (cachedCards) {
           // Use cached data
           setCards(JSON.parse(cachedCards));
