@@ -1,34 +1,28 @@
 import { ScryfallCard } from "@scryfall/api-types";
-import { useEffect, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { ActivityIndicator, FlatList, ScrollView, StyleSheet, View } from "react-native";
 import Card from "../card/Card";
 import NewDeck from "../decks/NewDeck";
 import ErrorModal from "../modals/specific-modals/ErrorModal";
-import { ARCHENEMEY_SCHEME_CARD_TOTAL_COUNT } from "@/constants/values";
+import { API_DATA_STORAGE_KEY, ARCHENEMEY_SCHEME_CARD_TOTAL_COUNT } from "@/constants/values";
 import { useCardStore, useNewDeckStore } from "@/store/store";
+import CustomButton from "../button/CustomButton";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import Filter from "../card/Filter";
+import { Image } from "expo-image";
 
 const DeckBuilder: React.FC = () => {
   const { cardsInStore, loadCardsIntoStore, loading, error } = useCardStore();
-  const [displayedCards, setDisplayedCards] = useState<ScryfallCard.Scheme[]>([]);
-
+  const [cardNameFilter, setCardNameFilter] = useState<string>("");
   const { cardsInNewDeck, addCardToNewDeck, removeCardFromNewDeck, clearNewDeck } =
     useNewDeckStore();
 
-  // displayes 1 card per set interval.
-  useEffect(() => {
-    let count = 0;
-    setDisplayedCards([]);
-    const intervalId = setInterval(() => {
-      if (count < Math.min(cardsInStore.length, ARCHENEMEY_SCHEME_CARD_TOTAL_COUNT)) {
-        setDisplayedCards((prevCards) => [...prevCards, cardsInStore[count]]);
-        count++;
-      } else {
-        clearInterval(intervalId); // Stop the interval after displaying cards
-      }
-    }, 300); // 0.3 second interval per card. CHANGE THIS FOR QUICKER / SLOWER LOAD
-
-    return () => clearInterval(intervalId); // Cleanup on component unmount
-  }, [cardsInStore]); // Trigger this effect when `cards` changes
+  const displayedCards = cardsInStore.filter((card) => {
+    if (cardNameFilter.length === 0) {
+      return true;
+    }
+    return card.name.toLowerCase().includes(cardNameFilter.trim().toLowerCase());
+  });
 
   if (loading) {
     return <ActivityIndicator size="large" color="#FFFFFF" />;
@@ -53,10 +47,28 @@ const DeckBuilder: React.FC = () => {
     </View>
   );
 
+  const headerComponent = (
+    <Fragment>
+      <CustomButton
+        text="Clear cache"
+        onPress={() => {
+          AsyncStorage.removeItem(API_DATA_STORAGE_KEY);
+          const clearDiskCache = async () => {
+            await Image.clearDiskCache();
+          };
+          clearDiskCache();
+        }}
+        type="neutral"
+      />
+      <NewDeck />
+      <Filter setFilter={setCardNameFilter} />
+    </Fragment>
+  );
+
   return (
     <View style={styles.scrollContainer}>
       <FlatList
-        ListHeaderComponent={<NewDeck />}
+        ListHeaderComponent={headerComponent}
         data={displayedCards}
         renderItem={renderItem}
         keyExtractor={(item) => item.name} // Assuming `name` is unique
@@ -66,64 +78,10 @@ const DeckBuilder: React.FC = () => {
         maxToRenderPerBatch={4}
       />
     </View>
-    // <ScrollView style={styles.scrollContainer}>
-    //   <NewDeck />
-    //   <View style={styles.container}>
-    //     {displayedCards.map((el) => (
-    //       <View style={styles.cardWrapper} key={el.name}>
-    //         <Card
-    //           card={el}
-    //           size={"normal"}
-    //           isOpacityControlled={true}
-    //           showAddRemoveOperator={true}
-    //           addToDeck={() => addCardToNewDeck(el)}
-    //           removeFromDeck={() => removeCardFromNewDeck(el)}
-    //           existsInDeck={cardsInNewDeck.find((card) => card.name === el.name) ? true : false}
-    //           showLoadingSpinner={true}
-    //         />
-    //       </View>
-    //     ))}
-    //   </View>
-    // </ScrollView>
   );
 };
 
 export default DeckBuilder;
-
-// const styles = StyleSheet.create({
-//   clearCacheButton: {
-//     width: 140,
-//     height: 40,
-//     maxHeight: 40,
-//     borderWidth: 2,
-//     alignSelf: "center",
-//     marginTop: 40,
-//     borderColor: "gold",
-//     backgroundColor: "gold",
-//     borderRadius: 10,
-//   },
-//   clearCacheButtonText: {
-//     fontSize: 15,
-//     color: "black",
-//     fontWeight: "bold",
-//     textAlign: "center",
-//     lineHeight: 35,
-//   },
-//   scrollContainer: { flex: 1, marginTop: 70 },
-//   container: {
-//     flex: 1,
-//     flexDirection: "row",
-//     // flexWrap: "wrap",
-//     alignItems: "center",
-//     justifyContent: "space-evenly",
-//     marginTop: 10,
-//   },
-//   cardWrapper: {
-//     marginVertical: 10,
-//   },
-// });
-
-// ------------------------------------------------------------
 
 const styles = StyleSheet.create({
   clearCacheButton: {
