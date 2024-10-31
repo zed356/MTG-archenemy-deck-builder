@@ -95,9 +95,15 @@ const Card: React.FC<InputProps> = ({
       borderColor: existsInDeck && border ? defaultColors.border : undefined,
       opacity: existsInDeck && isOpacityControlled ? 0.4 : 1,
     },
-    plusButton: {
+    operatorButtonContainer: {
       position: "absolute",
-      backgroundColor: "rgba(0, 0, 0, 0.65)",
+    },
+    operatorButton: {
+      marginLeft: 20,
+      marginBottom: 20,
+      backgroundColor: "rgba(0, 0, 0, 0.55)",
+      paddingHorizontal: 4,
+      borderBottomLeftRadius: 13,
     },
     loadingSpinner: {
       position: "absolute", // To position it over the image
@@ -135,12 +141,13 @@ const Card: React.FC<InputProps> = ({
             }}
           />
         </Pressable>
-        <Pressable style={styles.plusButton} onPress={handleAddRemoveCardToNewDeck}>
+        <Pressable style={styles.operatorButtonContainer} onPress={handleAddRemoveCardToNewDeck}>
           {showAddRemoveOperator && (
             <FontAwesome
               name={displayPlusMinusCardButton}
               size={operatorSize?.fontSize}
               color={!existsInDeck ? defaultColors.green : "red"}
+              style={styles.operatorButton}
             />
           )}
         </Pressable>

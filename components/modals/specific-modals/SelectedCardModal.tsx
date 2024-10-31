@@ -45,10 +45,15 @@ const SelectedCardModal: React.FC<InputProps> = ({
       height: 490,
       opacity: 1,
     },
-    plusButton: {
+    operatorButtonContainer: {
       position: "absolute",
-      backgroundColor: "rgba(0, 0, 0, 0.65)",
-      // borderRadius: 8,
+    },
+    operatorButton: {
+      marginLeft: 20,
+      marginBottom: 20,
+      backgroundColor: "rgba(0, 0, 0, 0.55)",
+      paddingHorizontal: 5,
+      borderBottomLeftRadius: 20,
     },
   });
 
@@ -58,21 +63,16 @@ const SelectedCardModal: React.FC<InputProps> = ({
         <View style={styles.imageContainer}>
           <Image
             style={[styles.card, styles.cardIsSelected]}
-            source={
-              // typeof card.image_uris!.normal === "string"
-              //   ? { uri: card.image_uris!.normal }
-              //   : card.image_uris!.normal
-              card.image_uris?.border_crop
-            }
+            source={card.image_uris?.border_crop}
             contentFit="contain"
           />
-          <Pressable style={styles.plusButton} onPress={() => addRemoveCardToDeck()}>
+          <Pressable style={styles.operatorButtonContainer} onPress={() => addRemoveCardToDeck()}>
             {showAddRemoveOperator && (
               <FontAwesome
                 name={displayPlusMinusCardButton === "plus" ? "plus" : "minus"} // does not work on its own..
                 size={45}
                 color={!existsInDeck ? defaultColors.green : "red"}
-                style={{ borderRadius: 0 }}
+                style={styles.operatorButton}
               />
             )}
           </Pressable>
