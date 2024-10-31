@@ -4,8 +4,9 @@ import { useCardStore } from "@/store/store";
 import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import "react-native-reanimated";
+import { Image } from "expo-image";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -15,27 +16,36 @@ export default function RootLayout() {
     SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
     Beleren: require("../assets/fonts/Beleren-Bold.ttf"),
   });
-
+  const [imagesLoaded, setImagesLoaded] = useState(false);
   const { loadCardsIntoStore, setError, setLoading } = useCardStore();
 
   // checks if card data exists in local storage. If not, send API request and cache it.
   const data = useLoadAPIData(API_DATA_STORAGE_KEY, API_URL, setError, setLoading);
 
-  // Update cards only when data changes
+  // Load cards into state when data is fetched from api/localstorage.
   useEffect(() => {
     if (data.length > 0) {
       loadCardsIntoStore(data);
     }
-  }, [data]); // Run this effect only when `data` changes
 
-  // show splashscreen for 2s before hiding
-  useEffect(() => {
-    setTimeout(() => {
-      if (loaded) {
-        SplashScreen.hideAsync();
+    // prefetch images if not stored in local cache
+    const preFetchImages = async () => {
+      if (data.length > 0) {
+        for (let i = 0; i < data.length; i++) {
+          if ((await Image.getCachePathAsync(data[i].image_uris?.border_crop!)) === null) {
+            await Image.prefetch(data[i].image_uris?.border_crop!);
+          }
+        }
       }
-    }, 2000);
-  }, [loaded]);
+      setImagesLoaded(true);
+    };
+
+    preFetchImages();
+  }, [data]);
+
+  if (loaded && imagesLoaded) {
+    SplashScreen.hideAsync();
+  }
 
   if (!loaded) {
     return null;
