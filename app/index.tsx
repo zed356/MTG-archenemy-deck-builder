@@ -3,17 +3,7 @@ import GradientBackground from "@/components/style-elements/GradientBackground";
 import { Redirect } from "expo-router";
 
 export default function HomeScreen() {
-  // const { loadCardsIntoStore, setError, setLoading } = useCardStore();
-
-  // // checks if card data exists in local storage. If not, send API request and cache it.
-  // const data = useLoadAPIData(API_DATA_STORAGE_KEY, API_URL, setError, setLoading);
-
-  // // Update cards only when data changes
-  // useEffect(() => {
-  //   if (data.length > 0) {
-  //     loadCardsIntoStore(data);
-  //   }
-  // }, [data]); // Run this effect only when `data` changes
+  // Can't run app without main index.tsx file. Only purpose to redirect to tabs.
 
   //// TODO ///
   // 1. Play mode gestures to reveal / discard cards!!
