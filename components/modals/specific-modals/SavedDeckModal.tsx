@@ -6,6 +6,8 @@ import { ScryfallCard } from "@scryfall/api-types";
 import { Fragment, useState } from "react";
 import { View, Modal, StyleSheet, ScrollView, Text, TextInput } from "react-native";
 import { MINIMUM_CARDS_IN_NEW_DECK } from "@/constants/values";
+import Filter from "@/components/card/Filter";
+import Spacer from "@/components/style-elements/Spacer";
 
 interface InputProps {
   modalVisible: boolean;
@@ -19,14 +21,29 @@ const SavedDeckModal: React.FC<InputProps> = ({ modalVisible, setVisible, deck, 
   const [newDeckName, setNewDeckName] = useState<string>("");
   const [deepCopyOfDeck, setDeepCopyOfDeck] = useState<SavedDeck>(JSON.parse(JSON.stringify(deck)));
   const { cardsInStore } = useCardStore();
+  const [displayedCards, setDisplayedCards] = useState<ScryfallCard.Scheme[]>(cardsInStore);
 
   const cardsInDeck: number | boolean = deck != null && deepCopyOfDeck.cards.length;
   const correctAmountOfCardsInDeck: boolean = cardsInDeck
     ? cardsInDeck >= MINIMUM_CARDS_IN_NEW_DECK
     : false;
 
+  // Step 1: Create a Set of card names for quick lookup
+  const deckCardNames = new Set(deepCopyOfDeck.cards.map((el) => el.name));
+
+  // Step 2: Sort displayedCards based on existence in the Set
+  const sortedCards = displayedCards.sort((a, b) => {
+    const aExists = deckCardNames.has(a.name);
+    const bExists = deckCardNames.has(b.name);
+    return (bExists ? 1 : 0) - (aExists ? 1 : 0);
+  });
+
   const resetDeepCopyOfDeck = () => {
     setDeepCopyOfDeck(JSON.parse(JSON.stringify(deck)));
+  };
+
+  const resetDisplayedCards = () => {
+    setDisplayedCards(cardsInStore);
   };
 
   const handleAddCardToDeckWhileEditing = (card: ScryfallCard.Scheme) => {
@@ -94,10 +111,9 @@ const SavedDeckModal: React.FC<InputProps> = ({ modalVisible, setVisible, deck, 
     cardCountText: {
       backgroundColor: defaultColors.purple,
       borderRadius: 10,
-      paddingHorizontal: 5,
+      paddingLeft: 6, // impossible to center text. its always a bit off to the left.
       color: calcCorrectTextColor(), // Assuming you want white text
       fontSize: 25,
-      alignSelf: "center",
       marginBottom: 10,
     },
     modalInput: {
@@ -141,10 +157,12 @@ const SavedDeckModal: React.FC<InputProps> = ({ modalVisible, setVisible, deck, 
                     disabled={!correctAmountOfCardsInDeck}
                   />
                 )}
+
                 <CustomButton
                   type="negative"
                   text={isEditing ? "CANCEL" : "CLOSE"}
                   onPress={() => {
+                    resetDisplayedCards();
                     if (isEditing) {
                       resetDeepCopyOfDeck();
                       setIsEditing(false);
@@ -154,9 +172,9 @@ const SavedDeckModal: React.FC<InputProps> = ({ modalVisible, setVisible, deck, 
                   }}
                 />
               </View>
-              <Text style={styles.cardCountText}>{`${cardsInDeck}${
-                isEditing ? ` / ${MINIMUM_CARDS_IN_NEW_DECK}` : ""
-              }`}</Text>
+              <Text style={styles.cardCountText}>
+                {`${cardsInDeck}${isEditing ? ` / ${MINIMUM_CARDS_IN_NEW_DECK}` : ""}`}{" "}
+              </Text>
               {isEditing && (
                 <TextInput
                   style={styles.modalInput}
@@ -168,9 +186,18 @@ const SavedDeckModal: React.FC<InputProps> = ({ modalVisible, setVisible, deck, 
                   onChangeText={setNewDeckName}
                 />
               )}
+              {isEditing && (
+                <View style={{ width: "96%", marginBottom: 10 }}>
+                  <Filter
+                    cards={cardsInStore}
+                    setDisplayedCards={setDisplayedCards}
+                    filterIconInactiveColor="white"
+                  />
+                </View>
+              )}
               <View style={styles.deckContainer}>
-                {cardsInStore.map((card) => {
-                  if (deepCopyOfDeck.cards.find((el) => el.name === card.name) || isEditing) {
+                {sortedCards.map((card) => {
+                  if (deckCardNames.has(card.name) || isEditing) {
                     return (
                       <Card
                         key={card.name}
@@ -179,13 +206,13 @@ const SavedDeckModal: React.FC<InputProps> = ({ modalVisible, setVisible, deck, 
                         showAddRemoveOperator={isEditing}
                         border={isEditing}
                         isOpacityControlled={isEditing}
-                        existsInDeck={!!deepCopyOfDeck.cards.find((el) => el.name === card.name)}
+                        existsInDeck={deckCardNames.has(card.name)}
                         addToDeck={handleAddCardToDeckWhileEditing}
                         removeFromDeck={handleRemoveCardFromDeckWhileEditing}
                       />
                     );
                   }
-                  return null; // Return null if the condition is not met
+                  return null;
                 })}
               </View>
             </View>
