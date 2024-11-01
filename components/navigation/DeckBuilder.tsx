@@ -1,36 +1,68 @@
 import { ScryfallCard } from "@scryfall/api-types";
-import { Fragment, useEffect, useState } from "react";
-import { ActivityIndicator, FlatList, ScrollView, StyleSheet, View } from "react-native";
+import { Fragment, useState } from "react";
+import { ActivityIndicator, FlatList, StyleSheet, View, Text } from "react-native";
 import Card from "../card/Card";
 import NewDeck from "../decks/NewDeck";
 import ErrorModal from "../modals/specific-modals/ErrorModal";
-import { API_DATA_STORAGE_KEY, ARCHENEMEY_SCHEME_CARD_TOTAL_COUNT } from "@/constants/values";
+import { API_DATA_STORAGE_KEY, MINIMUM_CARDS_IN_NEW_DECK } from "@/constants/values";
 import { useCardStore, useNewDeckStore } from "@/store/store";
 import CustomButton from "../button/CustomButton";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Filter from "../card/Filter";
 import { Image } from "expo-image";
+import { globalStyles } from "@/constants/styles";
+import { defaultColors } from "@/constants/Colors";
 
 const DeckBuilder: React.FC = () => {
-  const { cardsInStore, loadCardsIntoStore, loading, error } = useCardStore();
-  const [cardNameFilter, setCardNameFilter] = useState<string>("");
-  const { cardsInNewDeck, addCardToNewDeck, removeCardFromNewDeck, clearNewDeck } =
-    useNewDeckStore();
-
-  const displayedCards = cardsInStore.filter((card) => {
-    if (cardNameFilter.length === 0) {
-      return true;
-    }
-    return card.name.toLowerCase().includes(cardNameFilter.trim().toLowerCase());
-  });
-
-  if (loading) {
-    return <ActivityIndicator size="large" color="#FFFFFF" />;
-  }
+  const { cardsInNewDeck, addCardToNewDeck, removeCardFromNewDeck } = useNewDeckStore();
+  const { cardsInStore, error } = useCardStore();
+  const [displayedCards, setDisplayedCards] = useState<ScryfallCard.Scheme[]>([]);
 
   if (error) {
     return <ErrorModal errorMessage={error} />;
   }
+
+  const styles = StyleSheet.create({
+    text: {
+      color: cardsInNewDeck.length < MINIMUM_CARDS_IN_NEW_DECK ? defaultColors.red : "#42b883",
+      fontSize: 18,
+      margin: 0,
+      padding: 0,
+    },
+    clearCacheButton: {
+      width: 140,
+      height: 40,
+      maxHeight: 40,
+      borderWidth: 2,
+      alignSelf: "center",
+      marginTop: 40,
+      borderColor: "gold",
+      backgroundColor: "gold",
+      borderRadius: 10,
+    },
+    clearCacheButtonText: {
+      fontSize: 15,
+      color: "black",
+      fontWeight: "bold",
+      textAlign: "center",
+      lineHeight: 35,
+    },
+    scrollContainer: { flex: 1, marginVertical: 20 },
+    container: {
+      flex: 1,
+      justifyContent: "space-evenly",
+      marginTop: 10,
+    },
+    cardWrapper: {
+      flex: 1,
+      marginVertical: 10,
+      marginHorizontal: 5, // Add some horizontal margin for spacing
+      alignItems: "center", // Center the columns
+    },
+    columnWrapper: {
+      justifyContent: "space-between", // Optional: to evenly space columns
+    },
+  });
 
   const renderItem = ({ item }: { item: ScryfallCard.Scheme }) => (
     <View style={styles.cardWrapper}>
@@ -61,12 +93,15 @@ const DeckBuilder: React.FC = () => {
         type="neutral"
       />
       <NewDeck />
-      <Filter setFilter={setCardNameFilter} />
+      <Filter cards={cardsInStore} setDisplayedCards={setDisplayedCards} />
     </Fragment>
   );
 
   return (
     <View style={styles.scrollContainer}>
+      <Text style={[globalStyles.text, styles.text]}>
+        {cardsInNewDeck.length}/{MINIMUM_CARDS_IN_NEW_DECK}
+      </Text>
       <FlatList
         ListHeaderComponent={headerComponent}
         data={displayedCards}
@@ -82,39 +117,3 @@ const DeckBuilder: React.FC = () => {
 };
 
 export default DeckBuilder;
-
-const styles = StyleSheet.create({
-  clearCacheButton: {
-    width: 140,
-    height: 40,
-    maxHeight: 40,
-    borderWidth: 2,
-    alignSelf: "center",
-    marginTop: 40,
-    borderColor: "gold",
-    backgroundColor: "gold",
-    borderRadius: 10,
-  },
-  clearCacheButtonText: {
-    fontSize: 15,
-    color: "black",
-    fontWeight: "bold",
-    textAlign: "center",
-    lineHeight: 35,
-  },
-  scrollContainer: { flex: 1, marginVertical: 70 },
-  container: {
-    flex: 1,
-    justifyContent: "space-evenly",
-    marginTop: 10,
-  },
-  cardWrapper: {
-    flex: 1,
-    marginVertical: 10,
-    marginHorizontal: 5, // Add some horizontal margin for spacing
-    alignItems: "center", // Center the columns
-  },
-  columnWrapper: {
-    justifyContent: "space-between", // Optional: to evenly space columns
-  },
-});
