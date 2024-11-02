@@ -39,9 +39,6 @@ npx expo start
 - Write unit tests for core components
 - Perform usability testing with target audience
 
-## License
-This project is licensed under the MIT License - see the LICENSE.md file for details.
-
 ## Acknowledgements
 - A special thanks to [Scryfall](https://scryfall.com/) for providing the Magic: The Gathering card database API that powers this app.
 - Inspired by the creativity and strategy of the Archenemy format!
