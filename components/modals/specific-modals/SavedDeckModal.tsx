@@ -3,8 +3,8 @@ import Card from "@/components/card/Card";
 import { defaultColors } from "@/constants/Colors";
 import { SavedDeck, useCardStore } from "@/store/store";
 import { ScryfallCard } from "@scryfall/api-types";
-import { Fragment, useState } from "react";
-import { View, Modal, StyleSheet, ScrollView, Text, TextInput } from "react-native";
+import { Fragment, useEffect, useState } from "react";
+import { View, Modal, StyleSheet, ScrollView, Text, TextInput, FlatList } from "react-native";
 import { MINIMUM_CARDS_IN_NEW_DECK } from "@/constants/values";
 import Filter from "@/components/card/Filter";
 import Spacer from "@/components/style-elements/Spacer";
@@ -19,24 +19,32 @@ interface InputProps {
 const SavedDeckModal: React.FC<InputProps> = ({ modalVisible, setVisible, deck, updateDeck }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [newDeckName, setNewDeckName] = useState<string>("");
-  const [deepCopyOfDeck, setDeepCopyOfDeck] = useState<SavedDeck>(JSON.parse(JSON.stringify(deck)));
   const { cardsInStore } = useCardStore();
+  const [deepCopyOfDeck, setDeepCopyOfDeck] = useState<SavedDeck>(JSON.parse(JSON.stringify(deck)));
   const [displayedCards, setDisplayedCards] = useState<ScryfallCard.Scheme[]>(cardsInStore);
+  const [deckCardNames, setDeckCardNames] = useState<Set<string>>(new Set());
+  const [filteredCards, setFilteredCards] = useState<ScryfallCard.Scheme[]>(cardsInStore);
 
   const cardsInDeck: number | boolean = deck != null && deepCopyOfDeck.cards.length;
   const correctAmountOfCardsInDeck: boolean = cardsInDeck
     ? cardsInDeck >= MINIMUM_CARDS_IN_NEW_DECK
     : false;
 
-  // Step 1: Create a Set of card names for quick lookup
-  const deckCardNames = new Set(deepCopyOfDeck.cards.map((el) => el.name));
+  useEffect(() => {
+    if (!deepCopyOfDeck) return;
 
-  // Step 2: Sort displayedCards based on existence in the Set
-  const sortedCards = displayedCards.sort((a, b) => {
-    const aExists = deckCardNames.has(a.name);
-    const bExists = deckCardNames.has(b.name);
-    return (bExists ? 1 : 0) - (aExists ? 1 : 0);
-  });
+    const namesOfCardInDeck = new Set(deepCopyOfDeck.cards.map((el) => el.name));
+    const namesOfFilteredCards = new Set(filteredCards.map((el) => el.name));
+    setDeckCardNames(namesOfCardInDeck);
+
+    // Separate existing and new cards
+    const newCards = filteredCards.filter((card) => !namesOfCardInDeck.has(card.name));
+    const existingCards = deepCopyOfDeck.cards;
+    const fullDeck = [...existingCards, ...newCards];
+
+    // Combine existing and new cards, with new cards appended at the end
+    setDisplayedCards(fullDeck.filter((el) => (namesOfFilteredCards.has(el.name) ? el : null)));
+  }, [deepCopyOfDeck, cardsInStore, isEditing, filteredCards]);
 
   const resetDeepCopyOfDeck = () => {
     setDeepCopyOfDeck(JSON.parse(JSON.stringify(deck)));
@@ -190,26 +198,27 @@ const SavedDeckModal: React.FC<InputProps> = ({ modalVisible, setVisible, deck, 
                 <View style={{ width: "96%", marginBottom: 10 }}>
                   <Filter
                     cards={cardsInStore}
-                    setDisplayedCards={setDisplayedCards}
+                    setFilteredCards={setFilteredCards}
                     filterIconInactiveColor="white"
                   />
                 </View>
               )}
               <View style={styles.deckContainer}>
-                {sortedCards.map((card) => {
+                {displayedCards.map((card) => {
                   if (deckCardNames.has(card.name) || isEditing) {
                     return (
-                      <Card
-                        key={card.name}
-                        card={card}
-                        size="small"
-                        showAddRemoveOperator={isEditing}
-                        border={isEditing}
-                        isOpacityControlled={isEditing}
-                        existsInDeck={deckCardNames.has(card.name)}
-                        addToDeck={handleAddCardToDeckWhileEditing}
-                        removeFromDeck={handleRemoveCardFromDeckWhileEditing}
-                      />
+                      <View key={card.name} style={{ margin: 5 }}>
+                        <Card
+                          card={card}
+                          size="small"
+                          showAddRemoveOperator={isEditing}
+                          border={false}
+                          isOpacityControlled={isEditing}
+                          existsInDeck={deckCardNames.has(card.name)}
+                          addToDeck={handleAddCardToDeckWhileEditing}
+                          removeFromDeck={handleRemoveCardFromDeckWhileEditing}
+                        />
+                      </View>
                     );
                   }
                   return null;
@@ -221,79 +230,6 @@ const SavedDeckModal: React.FC<InputProps> = ({ modalVisible, setVisible, deck, 
       </View>
     </Modal>
   );
-
-  // const content = deck != null && (
-  //   <CustomModal
-  //     animationType="none"
-  //     transparent={true}
-  //     visible={modalVisible}
-  //     scrollEnabled={true}
-  //     setVisible={setVisible}
-  //     onRequestClose={() => {
-  //       setVisible(false);
-  //     }}
-  //   >
-  //     <View style={styles.buttonContainer}>
-  //       {!isEditing && (
-  //         <CustomButton type="neutral" text="EDIT" onPress={() => setIsEditing(true)} />
-  //       )}
-  //       {isEditing && (
-  //         <CustomButton
-  //           type="positive"
-  //           text="SAVE"
-  //           onPress={handleEditing}
-  //           disabled={!correctAmountOfCardsInDeck}
-  //         />
-  //       )}
-  //       <CustomButton
-  //         type="negative"
-  //         text={isEditing ? "CANCEL" : "CLOSE"}
-  //         onPress={() => {
-  //           if (isEditing) {
-  //             resetDeepCopyOfDeck();
-  //             setIsEditing(false);
-  //           } else {
-  //             setVisible(false);
-  //           }
-  //         }}
-  //       />
-  //     </View>
-  //     <Text style={styles.cardCountText}>{`${cardsInDeck}${
-  //       isEditing ? ` / ${MINIMUM_CARDS_IN_NEW_DECK}` : ""
-  //     }`}</Text>
-  //     {isEditing && (
-  //       <TextInput
-  //         style={styles.modalInput}
-  //         value={newDeckName || deck.deckName}
-  //         multiline={true}
-  //         numberOfLines={4}
-  //         maxLength={80}
-  //         autoCorrect={false}
-  //         onChangeText={setNewDeckName}
-  //       />
-  //     )}
-  //     <View style={styles.deckContainer}>
-  //       {cardsInStore.map((card) => {
-  //         if (deepCopyOfDeck.cards.find((el) => el.name === card.name) || isEditing) {
-  //           return (
-  //             <Card
-  //               key={card.name}
-  //               card={card}
-  //               size="small"
-  //               showAddRemoveOperator={isEditing}
-  //               border={isEditing}
-  //               isOpacityControlled={isEditing}
-  //               existsInDeck={!!deepCopyOfDeck.cards.find((el) => el.name === card.name)}
-  //               addToDeck={handleAddCardToDeckWhileEditing}
-  //               removeFromDeck={handleRemoveCardFromDeckWhileEditing}
-  //             />
-  //           );
-  //         }
-  //         return null; // Return null if the condition is not met
-  //       })}
-  //     </View>
-  //   </CustomModal>
-  // );
 
   return <Fragment>{content}</Fragment>;
 };
