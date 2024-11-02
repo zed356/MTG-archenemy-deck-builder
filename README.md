@@ -1,50 +1,23 @@
-# Welcome to your Expo app 👋
+# Magic the Gathering: Archenemy Deck Builder
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Welcome to the **Magic the Gathering: Archenemy Deck Builder** app! This application allows players to build and manage their Archenemy decks, enhancing the gameplay experience with user-friendly features.
 
-## Get started
+## Current Downloadable Version
+[Download Here](https://expo.dev/accounts/ztamoa/projects/mtg-archenemy-deckbuilder/builds/48eb3db3-204d-484b-959a-9484b400f7f3)
 
-1. Install dependencies
+**Dated:** 28/10/24
 
-   ```bash
-   npm install
-   ```
+## Features
+- Intuitive deck-building interface
+- Support for various card types and mechanics
+- Save and load decks for easy access
+- User-friendly design tailored for both new and experienced players
 
-2. Start the app
-
-   ```bash
-    npx expo start
-   ```
-
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
+## Installation
+To run this application locally, you will need to have [Node.js](https://nodejs.org/) and [Expo CLI](https://docs.expo.dev/get-started/installation/) installed. After that, you can clone the repository and start the app:
 
 ```bash
-npm run reset-project
-```
-
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
-
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+git clone https://github.com/yourusername/mtg-archenemy-deckbuilder.git
+cd mtg-archenemy-deckbuilder
+npm install
+npx expo start
