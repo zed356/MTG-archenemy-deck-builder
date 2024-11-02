@@ -8,10 +8,8 @@ Welcome to the **Magic the Gathering: Archenemy Deck Builder** app! This applica
 **Dated:** 28/10/24
 
 ## Features
-- Intuitive deck-building interface
-- Support for various card types and mechanics
-- Save and load decks for easy access
-- User-friendly design tailored for both new and experienced players
+- Save and load Archenemy decks for easy access
+- Play mode. Stores ongoing cards for later use/discard.
 
 ## Installation
 To run this application locally, you will need to have [Node.js](https://nodejs.org/) and [Expo CLI](https://docs.expo.dev/get-started/installation/) installed. After that, you can clone the repository and start the app:
