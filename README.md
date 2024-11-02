@@ -23,6 +23,11 @@ npx expo start
 
 ## Todo List
 
+### Known bugs
+- Too long of a deck name will cause UI element overlap in saved decks.
+- Adding/removing a card in the builder, that would force a resize of the new deck container at the top, AND
+  quickly scrolling to the bottom, will make the UI glitch out.
+
 ### Features to Implement
 - Add user authentication
 - Implement multiplayer deck sharing
