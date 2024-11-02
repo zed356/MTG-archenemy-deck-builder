@@ -4,6 +4,7 @@ import { View, Pressable, StyleSheet, Text } from "react-native";
 import { Image } from "expo-image";
 import CustomModal from "../CustomModal";
 import { FontAwesome } from "@expo/vector-icons";
+import CustomButton from "@/components/button/CustomButton";
 
 interface InputProps {
   card: ScryfallCard.Scheme;
@@ -16,6 +17,7 @@ interface InputProps {
   showAddRemoveOperator: boolean;
   displayPlusMinusCardButton: string;
   addRemoveCardToDeck: () => void;
+  displayDiscardButtonInsteadOfOperator?: boolean;
 }
 
 const SelectedCardModal: React.FC<InputProps> = ({
@@ -28,6 +30,7 @@ const SelectedCardModal: React.FC<InputProps> = ({
   displayPlusMinusCardButton,
   showAddRemoveOperator,
   addRemoveCardToDeck,
+  displayDiscardButtonInsteadOfOperator,
 }) => {
   const styles = StyleSheet.create({
     imageContainer: {
@@ -52,7 +55,7 @@ const SelectedCardModal: React.FC<InputProps> = ({
       marginLeft: 20,
       marginBottom: 20,
       backgroundColor: "rgba(0, 0, 0, 0.55)",
-      paddingHorizontal: 5,
+      paddingLeft: 5,
       borderBottomLeftRadius: 20,
     },
   });
@@ -67,7 +70,7 @@ const SelectedCardModal: React.FC<InputProps> = ({
             contentFit="contain"
           />
           <Pressable style={styles.operatorButtonContainer} onPress={() => addRemoveCardToDeck()}>
-            {showAddRemoveOperator && (
+            {showAddRemoveOperator && !displayDiscardButtonInsteadOfOperator && (
               <FontAwesome
                 name={displayPlusMinusCardButton === "plus" ? "plus" : "minus"} // does not work on its own..
                 size={45}
@@ -77,6 +80,9 @@ const SelectedCardModal: React.FC<InputProps> = ({
             )}
           </Pressable>
         </View>
+        {displayDiscardButtonInsteadOfOperator && (
+          <CustomButton type="negative" text="Discard" onPress={() => addRemoveCardToDeck()} />
+        )}
       </Pressable>
     </CustomModal>
   );

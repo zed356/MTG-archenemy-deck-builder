@@ -21,6 +21,7 @@ interface InputProps {
   addToDeck?: (card: ScryfallCard.Scheme) => void;
   removeFromDeck?: (card: ScryfallCard.Scheme) => void;
   onCardInPlayPress?: () => void;
+  displayDiscardButtonInsteadOfOperator?: boolean;
 }
 
 const Card: React.FC<InputProps> = ({
@@ -38,6 +39,7 @@ const Card: React.FC<InputProps> = ({
   addToDeck,
   removeFromDeck,
   onCardInPlayPress,
+  displayDiscardButtonInsteadOfOperator,
 }) => {
   const [loading, setLoading] = useState(true);
   const [isSelected, setIsSelected] = useState(false);
@@ -102,7 +104,7 @@ const Card: React.FC<InputProps> = ({
       marginLeft: 20,
       marginBottom: 20,
       backgroundColor: "rgba(0, 0, 0, 0.55)",
-      paddingHorizontal: 4,
+      paddingLeft: 4,
       borderBottomLeftRadius: 13,
     },
     loadingSpinner: {
@@ -160,6 +162,7 @@ const Card: React.FC<InputProps> = ({
         showAddRemoveOperator={showAddRemoveOperator || showAddRemoveOperatorOnSelectedCard}
         addRemoveCardToDeck={handleAddRemoveCardToNewDeck}
         displayPlusMinusCardButton={displayPlusMinusCardButton}
+        displayDiscardButtonInsteadOfOperator={displayDiscardButtonInsteadOfOperator}
       />
     </Fragment>
   );

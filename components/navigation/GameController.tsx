@@ -82,6 +82,7 @@ const GameController: React.FC<GameControllerProps> = () => {
               showAddRemoveOperatorOnSelectedCard={true}
               size="small"
               removeFromDeck={handleRemoveOnGoingScheme}
+              displayDiscardButtonInsteadOfOperator={true}
             />
           </View>
         ))}
