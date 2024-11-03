@@ -1,41 +1,48 @@
-import { useRef } from "react";
-import { Animated, Pressable, StyleSheet } from "react-native";
+import React, { useEffect } from "react";
+import { Pressable, StyleSheet, View } from "react-native";
+import Animated, { useSharedValue, useAnimatedStyle, withTiming } from "react-native-reanimated";
 
-interface InputProps {
+interface AnimatedIconProps {
   children: React.ReactNode;
   onPress?: () => void;
   visible?: boolean;
 }
 
-const AnimatedIcon: React.FC<InputProps> = ({ children, onPress, visible = true }) => {
+const AnimatedIcon: React.FC<AnimatedIconProps> = ({ children, onPress, visible = true }) => {
   const handleOnPress = () => {
-    if (onPress) {
+    if (onPress && visible) {
       onPress();
     }
   };
 
-  const scaleAnim = useRef(new Animated.Value(1)).current; // Initial scale value
+  const scaleAnim = useSharedValue(1); // Initial scale value
 
   // Function to handle press in
   const handlePressIn = () => {
-    Animated.timing(scaleAnim, {
-      toValue: 0.9, // Scale down to 95%
-      duration: 150, // Animation duration
-      useNativeDriver: true, // Use native driver for better performance
-    }).start();
+    scaleAnim.value = withTiming(0.9, { duration: 150 }); // Scale down to 90%
   };
 
   // Function to handle press out
   const handlePressOut = () => {
-    Animated.timing(scaleAnim, {
-      toValue: 1, // Scale back to 100%
-      duration: 150,
-      useNativeDriver: true,
-    }).start();
+    scaleAnim.value = withTiming(1, { duration: 150 }); // Scale back to 100%
   };
 
+  const animatedStyle = useAnimatedStyle(() => {
+    return {
+      transform: [{ scale: scaleAnim.value }],
+    };
+  });
+
+  useEffect(() => {
+    if (!visible) {
+      scaleAnim.value = withTiming(0, { duration: 150 });
+    } else {
+      scaleAnim.value = withTiming(1, { duration: 150 });
+    }
+  }, [visible, scaleAnim]);
+
   return (
-    <Animated.View style={[{ transform: [{ scale: scaleAnim }] }, !visible && styles.hidden]}>
+    <Animated.View style={[animatedStyle, !visible && styles.hidden]}>
       <Pressable
         onPress={handleOnPress}
         onPressIn={handlePressIn}
@@ -43,7 +50,7 @@ const AnimatedIcon: React.FC<InputProps> = ({ children, onPress, visible = true 
         accessibilityRole="button"
         disabled={!visible}
       >
-        {children}
+        <View style={styles.buttonContainer}>{children}</View>
       </Pressable>
     </Animated.View>
   );
@@ -52,6 +59,10 @@ const AnimatedIcon: React.FC<InputProps> = ({ children, onPress, visible = true 
 const styles = StyleSheet.create({
   hidden: {
     opacity: 0,
+  },
+  buttonContainer: {
+    marginHorizontal: 20,
+    marginBottom: 20,
   },
 });
 

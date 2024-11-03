@@ -1,25 +1,38 @@
-import { useState, useEffect } from "react";
-import { Animated } from "react-native";
+import { useEffect } from "react";
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from "react-native-reanimated";
+import { StyleSheet } from "react-native";
 
 interface FadeInProps {
   children: React.ReactNode;
   duration?: number;
-  delay?: number;
 }
 
-const FadeIn: React.FC<FadeInProps> = ({ children, duration = 300, delay = 0 }) => {
-  const [opacity] = useState(new Animated.Value(0));
+const FadeIn: React.FC<FadeInProps> = ({ children, duration = 300 }) => {
+  const opacity = useSharedValue(0);
+  const animatedStyles = useAnimatedStyle(() => {
+    return {
+      opacity: opacity.value,
+    };
+  });
   useEffect(() => {
-    Animated.timing(opacity, {
-      toValue: 1,
-      duration,
-      delay,
-      useNativeDriver: true,
-    }).start();
-  }, []);
+    opacity.value = withTiming(1, { duration });
+  }, [opacity, duration]);
   return (
-    <Animated.View style={{ opacity, width: "100%", height: "100%" }}>{children}</Animated.View>
+    <Animated.View style={[styles.container, animatedStyles]}>
+      {children}
+    </Animated.View>
   );
 };
 
 export default FadeIn;
+
+const styles = StyleSheet.create({
+  container: {
+    width: "100%",
+    height: "100%",
+  },
+});

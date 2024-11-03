@@ -1,8 +1,12 @@
 import { defaultColors } from "@/constants/Colors";
 import { globalStyles, defaultBorderRadius } from "@/constants/styles";
 import { LinearGradient } from "expo-linear-gradient";
-import { useRef } from "react";
-import { Animated, Pressable, StyleSheet, Text } from "react-native";
+import { Pressable, StyleSheet, Text, View } from "react-native";
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from "react-native-reanimated";
 
 interface InputProps {
   text?: string;
@@ -19,30 +23,32 @@ const CustomButton: React.FC<InputProps> = ({
   disabled = false,
   children,
 }) => {
+  const scale = useSharedValue(1); // Initial scale value
+  const opacity = useSharedValue(1); // Initial shadow offset value
+
+  const animatedStyles = useAnimatedStyle(() => {
+    return {
+      transform: [{ scale: scale.value }],
+      opacity: opacity.value,
+    };
+  });
+
   const handleOnPress = () => {
     if (!disabled && onPress) {
       onPress();
     }
   };
 
-  const scaleAnim = useRef(new Animated.Value(1)).current; // Initial scale value
-
   // Function to handle press in
   const handlePressIn = () => {
-    Animated.timing(scaleAnim, {
-      toValue: 0.95, // Scale down to 95%
-      duration: 100, // Animation duration
-      useNativeDriver: true, // Use native driver for better performance
-    }).start();
+    scale.value = withTiming(0.95, { duration: 100 });
+    opacity.value = withTiming(0.9, { duration: 100 });
   };
 
   // Function to handle press out
   const handlePressOut = () => {
-    Animated.timing(scaleAnim, {
-      toValue: 1, // Scale back to 100%
-      duration: 100,
-      useNativeDriver: true,
-    }).start();
+    scale.value = withTiming(1, { duration: 100 });
+    opacity.value = withTiming(1, { duration: 100 });
   };
 
   const getButtonColors = () => {
@@ -61,7 +67,7 @@ const CustomButton: React.FC<InputProps> = ({
   };
 
   return (
-    <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
+    <Animated.View style={animatedStyles}>
       <Pressable
         onPress={handleOnPress}
         onPressIn={handlePressIn}
@@ -70,16 +76,22 @@ const CustomButton: React.FC<InputProps> = ({
         accessibilityRole="button"
         style={styles.container}
       >
-        <LinearGradient colors={getButtonColors()} style={styles.gradientBackground}>
-          <Text
-            style={[
-              globalStyles.text,
-              type == "positive" && !disabled && { color: defaultColors.gold },
-            ]}
+        <View>
+          <LinearGradient
+            colors={getButtonColors()}
+            style={styles.gradientBackground}
           >
-            {text || children}
-          </Text>
-        </LinearGradient>
+            <Text
+              style={[
+                globalStyles.text,
+                type === "positive" &&
+                  !disabled && { color: defaultColors.gold },
+              ]}
+            >
+              {text || children}
+            </Text>
+          </LinearGradient>
+        </View>
       </Pressable>
     </Animated.View>
   );
