@@ -7,7 +7,10 @@ interface InputProps {
   reversed?: boolean;
 }
 
-const GradientBackground: React.FC<InputProps> = ({ children, reversed = false }) => {
+const GradientBackground: React.FC<InputProps> = ({
+  children,
+  reversed = false,
+}) => {
   const colors = reversed ? ["#000000", "#2E0054"] : ["#2E0054", "#000000"];
 
   return (

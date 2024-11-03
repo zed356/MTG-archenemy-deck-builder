@@ -7,7 +7,7 @@ export const useLoadAPIData = (
   STORAGE_KEY: string,
   API_URL: string,
   setError: (error: string | null) => void,
-  setLoading: (loading: boolean) => void
+  setLoading: (loading: boolean) => void,
 ): ScryfallCard.Scheme[] => {
   const [cards, setCards] = useState<ScryfallCard.Scheme[]>([]);
 
@@ -25,8 +25,14 @@ export const useLoadAPIData = (
               throw new Error("Failed to fetch cards");
             }
             apiData = await response.json();
-            if (cachedCards === null || JSON.parse(cachedCards).length < apiData.data.length) {
-              await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(apiData.data));
+            if (
+              cachedCards === null ||
+              JSON.parse(cachedCards).length < apiData.data.length
+            ) {
+              await AsyncStorage.setItem(
+                STORAGE_KEY,
+                JSON.stringify(apiData.data),
+              );
               setCards(apiData.data);
             } else {
               // Use cached data
@@ -38,7 +44,7 @@ export const useLoadAPIData = (
           setCards(JSON.parse(cachedCards));
         } else {
           throw new Error(
-            "No internet connection and no cached data. Please connect to the internet."
+            "No internet connection and no cached data. Please connect to the internet.",
           );
         }
       } catch (error: any) {
@@ -49,7 +55,7 @@ export const useLoadAPIData = (
     };
 
     fetchCards();
-  }, []);
+  }, [API_URL, STORAGE_KEY, setError, setLoading]);
 
   return cards;
 };

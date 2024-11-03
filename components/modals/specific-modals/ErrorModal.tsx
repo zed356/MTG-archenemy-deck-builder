@@ -27,7 +27,10 @@ const ErrorModal: React.FC<InputProps> = ({ errorMessage }) => {
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
             <Text style={styles.modalText}>{errorMessage}</Text>
-            <Pressable style={[styles.button, styles.buttonClose]} onPress={handleReloadApp}>
+            <Pressable
+              style={[styles.button, styles.buttonClose]}
+              onPress={handleReloadApp}
+            >
               <Text style={styles.textStyle}>Reload App</Text>
             </Pressable>
           </View>

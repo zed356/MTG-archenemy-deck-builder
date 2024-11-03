@@ -24,6 +24,7 @@ const TabsLayout = () => {
         },
         tabBarActiveTintColor: defaultColors.gold,
         tabBarInactiveTintColor: defaultColors.grey,
+        tabBarHideOnKeyboard: true,
       }}
     >
       <Tabs.Screen

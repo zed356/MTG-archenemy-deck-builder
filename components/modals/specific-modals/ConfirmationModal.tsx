@@ -9,7 +9,12 @@ interface InputProps {
   onCancel: () => void;
 }
 
-const ConfirmationModal: React.FC<InputProps> = ({ isVisible, text, onConfirm, onCancel }) => {
+const ConfirmationModal: React.FC<InputProps> = ({
+  isVisible,
+  text,
+  onConfirm,
+  onCancel,
+}) => {
   return (
     <Modal visible={isVisible} transparent={true} animationType="fade">
       <View style={styles.centeredView}>

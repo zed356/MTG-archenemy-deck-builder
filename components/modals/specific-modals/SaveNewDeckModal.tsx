@@ -8,7 +8,11 @@ interface InputProps {
   confirmSaveDeck: (deckName: string) => void;
 }
 
-const SaveNewDeckModal: React.FC<InputProps> = ({ modalVisible, setVisible, confirmSaveDeck }) => {
+const SaveNewDeckModal: React.FC<InputProps> = ({
+  modalVisible,
+  setVisible,
+  confirmSaveDeck,
+}) => {
   const [userInputValue, setUserInputValue] = useState("");
   const isSaveEnabled: boolean = userInputValue.trim().length > 0;
 

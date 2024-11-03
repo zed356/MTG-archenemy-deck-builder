@@ -1,13 +1,13 @@
 import { API_DATA_STORAGE_KEY, API_URL } from "@/constants/values";
+import { loadDecksFromStorage } from "@/helpers/savedDeckManager";
 import { useLoadAPIData } from "@/hooks/useLoadAPIData";
 import { useCardStore, useSavedDeckStore } from "@/store/store";
 import { useFonts } from "expo-font";
+import { Image } from "expo-image";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect, useState } from "react";
 import "react-native-reanimated";
-import { Image } from "expo-image";
-import { loadDecksFromStorage } from "@/helpers/savedDeckManager";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -29,38 +29,37 @@ export default function RootLayout() {
   // Load saved decks from local storage into state.
   // Pre-fetch images for cards that are not stored in local cache.
   useEffect(() => {
-    if (data.length > 0) {
-      loadCardsIntoStore(data);
+    if (data.length === 0) {
+      return;
     }
 
-    const preFetchImages = async () => {
-      if (data.length > 0) {
-        for (let i = 0; i < data.length; i++) {
-          if ((await Image.getCachePathAsync(data[i].image_uris?.border_crop!)) === null) {
-            await Image.prefetch(data[i].image_uris?.border_crop!);
-          }
-        }
+    loadCardsIntoStore(data);
+
+    const initialiseAppData = async () => {
+      const savedDecks = await loadDecksFromStorage();
+      if (savedDecks) {
+        loadDecksFromStorageIntoState(savedDecks);
       }
+
+      const prefetchImagesPromises = data.map(async (card) => {
+        const cachePath = await Image.getCachePathAsync(card.image_uris?.border_crop!);
+        if (!cachePath) {
+          await Image.prefetch(card.image_uris?.border_crop!);
+        }
+      });
+
+      await Promise.all(prefetchImagesPromises);
       setImagesLoaded(true);
     };
 
-    const hideSplashScreen = async () => {
-      if (loaded && imagesLoaded) {
-        await SplashScreen.hideAsync();
-      }
-    };
+    initialiseAppData();
+  }, [data, loadCardsIntoStore, loadDecksFromStorageIntoState]);
 
-    const loadSavedDecks = async () => {
-      const savedDecks = await loadDecksFromStorage();
-      if (savedDecks != null) {
-        loadDecksFromStorageIntoState(savedDecks);
-      }
-    };
-
-    loadSavedDecks();
-    preFetchImages();
-    hideSplashScreen();
-  }, [data]);
+  useEffect(() => {
+    if (loaded && imagesLoaded) {
+      SplashScreen.hideAsync();
+    }
+  }, [loaded, imagesLoaded]);
 
   if (!loaded) {
     return null;

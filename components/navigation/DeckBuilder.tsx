@@ -1,22 +1,23 @@
+import { defaultColors } from "@/constants/Colors";
+import { globalStyles } from "@/constants/styles";
+import { MINIMUM_CARDS_IN_NEW_DECK } from "@/constants/values";
+import { useCardStore, useNewDeckStore } from "@/store/store";
 import { ScryfallCard } from "@scryfall/api-types";
 import { Fragment, useState } from "react";
-import { ActivityIndicator, FlatList, StyleSheet, View, Text } from "react-native";
+import { FlatList, StyleSheet, Text, View } from "react-native";
 import Card from "../card/Card";
+import Filter from "../card/Filter";
 import NewDeck from "../decks/NewDeck";
 import ErrorModal from "../modals/specific-modals/ErrorModal";
-import { API_DATA_STORAGE_KEY, MINIMUM_CARDS_IN_NEW_DECK } from "@/constants/values";
-import { useCardStore, useNewDeckStore } from "@/store/store";
-import CustomButton from "../button/CustomButton";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import Filter from "../card/Filter";
-import { Image } from "expo-image";
-import { globalStyles } from "@/constants/styles";
-import { defaultColors } from "@/constants/Colors";
+import PulseWrapper from "../style-elements/PulseWrapper";
 
 const DeckBuilder: React.FC = () => {
-  const { cardsInNewDeck, addCardToNewDeck, removeCardFromNewDeck } = useNewDeckStore();
+  const { cardsInNewDeck, addCardToNewDeck, removeCardFromNewDeck } =
+    useNewDeckStore();
   const { cardsInStore, error } = useCardStore();
-  const [displayedCards, setDisplayedCards] = useState<ScryfallCard.Scheme[]>([]);
+  const [displayedCards, setDisplayedCards] = useState<ScryfallCard.Scheme[]>(
+    [],
+  );
 
   if (error) {
     return <ErrorModal errorMessage={error} />;
@@ -24,30 +25,15 @@ const DeckBuilder: React.FC = () => {
 
   const styles = StyleSheet.create({
     text: {
-      color: cardsInNewDeck.length < MINIMUM_CARDS_IN_NEW_DECK ? defaultColors.red : "#42b883",
+      color:
+        cardsInNewDeck.length < MINIMUM_CARDS_IN_NEW_DECK
+          ? defaultColors.red
+          : "#42b883",
       fontSize: 18,
       margin: 0,
-      padding: 0,
+      paddingBottom: 5,
     },
-    clearCacheButton: {
-      width: 140,
-      height: 40,
-      maxHeight: 40,
-      borderWidth: 2,
-      alignSelf: "center",
-      marginTop: 40,
-      borderColor: "gold",
-      backgroundColor: "gold",
-      borderRadius: 10,
-    },
-    clearCacheButtonText: {
-      fontSize: 15,
-      color: "black",
-      fontWeight: "bold",
-      textAlign: "center",
-      lineHeight: 35,
-    },
-    scrollContainer: { flex: 1, marginVertical: 20 },
+    scrollContainer: { flex: 1, marginVertical: 30 },
     container: {
       flex: 1,
       justifyContent: "space-evenly",
@@ -81,27 +67,18 @@ const DeckBuilder: React.FC = () => {
 
   const headerComponent = (
     <Fragment>
-      <CustomButton
-        text="Clear cache"
-        onPress={() => {
-          AsyncStorage.removeItem(API_DATA_STORAGE_KEY);
-          const clearDiskCache = async () => {
-            await Image.clearDiskCache();
-          };
-          clearDiskCache();
-        }}
-        type="neutral"
-      />
       <NewDeck />
-      <Filter cards={cardsInStore} setDisplayedCards={setDisplayedCards} />
+      <Filter cards={cardsInStore} setFilteredCards={setDisplayedCards} />
     </Fragment>
   );
 
   return (
     <View style={styles.scrollContainer}>
-      <Text style={[globalStyles.text, styles.text]}>
-        {cardsInNewDeck.length}/{MINIMUM_CARDS_IN_NEW_DECK}
-      </Text>
+      <PulseWrapper newDeckCardCount={cardsInNewDeck.length}>
+        <Text style={[globalStyles.text, styles.text]}>
+          {cardsInNewDeck.length}/{MINIMUM_CARDS_IN_NEW_DECK}
+        </Text>
+      </PulseWrapper>
       <FlatList
         ListHeaderComponent={headerComponent}
         data={displayedCards}
@@ -109,8 +86,10 @@ const DeckBuilder: React.FC = () => {
         keyExtractor={(item) => item.name} // Assuming `name` is unique
         numColumns={2} // This sets the number of columns to 2
         initialNumToRender={4} // Reduce the number of items to render initially
-        windowSize={5}
-        maxToRenderPerBatch={4}
+        windowSize={21}
+        maxToRenderPerBatch={6}
+        contentContainerStyle={{ flexGrow: 1 }}
+        keyboardShouldPersistTaps="handled"
       />
     </View>
   );

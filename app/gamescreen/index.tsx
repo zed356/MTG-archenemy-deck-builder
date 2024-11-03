@@ -18,7 +18,7 @@ const GameScreen = () => {
       }
     });
     return unsubscribe;
-  }, [navigation]);
+  }, [navigation, savedDecksInState]);
 
   const handleQuitGame = () => {
     setModalVisible(false);

@@ -6,7 +6,10 @@ import CustomButton from "../button/CustomButton";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { SavedDeck, useSavedDeckStore } from "@/store/store";
 import { useState } from "react";
-import { removeDeckFromStorage, updateDeckInStorage } from "@/helpers/savedDeckManager";
+import {
+  removeDeckFromStorage,
+  updateDeckInStorage,
+} from "@/helpers/savedDeckManager";
 import { FontAwesome6 } from "@expo/vector-icons";
 import AnimatedIcon from "../button/AnimatedIcon";
 import { SAVED_DECKS_PER_PAGE } from "@/constants/values";
@@ -25,8 +28,12 @@ const SavedDecks: React.FC<SavedDecksProps> = ({
   canClearDeckList = true,
   onDeckSelectedForPlay,
 }) => {
-  const { savedDecksInState, removeDeckFromState, updateDeckInState, clearDecks } =
-    useSavedDeckStore();
+  const {
+    savedDecksInState,
+    removeDeckFromState,
+    updateDeckInState,
+    clearDecks,
+  } = useSavedDeckStore();
   const [deckListModalIsVisible, setDeckListModalIsVisible] = useState(false);
   const [selectedDeck, setSelectedDeck] = useState<SavedDeck | null>(null);
   const [deckToDelete, setDeckToDelete] = useState<SavedDeck | null>(null);
@@ -127,7 +134,9 @@ const SavedDecks: React.FC<SavedDecksProps> = ({
     ) : (
       // <Link href="/(tabs)/deckbuilder">
       <Pressable onPress={() => router.push("/(tabs)/deckbuilder")}>
-        <Text style={[globalStyles.text, styles.emptyDeckText]}>Create a new deck</Text>
+        <Text style={[globalStyles.text, styles.emptyDeckText]}>
+          Create a new deck
+        </Text>
       </Pressable>
       // </Link>
     );
@@ -135,13 +144,21 @@ const SavedDecks: React.FC<SavedDecksProps> = ({
   const paginationContent = (
     <View style={styles.paginationContainer}>
       <AnimatedIcon onPress={handlePreviousPage} visible={currentPage > 1}>
-        <FontAwesome6 name="chevron-left" size={24} color={defaultColors.gold} />
+        <FontAwesome6
+          name="chevron-left"
+          size={24}
+          color={defaultColors.gold}
+        />
       </AnimatedIcon>
       <Text style={[globalStyles.text, styles.emptyDeckText]}>
         {currentPage} / {maxPages}
       </Text>
       <AnimatedIcon onPress={handleNextPage} visible={currentPage < maxPages}>
-        <FontAwesome6 name="chevron-right" size={24} color={defaultColors.gold} />
+        <FontAwesome6
+          name="chevron-right"
+          size={24}
+          color={defaultColors.gold}
+        />
       </AnimatedIcon>
     </View>
   );
@@ -149,10 +166,16 @@ const SavedDecks: React.FC<SavedDecksProps> = ({
   return (
     <View style={styles.container}>
       <View style={styles.allDecksContainer}>{deckContent}</View>
-      {savedDecksInState.length > SAVED_DECKS_PER_PAGE && <View>{paginationContent}</View>}
+      {savedDecksInState.length > SAVED_DECKS_PER_PAGE && (
+        <View>{paginationContent}</View>
+      )}
       <Spacer height={50} />
       {savedDecksInState.length > 0 && canClearDeckList && (
-        <CustomButton text="Clear decks" type="negative" onPress={handleClearDecks} />
+        <CustomButton
+          text="Clear decks"
+          type="negative"
+          onPress={handleClearDecks}
+        />
       )}
     </View>
   );

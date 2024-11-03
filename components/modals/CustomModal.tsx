@@ -1,5 +1,6 @@
 import { defaultColors } from "@/constants/Colors";
-import { Modal, View, ScrollView, StyleSheet, ModalProps } from "react-native";
+import { defaultBorderRadius } from "@/constants/styles";
+import { Modal, ModalProps, ScrollView, StyleSheet, View } from "react-native";
 
 interface CustomModalProps extends ModalProps {
   visible: boolean;
@@ -9,52 +10,58 @@ interface CustomModalProps extends ModalProps {
   transparentBackground?: boolean;
 }
 
-const CustomModal: React.FC<CustomModalProps> = (props) => {
+const CustomModal: React.FC<CustomModalProps> = ({
+  visible,
+  setVisible,
+  children,
+  scrollEnabled,
+  transparentBackground,
+}) => {
   const styles = StyleSheet.create({
     centeredView: {
       flex: 1,
       justifyContent: "center",
       alignItems: "center",
-      backgroundColor: "rgba(0,0,0,0.2)", // Optional: adds a backdrop
+      backgroundColor: "rgba(0,0,0,0.5)", // Optional: adds a backdrop
     },
     modalContainer: {
       width: "97%", // Modal width
       maxHeight: "80%", // Maximum height to prevent overflow
-      backgroundColor: !props.transparentBackground ? defaultColors.grey : "none",
-      borderRadius: 20,
+      backgroundColor: !transparentBackground ? defaultColors.grey : "none",
+      borderRadius: defaultBorderRadius,
       elevation: 5,
-      // padding: 20,
+      overflow: "hidden",
+    },
+    modalView: {
+      width: "100%", // Modal width
+      alignItems: "center",
     },
     contentContainer: {
       justifyContent: "center",
       alignItems: "center",
       paddingBottom: 20, // Additional padding at the bottom if needed
     },
-    modalView: {
-      width: "100%", // Modal width
-      // backgroundColor: defaultColors.grey,
-      // borderWidth: 2,
-      // borderRadius: 20,
-      // padding: 20,
-      alignItems: "center",
-    },
   });
 
-  const content = props.scrollEnabled ? (
-    <ScrollView contentContainerStyle={styles.contentContainer}>
-      <View style={styles.modalView}>{props.children}</View>
+  const content = scrollEnabled ? (
+    <ScrollView
+      contentContainerStyle={styles.contentContainer}
+      keyboardShouldPersistTaps="handled"
+    >
+      <View style={styles.modalView}>{children}</View>
     </ScrollView>
   ) : (
-    <View style={styles.modalView}>{props.children}</View>
+    <View style={styles.modalView}>{children}</View>
   );
 
   return (
     <Modal
+      statusBarTranslucent={true}
       animationType="none"
       transparent={true}
-      visible={props.visible}
+      visible={visible}
       onRequestClose={() => {
-        props.setVisible(false);
+        setVisible(false);
       }}
     >
       <View style={styles.centeredView}>

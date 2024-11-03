@@ -6,7 +6,10 @@ export const cardShuffler = (deck: SavedDeck): SavedDeck => {
   // Fisher-Yates shuffle
   for (let i = copiedDeck.cards.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
-    [copiedDeck.cards[i], copiedDeck.cards[j]] = [copiedDeck.cards[j], copiedDeck.cards[i]];
+    [copiedDeck.cards[i], copiedDeck.cards[j]] = [
+      copiedDeck.cards[j],
+      copiedDeck.cards[i],
+    ];
   }
   return copiedDeck;
 };

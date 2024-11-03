@@ -1,14 +1,15 @@
-import { SavedDeck } from "@/store/store";
-import { ScrollView, StyleSheet, View } from "react-native";
-import { Ref, useEffect, useRef, useState } from "react";
-import SavedDecks from "./SavedDecks";
-import FadeIn from "../style-elements/FadeIn";
-import { cardShuffler } from "@/helpers/cardShuffler";
-import { ScryfallCard } from "@scryfall/api-types";
-import CardInPlayDeck from "../card/CardInPlayDeck";
 import { defaultColors } from "@/constants/Colors";
+import { defaultBorderRadius } from "@/constants/styles";
+import { cardShuffler } from "@/helpers/cardShuffler";
+import { SavedDeck } from "@/store/store";
+import { ScryfallCard } from "@scryfall/api-types";
+import { useState } from "react";
+import { ScrollView, StyleSheet, View } from "react-native";
 import ShatterButton from "../button/ShatterButton";
+import CardInPlayDeck from "../card/CardInPlayDeck";
 import OnGoingScheme from "../card/OnGoingScheme";
+import FadeIn from "../style-elements/FadeIn";
+import SavedDecks from "./SavedDecks";
 
 const GAME_STATES = {
   DECK_SELECTION: "DECK_SELECTION",
@@ -21,8 +22,12 @@ const GameController: React.FC<GameControllerProps> = () => {
   const [gameState, setGameState] = useState(GAME_STATES.DECK_SELECTION);
   const [selectedDeck, setSelectedDeck] = useState<SavedDeck | null>(null);
   const [shuffledDeck, setShuffledDeck] = useState<SavedDeck | null>(null);
-  const [onGoingSchemes, setOnGoingSchemes] = useState<ScryfallCard.Scheme[]>([]);
-  const [discardedCards, setDiscardedCards] = useState<ScryfallCard.Scheme[]>([]);
+  const [onGoingSchemes, setOnGoingSchemes] = useState<ScryfallCard.Scheme[]>(
+    [],
+  );
+  const [discardedCards, setDiscardedCards] = useState<ScryfallCard.Scheme[]>(
+    [],
+  );
 
   const handleShuffleDeck = (deck: SavedDeck) => {
     if (deck) {
@@ -30,14 +35,24 @@ const GameController: React.FC<GameControllerProps> = () => {
     }
   };
 
-  const handleRemoveCardFromShuffledDeck = (card: ScryfallCard.Scheme, discardCard: boolean) => {
+  const handleRemoveCardFromShuffledDeck = (
+    card: ScryfallCard.Scheme,
+    discardCard: boolean,
+  ) => {
     if (shuffledDeck) {
-      const newShuffledDeck = shuffledDeck.cards.filter((deckCard) => deckCard.name !== card.name);
+      const newShuffledDeck = shuffledDeck.cards.filter(
+        (deckCard) => deckCard.name !== card.name,
+      );
       setShuffledDeck((prevShuffledDeck) =>
-        prevShuffledDeck ? { ...prevShuffledDeck, cards: newShuffledDeck } : null
+        prevShuffledDeck
+          ? { ...prevShuffledDeck, cards: newShuffledDeck }
+          : null,
       );
       if (discardCard) {
-        setDiscardedCards((prevDiscardedCards) => [...prevDiscardedCards, card]);
+        setDiscardedCards((prevDiscardedCards) => [
+          ...prevDiscardedCards,
+          card,
+        ]);
       }
     }
   };
@@ -53,14 +68,19 @@ const GameController: React.FC<GameControllerProps> = () => {
   };
 
   const handleRemoveOnGoingScheme = (card: ScryfallCard.Scheme) => {
-    const newOnGoingSchemes = onGoingSchemes.filter((scheme) => scheme.name !== card.name);
+    const newOnGoingSchemes = onGoingSchemes.filter(
+      (scheme) => scheme.name !== card.name,
+    );
     setOnGoingSchemes(newOnGoingSchemes);
     setDiscardedCards((prevDiscardedCards) => [...prevDiscardedCards, card]);
   };
 
   const handleResetGame = () => {
     if (discardedCards.length > 0 && selectedDeck) {
-      const newDeck: SavedDeck = { deckName: selectedDeck.deckName, cards: [...discardedCards] };
+      const newDeck: SavedDeck = {
+        deckName: selectedDeck.deckName,
+        cards: [...discardedCards],
+      };
       handleShuffleDeck(newDeck);
     }
     // clear discarded cards after reshuffle
@@ -101,7 +121,7 @@ const GameController: React.FC<GameControllerProps> = () => {
 
   return (
     <View style={styles.container}>
-      {gameState == "DECK_SELECTION" && (
+      {gameState === "DECK_SELECTION" && (
         <FadeIn>
           <SavedDecks
             canDeleteDeck={false}
@@ -110,7 +130,7 @@ const GameController: React.FC<GameControllerProps> = () => {
           />
         </FadeIn>
       )}
-      {gameState == "GAME_START" && playDeckContent}
+      {gameState === "GAME_START" && playDeckContent}
     </View>
   );
 };
@@ -130,7 +150,7 @@ const styles = StyleSheet.create({
   onGoingSchemeContainer: {
     borderWidth: 2,
     borderColor: defaultColors.gold,
-    borderRadius: 10,
+    borderRadius: defaultBorderRadius,
     width: "95%",
     paddingVertical: 10,
     marginTop: 30,

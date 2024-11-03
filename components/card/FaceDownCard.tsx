@@ -16,16 +16,12 @@ const FaceDownCard: React.FC<InputProps> = ({
   const { width, height } = Dimensions.get("window");
 
   let cardSize;
-  let operatorSize;
-  if (size == "small") {
+  if (size === "small") {
     cardSize = { width: 100, height: 150 };
-    operatorSize = { fontSize: 20 };
-  } else if (size == "normal") {
+  } else if (size === "normal") {
     cardSize = { width: 160, height: 230 };
-    operatorSize = { fontSize: 25 };
-  } else if (size == "large") {
+  } else if (size === "large") {
     cardSize = { width: width * 0.9, height: height * 0.625 };
-    operatorSize = { fontSize: 30 };
   }
 
   const styles = StyleSheet.create({

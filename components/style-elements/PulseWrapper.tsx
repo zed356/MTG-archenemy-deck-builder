@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { View, StyleSheet, Text } from "react-native";
+import React, { useEffect } from "react";
+import { View } from "react-native";
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -12,7 +12,10 @@ interface PulseWrapperProps {
   newDeckCardCount: number;
 }
 
-const PulseWrapper: React.FC<PulseWrapperProps> = ({ children, newDeckCardCount }) => {
+const PulseWrapper: React.FC<PulseWrapperProps> = ({
+  children,
+  newDeckCardCount,
+}) => {
   const scale = useSharedValue(1);
 
   const animatedStyle = useAnimatedStyle(() => ({

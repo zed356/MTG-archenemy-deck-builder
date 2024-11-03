@@ -1,12 +1,11 @@
 import { create } from "zustand";
 import { ScryfallCard } from "@scryfall/api-types";
 
-export type CardsInDeck = ScryfallCard.Scheme[];
-export type SavedDeck = { deckName: string; cards: CardsInDeck };
+export type SavedDeck = { deckName: string; cards: ScryfallCard.Scheme[] };
 
 interface CardsInStore {
-  cardsInStore: CardsInDeck;
-  loadCardsIntoStore: (cards: CardsInDeck) => void;
+  cardsInStore: ScryfallCard.Scheme[];
+  loadCardsIntoStore: (cards: ScryfallCard.Scheme[]) => void;
   loading: boolean;
   setLoading: (loading: boolean) => void;
   error: string | null;
@@ -14,7 +13,7 @@ interface CardsInStore {
 }
 
 interface NewDeckState {
-  cardsInNewDeck: CardsInDeck;
+  cardsInNewDeck: ScryfallCard.Scheme[];
   addCardToNewDeck: (card: ScryfallCard.Scheme) => void;
   removeCardFromNewDeck: (card: ScryfallCard.Scheme) => void;
   clearNewDeck: () => void;
@@ -31,10 +30,13 @@ interface SavedDeckState {
 
 export const useNewDeckStore = create<NewDeckState>((set) => ({
   cardsInNewDeck: [],
-  addCardToNewDeck: (card) => set((state) => ({ cardsInNewDeck: [...state.cardsInNewDeck, card] })),
+  addCardToNewDeck: (card) =>
+    set((state) => ({ cardsInNewDeck: [...state.cardsInNewDeck, card] })),
   removeCardFromNewDeck: (card) =>
     set((state) => ({
-      cardsInNewDeck: state.cardsInNewDeck.filter((el) => el.name !== card.name),
+      cardsInNewDeck: state.cardsInNewDeck.filter(
+        (el) => el.name !== card.name,
+      ),
     })),
   clearNewDeck: () => set({ cardsInNewDeck: [] }),
 }));
@@ -45,20 +47,22 @@ export const useSavedDeckStore = create<SavedDeckState>((set) => ({
   saveDeckToState: (deck) =>
     set((state) => ({ savedDecksInState: [...state.savedDecksInState, deck] })),
   removeDeckFromState: (deck) =>
-    set((state) => ({ savedDecksInState: state.savedDecksInState.filter((el) => el !== deck) })),
+    set((state) => ({
+      savedDecksInState: state.savedDecksInState.filter((el) => el !== deck),
+    })),
   updateDeckInState: (deck, newDeckName) =>
     set((state) => {
       if (newDeckName && newDeckName.trim().length > 0) {
         const updatedDeck = { deckName: newDeckName, cards: deck.cards };
         return {
           savedDecksInState: state.savedDecksInState.map((el) =>
-            el.deckName === deck.deckName ? updatedDeck : el
+            el.deckName === deck.deckName ? updatedDeck : el,
           ),
         };
       } else {
         return {
           savedDecksInState: state.savedDecksInState.map((el) =>
-            el.deckName === deck.deckName ? deck : el
+            el.deckName === deck.deckName ? deck : el,
           ),
         };
       }
@@ -69,7 +73,8 @@ export const useSavedDeckStore = create<SavedDeckState>((set) => ({
 
 export const useCardStore = create<CardsInStore>((set) => ({
   cardsInStore: [],
-  loadCardsIntoStore: (cards: CardsInDeck) => set({ cardsInStore: cards }),
+  loadCardsIntoStore: (cards: ScryfallCard.Scheme[]) =>
+    set({ cardsInStore: cards }),
   loading: false,
   setLoading: (loading) => set({ loading }),
   error: null,

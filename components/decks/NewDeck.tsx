@@ -1,21 +1,27 @@
-import { StyleSheet, Text, View } from "react-native";
-import { useNewDeckStore, useSavedDeckStore } from "@/store/store";
-import { defaultBorderRadius, globalStyles } from "@/constants/styles";
 import { defaultColors } from "@/constants/Colors";
-import Card from "../card/Card";
-import { Fragment, useState } from "react";
-import CustomButton from "../button/CustomButton";
+import { defaultBorderRadius } from "@/constants/styles";
 import { MINIMUM_CARDS_IN_NEW_DECK } from "@/constants/values";
 import { saveDeckToStorage } from "@/helpers/savedDeckManager";
+import { useNewDeckStore, useSavedDeckStore } from "@/store/store";
+import { Fragment, useState } from "react";
+import { StyleSheet, View } from "react-native";
+import CustomButton from "../button/CustomButton";
+import Card from "../card/Card";
 import SaveNewDeckModal from "../modals/specific-modals/SaveNewDeckModal";
 
 const NewDeck: React.FC = () => {
-  const [confirmationModalVisible, setConfirmationModalVisible] = useState(false);
-  const { cardsInNewDeck, addCardToNewDeck, removeCardFromNewDeck, clearNewDeck } =
-    useNewDeckStore();
+  const [confirmationModalVisible, setConfirmationModalVisible] =
+    useState(false);
+  const {
+    cardsInNewDeck,
+    addCardToNewDeck,
+    removeCardFromNewDeck,
+    clearNewDeck,
+  } = useNewDeckStore();
   const { saveDeckToState } = useSavedDeckStore();
   const countOfCardsInNewDeck: number = cardsInNewDeck.length;
-  const isMinimumCardsInDeckReached: boolean = countOfCardsInNewDeck >= MINIMUM_CARDS_IN_NEW_DECK;
+  const isMinimumCardsInDeckReached: boolean =
+    countOfCardsInNewDeck >= MINIMUM_CARDS_IN_NEW_DECK;
 
   const handleClearNewDeck = () => {
     clearNewDeck();
@@ -36,7 +42,9 @@ const NewDeck: React.FC = () => {
     },
     newDeckContainer: {
       borderWidth: 1,
-      borderColor: isMinimumCardsInDeckReached ? defaultColors.green : defaultColors.red,
+      borderColor: isMinimumCardsInDeckReached
+        ? defaultColors.green
+        : defaultColors.red,
       borderRadius: defaultBorderRadius,
       margin: 10,
       padding: 5,
@@ -52,7 +60,10 @@ const NewDeck: React.FC = () => {
       padding: 5,
     },
     text: {
-      color: countOfCardsInNewDeck < MINIMUM_CARDS_IN_NEW_DECK ? defaultColors.red : "#42b883",
+      color:
+        countOfCardsInNewDeck < MINIMUM_CARDS_IN_NEW_DECK
+          ? defaultColors.red
+          : "#42b883",
       fontSize: 18,
     },
     invalidButton: {
@@ -62,41 +73,46 @@ const NewDeck: React.FC = () => {
 
   return (
     <Fragment>
-      <View style={styles.buttonContainer}>
-        <CustomButton
-          text="SAVE DECK"
-          type={"positive"}
-          disabled={!isMinimumCardsInDeckReached}
-          onPress={() => setConfirmationModalVisible(true)}
-        />
-        <CustomButton text="CLEAR DECK" type={"neutral"} onPress={handleClearNewDeck} />
-      </View>
-      <View style={styles.newDeckContainer}>
-        <Text style={[globalStyles.text, styles.text]}>
-          {countOfCardsInNewDeck}/{MINIMUM_CARDS_IN_NEW_DECK}
-        </Text>
-        <View style={styles.cards}>
-          {cardsInNewDeck.map((el) => (
-            <View style={styles.cardWrapper} key={el.name}>
-              <Card
-                card={el}
-                size={"small"}
-                border={false}
-                showAddRemoveOperator={true}
-                isOpacityControlled={false}
-                existsInDeck={true}
-                addToDeck={() => addCardToNewDeck(el)}
-                removeFromDeck={() => removeCardFromNewDeck(el)}
-              />
+      {countOfCardsInNewDeck > 0 && (
+        <Fragment>
+          <View style={styles.buttonContainer}>
+            <CustomButton
+              text="SAVE DECK"
+              type={"positive"}
+              disabled={!isMinimumCardsInDeckReached}
+              onPress={() => setConfirmationModalVisible(true)}
+            />
+            <CustomButton
+              text="CLEAR DECK"
+              type={"neutral"}
+              onPress={handleClearNewDeck}
+            />
+          </View>
+          <View style={styles.newDeckContainer}>
+            <View style={styles.cards}>
+              {cardsInNewDeck.map((el) => (
+                <View style={styles.cardWrapper} key={el.name}>
+                  <Card
+                    card={el}
+                    size={"small"}
+                    border={false}
+                    showAddRemoveOperator={true}
+                    isOpacityControlled={false}
+                    existsInDeck={true}
+                    addToDeck={() => addCardToNewDeck(el)}
+                    removeFromDeck={() => removeCardFromNewDeck(el)}
+                  />
+                </View>
+              ))}
             </View>
-          ))}
-        </View>
-        <SaveNewDeckModal
-          modalVisible={confirmationModalVisible}
-          setVisible={setConfirmationModalVisible}
-          confirmSaveDeck={handleSaveDeck}
-        />
-      </View>
+            <SaveNewDeckModal
+              modalVisible={confirmationModalVisible}
+              setVisible={setConfirmationModalVisible}
+              confirmSaveDeck={handleSaveDeck}
+            />
+          </View>
+        </Fragment>
+      )}
     </Fragment>
   );
 };
