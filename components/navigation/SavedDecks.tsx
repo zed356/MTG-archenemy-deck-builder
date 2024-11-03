@@ -1,16 +1,12 @@
 import { defaultColors } from "@/constants/Colors";
 import { View, Text, StyleSheet, Pressable } from "react-native";
 import { globalStyles } from "@/constants/styles";
-import { Link, router } from "expo-router";
+import { router } from "expo-router";
 import CustomButton from "../button/CustomButton";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { SavedDeck, useSavedDeckStore } from "@/store/store";
-import { useEffect, useState } from "react";
-import {
-  loadDecksFromStorage,
-  removeDeckFromStorage,
-  updateDeckInStorage,
-} from "@/helpers/savedDeckManager";
+import { useState } from "react";
+import { removeDeckFromStorage, updateDeckInStorage } from "@/helpers/savedDeckManager";
 import { FontAwesome6 } from "@expo/vector-icons";
 import AnimatedIcon from "../button/AnimatedIcon";
 import { SAVED_DECKS_PER_PAGE } from "@/constants/values";
@@ -29,29 +25,13 @@ const SavedDecks: React.FC<SavedDecksProps> = ({
   canClearDeckList = true,
   onDeckSelectedForPlay,
 }) => {
-  const {
-    savedDecksInState,
-    loadDecksFromStorageIntoState,
-    removeDeckFromState,
-    updateDeckInState,
-    clearDecks,
-  } = useSavedDeckStore();
+  const { savedDecksInState, removeDeckFromState, updateDeckInState, clearDecks } =
+    useSavedDeckStore();
   const [deckListModalIsVisible, setDeckListModalIsVisible] = useState(false);
   const [selectedDeck, setSelectedDeck] = useState<SavedDeck | null>(null);
   const [deckToDelete, setDeckToDelete] = useState<SavedDeck | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const maxPages = Math.ceil(savedDecksInState.length / SAVED_DECKS_PER_PAGE);
-
-  // load decks from local storage if any exist
-  useEffect(() => {
-    const fetchCards = async () => {
-      const decks = await loadDecksFromStorage();
-      if (decks != null) {
-        loadDecksFromStorageIntoState(decks);
-      }
-    };
-    fetchCards();
-  }, []);
 
   const handleClearDecks = () => {
     AsyncStorage.removeItem("saved-decks");
