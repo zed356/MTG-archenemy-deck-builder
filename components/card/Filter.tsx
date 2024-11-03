@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useState } from "react";
+import { Fragment, useEffect, useMemo, useState } from "react";
 import { View, TextInput, StyleSheet } from "react-native";
 import { defaultColors } from "@/constants/Colors";
 import { ScryfallCard } from "@scryfall/api-types";
@@ -6,10 +6,11 @@ import CheckBoxButton from "../button/CheckBoxButton";
 import { FontAwesome } from "@expo/vector-icons";
 import CustomButton from "../button/CustomButton";
 import Spacer from "../style-elements/Spacer";
+import { defaultBorderRadius } from "@/constants/styles";
 
 interface FilterProps {
   cards: ScryfallCard.Scheme[];
-  setDisplayedCards: (cards: ScryfallCard.Scheme[]) => void;
+  setFilteredCards: (cards: ScryfallCard.Scheme[]) => void;
   filterIconActiveColor?: string;
   filterIconInactiveColor?: string;
 }
@@ -21,7 +22,7 @@ interface ICheckBoxFilter {
 
 const Filter: React.FC<FilterProps> = ({
   cards,
-  setDisplayedCards,
+  setFilteredCards,
   filterIconActiveColor,
   filterIconInactiveColor,
 }) => {
@@ -33,35 +34,37 @@ const Filter: React.FC<FilterProps> = ({
   });
   const [filtersAreShown, setFiltersAreShown] = useState<boolean>(false);
 
-  const filteredCards = cards.filter((card) => {
-    if (!checkBoxFilter.showSchemes && card.type_line === "Scheme") {
-      return false;
-    }
+  const filteredCards = useMemo(() => {
+    return cards.filter((card) => {
+      if (!checkBoxFilter.showSchemes && card.type_line === "Scheme") {
+        return false;
+      }
 
-    if (!checkBoxFilter.showOngoingSchemes && card.type_line === "Ongoing Scheme") {
-      return false;
-    }
+      if (!checkBoxFilter.showOngoingSchemes && card.type_line === "Ongoing Scheme") {
+        return false;
+      }
 
-    if (
-      cardNameFilter.length !== 0 &&
-      !card.name.toLowerCase().includes(cardNameFilter.trim().toLowerCase())
-    ) {
-      return false;
-    }
+      if (
+        cardNameFilter.length !== 0 &&
+        !card.name.toLowerCase().includes(cardNameFilter.trim().toLowerCase())
+      ) {
+        return false;
+      }
 
-    if (
-      cardOracleTextFilter.length !== 0 &&
-      !card.oracle_text.toLowerCase().includes(cardOracleTextFilter.trim().toLowerCase())
-    ) {
-      return false;
-    }
+      if (
+        cardOracleTextFilter.length !== 0 &&
+        !card.oracle_text.toLowerCase().includes(cardOracleTextFilter.trim().toLowerCase())
+      ) {
+        return false;
+      }
 
-    return true;
-  });
+      return true;
+    });
+  }, [cards, cardNameFilter, cardOracleTextFilter, checkBoxFilter]);
 
   useEffect(() => {
-    setDisplayedCards(filteredCards);
-  }, [cardNameFilter, checkBoxFilter, cardOracleTextFilter]);
+    setFilteredCards(filteredCards);
+  }, [filteredCards, setFilteredCards]);
 
   const content = filtersAreShown ? (
     <Fragment>
@@ -88,15 +91,23 @@ const Filter: React.FC<FilterProps> = ({
       <View style={styles.checkBoxButtonContainer}>
         <CheckBoxButton
           text="Ongoing schemes"
-          onCheckChange={(newState) =>
-            setCheckBoxFilter((prev) => ({ ...prev, showOngoingSchemes: newState }))
+          checked={checkBoxFilter.showOngoingSchemes}
+          onCheckChange={() =>
+            setCheckBoxFilter((prev) => ({
+              ...prev,
+              showOngoingSchemes: !prev.showOngoingSchemes,
+            }))
           }
           inactiveColor={filterIconInactiveColor || defaultColors.grey}
         />
         <CheckBoxButton
           text="Schemes"
-          onCheckChange={(newState) =>
-            setCheckBoxFilter((prev) => ({ ...prev, showSchemes: newState }))
+          checked={checkBoxFilter.showSchemes}
+          onCheckChange={() =>
+            setCheckBoxFilter((prev) => ({
+              ...prev,
+              showSchemes: !prev.showSchemes,
+            }))
           }
           inactiveColor={filterIconInactiveColor || defaultColors.grey}
         />
@@ -127,7 +138,7 @@ const Filter: React.FC<FilterProps> = ({
         <FontAwesome
           name="filter"
           size={35}
-          style={{ alignSelf: "flex-end", marginRight: 15 }}
+          style={{ alignSelf: "flex-end", paddingHorizontal: 15 }}
           onPress={() => setFiltersAreShown((prev) => !prev)}
           color={
             filtersAreShown
@@ -155,6 +166,7 @@ const styles = StyleSheet.create({
   textInput: {
     flex: 1,
     borderWidth: 1,
+    borderRadius: defaultBorderRadius,
     borderColor: defaultColors.gold,
     backgroundColor: "#590080",
     padding: 10,
@@ -162,6 +174,7 @@ const styles = StyleSheet.create({
     color: defaultColors.gold,
     width: "96%",
     marginVertical: 5,
+    fontFamily: "Beleren",
   },
   checkBoxButtonContainer: {
     flexDirection: "row",
