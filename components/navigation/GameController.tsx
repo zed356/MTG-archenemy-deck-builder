@@ -1,14 +1,14 @@
-import { SavedDeck, useSavedDeckStore } from "@/store/store";
+import { SavedDeck } from "@/store/store";
 import { ScrollView, StyleSheet, View } from "react-native";
-import { useState } from "react";
+import { Ref, useEffect, useRef, useState } from "react";
 import SavedDecks from "./SavedDecks";
 import FadeIn from "../style-elements/FadeIn";
 import { cardShuffler } from "@/helpers/cardShuffler";
 import { ScryfallCard } from "@scryfall/api-types";
 import CardInPlayDeck from "../card/CardInPlayDeck";
-import Card from "../card/Card";
 import { defaultColors } from "@/constants/Colors";
 import ShatterButton from "../button/ShatterButton";
+import OnGoingScheme from "../card/OnGoingScheme";
 
 const GAME_STATES = {
   DECK_SELECTION: "DECK_SELECTION",
@@ -71,20 +71,11 @@ const GameController: React.FC<GameControllerProps> = () => {
     <View style={styles.onGoingSchemeContainer}>
       <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
         {onGoingSchemes.map((card) => (
-          <View key={card.name} style={styles.onGoingSchemeCard}>
-            <Card
-              card={card}
-              alignFlexEnd={true}
-              existsInDeck={true}
-              border={false}
-              isOpacityControlled={false}
-              showAddRemoveOperator={false}
-              showAddRemoveOperatorOnSelectedCard={true}
-              size="small"
-              removeFromDeck={handleRemoveOnGoingScheme}
-              displayDiscardButtonInsteadOfOperator={true}
-            />
-          </View>
+          <OnGoingScheme
+            key={card.name}
+            card={card}
+            removeOnGoingScheme={() => handleRemoveOnGoingScheme(card)}
+          />
         ))}
       </ScrollView>
     </View>
@@ -147,9 +138,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignSelf: "center",
     overflow: "hidden",
-  },
-  onGoingSchemeCard: {
-    marginHorizontal: 5,
   },
 });
 
