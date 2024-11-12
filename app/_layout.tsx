@@ -5,7 +5,7 @@ import { useCardStore, useSavedDeckStore } from "@/store/store";
 import { useFonts } from "expo-font";
 import { Image } from "expo-image";
 import { Stack } from "expo-router";
-import * as SplashScreen from "expo-splash-screen";
+import { SplashScreen } from "expo-router";
 import { useEffect, useState } from "react";
 import "react-native-reanimated";
 
