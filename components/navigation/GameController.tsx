@@ -1,15 +1,17 @@
 import { defaultColors } from "@/constants/Colors";
-import { defaultBorderRadius } from "@/constants/styles";
+import { defaultBorderRadius, globalStyles } from "@/constants/styles";
 import { cardShuffler } from "@/helpers/cardShuffler";
 import { SavedDeck } from "@/store/store";
 import { ScryfallCard } from "@scryfall/api-types";
-import { useState } from "react";
-import { ScrollView, StyleSheet, View } from "react-native";
+import { Fragment, useState } from "react";
+import { ScrollView, StyleSheet, View, Text } from "react-native";
 import ShatterButton from "../button/ShatterButton";
 import CardInPlayDeck from "../card/CardInPlayDeck";
 import OnGoingScheme from "../card/OnGoingScheme";
 import FadeIn from "../style-elements/FadeIn";
 import SavedDecks from "./SavedDecks";
+import Animated from "react-native-reanimated";
+import PulseWrapper from "../style-elements/PulseWrapper";
 
 const GAME_STATES = {
   DECK_SELECTION: "DECK_SELECTION",
@@ -22,12 +24,8 @@ const GameController: React.FC<GameControllerProps> = () => {
   const [gameState, setGameState] = useState(GAME_STATES.DECK_SELECTION);
   const [selectedDeck, setSelectedDeck] = useState<SavedDeck | null>(null);
   const [shuffledDeck, setShuffledDeck] = useState<SavedDeck | null>(null);
-  const [onGoingSchemes, setOnGoingSchemes] = useState<ScryfallCard.Scheme[]>(
-    [],
-  );
-  const [discardedCards, setDiscardedCards] = useState<ScryfallCard.Scheme[]>(
-    [],
-  );
+  const [onGoingSchemes, setOnGoingSchemes] = useState<ScryfallCard.Scheme[]>([]);
+  const [discardedCards, setDiscardedCards] = useState<ScryfallCard.Scheme[]>([]);
 
   const handleShuffleDeck = (deck: SavedDeck) => {
     if (deck) {
@@ -35,24 +33,14 @@ const GameController: React.FC<GameControllerProps> = () => {
     }
   };
 
-  const handleRemoveCardFromShuffledDeck = (
-    card: ScryfallCard.Scheme,
-    discardCard: boolean,
-  ) => {
+  const handleRemoveCardFromShuffledDeck = (card: ScryfallCard.Scheme, discardCard: boolean) => {
     if (shuffledDeck) {
-      const newShuffledDeck = shuffledDeck.cards.filter(
-        (deckCard) => deckCard.name !== card.name,
-      );
+      const newShuffledDeck = shuffledDeck.cards.filter((deckCard) => deckCard.name !== card.name);
       setShuffledDeck((prevShuffledDeck) =>
-        prevShuffledDeck
-          ? { ...prevShuffledDeck, cards: newShuffledDeck }
-          : null,
+        prevShuffledDeck ? { ...prevShuffledDeck, cards: newShuffledDeck } : null
       );
       if (discardCard) {
-        setDiscardedCards((prevDiscardedCards) => [
-          ...prevDiscardedCards,
-          card,
-        ]);
+        setDiscardedCards((prevDiscardedCards) => [...prevDiscardedCards, card]);
       }
     }
   };
@@ -68,9 +56,7 @@ const GameController: React.FC<GameControllerProps> = () => {
   };
 
   const handleRemoveOnGoingScheme = (card: ScryfallCard.Scheme) => {
-    const newOnGoingSchemes = onGoingSchemes.filter(
-      (scheme) => scheme.name !== card.name,
-    );
+    const newOnGoingSchemes = onGoingSchemes.filter((scheme) => scheme.name !== card.name);
     setOnGoingSchemes(newOnGoingSchemes);
     setDiscardedCards((prevDiscardedCards) => [...prevDiscardedCards, card]);
   };
@@ -105,14 +91,23 @@ const GameController: React.FC<GameControllerProps> = () => {
     <View style={styles.playCardContainer}>
       {onGoingSchemes.length > 0 && onGoingSchemesContent}
       {shuffledDeck && shuffledDeck.cards.length > 0 ? (
-        shuffledDeck.cards.map((card: ScryfallCard.Scheme) => (
-          <CardInPlayDeck
-            key={card.name}
-            card={card}
-            addToOnGoingSchemes={handleAddOnGoingScheme}
-            removeCardFromDeck={handleRemoveCardFromShuffledDeck}
-          />
-        ))
+        <Fragment>
+          {shuffledDeck.cards.map((card: ScryfallCard.Scheme) => (
+            <CardInPlayDeck
+              key={card.name}
+              card={card}
+              addToOnGoingSchemes={handleAddOnGoingScheme}
+              removeCardFromDeck={handleRemoveCardFromShuffledDeck}
+            />
+          ))}
+          <View style={styles.cardCountInShuffledDeckContainer}>
+            <PulseWrapper count={shuffledDeck.cards.length}>
+              <Text style={[globalStyles.text, styles.cardCountText]}>
+                {shuffledDeck.cards.length}
+              </Text>
+            </PulseWrapper>
+          </View>
+        </Fragment>
       ) : (
         <ShatterButton buttonName={"Reshuffle"} onPlayPress={handleResetGame} />
       )}
@@ -158,6 +153,16 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignSelf: "center",
     overflow: "hidden",
+  },
+  cardCountInShuffledDeckContainer: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "flex-end",
+    marginBottom: 20,
+  },
+  cardCountText: {
+    fontSize: 25,
+    color: defaultColors.grey,
   },
 });
 
