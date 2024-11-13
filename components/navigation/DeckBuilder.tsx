@@ -12,12 +12,9 @@ import ErrorModal from "../modals/specific-modals/ErrorModal";
 import PulseWrapper from "../style-elements/PulseWrapper";
 
 const DeckBuilder: React.FC = () => {
-  const { cardsInNewDeck, addCardToNewDeck, removeCardFromNewDeck } =
-    useNewDeckStore();
+  const { cardsInNewDeck, addCardToNewDeck, removeCardFromNewDeck } = useNewDeckStore();
   const { cardsInStore, error } = useCardStore();
-  const [displayedCards, setDisplayedCards] = useState<ScryfallCard.Scheme[]>(
-    [],
-  );
+  const [displayedCards, setDisplayedCards] = useState<ScryfallCard.Scheme[]>([]);
 
   if (error) {
     return <ErrorModal errorMessage={error} />;
@@ -25,10 +22,7 @@ const DeckBuilder: React.FC = () => {
 
   const styles = StyleSheet.create({
     text: {
-      color:
-        cardsInNewDeck.length < MINIMUM_CARDS_IN_NEW_DECK
-          ? defaultColors.red
-          : "#42b883",
+      color: cardsInNewDeck.length < MINIMUM_CARDS_IN_NEW_DECK ? defaultColors.red : "#42b883",
       fontSize: 18,
       margin: 0,
       paddingBottom: 5,
@@ -74,7 +68,7 @@ const DeckBuilder: React.FC = () => {
 
   return (
     <View style={styles.scrollContainer}>
-      <PulseWrapper newDeckCardCount={cardsInNewDeck.length}>
+      <PulseWrapper count={cardsInNewDeck.length}>
         <Text style={[globalStyles.text, styles.text]}>
           {cardsInNewDeck.length}/{MINIMUM_CARDS_IN_NEW_DECK}
         </Text>

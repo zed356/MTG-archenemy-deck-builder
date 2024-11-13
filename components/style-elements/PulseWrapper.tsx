@@ -9,13 +9,10 @@ import Animated, {
 
 interface PulseWrapperProps {
   children: React.ReactNode;
-  newDeckCardCount: number;
+  count: number;
 }
 
-const PulseWrapper: React.FC<PulseWrapperProps> = ({
-  children,
-  newDeckCardCount,
-}) => {
+const PulseWrapper: React.FC<PulseWrapperProps> = ({ children, count }) => {
   const scale = useSharedValue(1);
 
   const animatedStyle = useAnimatedStyle(() => ({
@@ -23,7 +20,7 @@ const PulseWrapper: React.FC<PulseWrapperProps> = ({
   }));
 
   useEffect(() => {
-    if (newDeckCardCount > 0) {
+    if (count > 0) {
       scale.value = withTiming(1.1, {
         duration: 100,
         easing: Easing.out(Easing.exp),
@@ -36,7 +33,7 @@ const PulseWrapper: React.FC<PulseWrapperProps> = ({
 
       return () => clearTimeout(timeout); // Cleanup on unmount
     }
-  }, [newDeckCardCount, scale]);
+  }, [count, scale]);
 
   return (
     <View>
