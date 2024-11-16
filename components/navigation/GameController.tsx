@@ -3,15 +3,14 @@ import { defaultBorderRadius, globalStyles } from "@/constants/styles";
 import { cardShuffler } from "@/helpers/cardShuffler";
 import { SavedDeck } from "@/store/store";
 import { ScryfallCard } from "@scryfall/api-types";
-import { Fragment, useState } from "react";
-import { ScrollView, StyleSheet, View, Text } from "react-native";
+import { useState } from "react";
+import { ScrollView, StyleSheet, Text, View } from "react-native";
 import ShatterButton from "../button/ShatterButton";
 import CardInPlayDeck from "../card/CardInPlayDeck";
 import OnGoingScheme from "../card/OnGoingScheme";
 import FadeIn from "../style-elements/FadeIn";
-import SavedDecks from "./SavedDecks";
-import Animated from "react-native-reanimated";
 import PulseWrapper from "../style-elements/PulseWrapper";
+import SavedDecks from "./SavedDecks";
 
 const GAME_STATES = {
   DECK_SELECTION: "DECK_SELECTION",
@@ -91,7 +90,7 @@ const GameController: React.FC<GameControllerProps> = () => {
     <View style={styles.playCardContainer}>
       {onGoingSchemes.length > 0 && onGoingSchemesContent}
       {shuffledDeck && shuffledDeck.cards.length > 0 ? (
-        <Fragment>
+        <>
           {shuffledDeck.cards.map((card: ScryfallCard.Scheme) => (
             <CardInPlayDeck
               key={card.name}
@@ -107,7 +106,7 @@ const GameController: React.FC<GameControllerProps> = () => {
               </Text>
             </PulseWrapper>
           </View>
-        </Fragment>
+        </>
       ) : (
         <ShatterButton buttonName={"Reshuffle"} onPlayPress={handleResetGame} />
       )}

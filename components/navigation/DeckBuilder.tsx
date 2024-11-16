@@ -3,7 +3,7 @@ import { globalStyles } from "@/constants/styles";
 import { MINIMUM_CARDS_IN_NEW_DECK } from "@/constants/values";
 import { useCardStore, useNewDeckStore } from "@/store/store";
 import { ScryfallCard } from "@scryfall/api-types";
-import { Fragment, useState } from "react";
+import { useState } from "react";
 import { FlatList, StyleSheet, Text, View } from "react-native";
 import Card from "../card/Card";
 import Filter from "../card/Filter";
@@ -60,10 +60,10 @@ const DeckBuilder: React.FC = () => {
   );
 
   const headerComponent = (
-    <Fragment>
+    <>
       <NewDeck />
       <Filter cards={cardsInStore} setFilteredCards={setDisplayedCards} />
-    </Fragment>
+    </>
   );
 
   return (

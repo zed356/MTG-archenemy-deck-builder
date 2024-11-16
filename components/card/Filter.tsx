@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { View, TextInput, StyleSheet } from "react-native";
 import { defaultColors } from "@/constants/Colors";
 import { ScryfallCard } from "@scryfall/api-types";
@@ -67,7 +67,7 @@ const Filter: React.FC<FilterProps> = ({
   }, [filteredCards, setFilteredCards]);
 
   const content = filtersAreShown ? (
-    <Fragment>
+    <>
       <View style={styles.filterWrapper}>
         <TextInput
           style={styles.textInput}
@@ -112,15 +112,15 @@ const Filter: React.FC<FilterProps> = ({
           inactiveColor={filterIconInactiveColor || defaultColors.grey}
         />
       </View>
-    </Fragment>
+    </>
   ) : null;
 
   return (
-    <Fragment>
+    <>
       <View style={styles.container}>
         <Spacer />
         {filtersAreShown && (
-          <Fragment>
+          <>
             <CustomButton
               type="neutral"
               text="Reset filters"
@@ -133,7 +133,7 @@ const Filter: React.FC<FilterProps> = ({
                 });
               }}
             />
-          </Fragment>
+          </>
         )}
         <FontAwesome
           name="filter"
@@ -148,7 +148,7 @@ const Filter: React.FC<FilterProps> = ({
         />
       </View>
       {content}
-    </Fragment>
+    </>
   );
 };
 

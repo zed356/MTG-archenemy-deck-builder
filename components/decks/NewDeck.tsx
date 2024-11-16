@@ -3,7 +3,7 @@ import { defaultBorderRadius } from "@/constants/styles";
 import { MINIMUM_CARDS_IN_NEW_DECK } from "@/constants/values";
 import { saveDeckToStorage } from "@/helpers/savedDeckManager";
 import { useNewDeckStore, useSavedDeckStore } from "@/store/store";
-import { Fragment, useState } from "react";
+import { useState } from "react";
 import { StyleSheet, View } from "react-native";
 import CustomButton from "../button/CustomButton";
 import Card from "../card/Card";
@@ -61,9 +61,9 @@ const NewDeck: React.FC = () => {
   });
 
   return (
-    <Fragment>
+    <>
       {countOfCardsInNewDeck > 0 && (
-        <Fragment>
+        <>
           <View style={styles.buttonContainer}>
             <CustomButton
               text="SAVE DECK"
@@ -96,9 +96,9 @@ const NewDeck: React.FC = () => {
               confirmSaveDeck={handleSaveDeck}
             />
           </View>
-        </Fragment>
+        </>
       )}
-    </Fragment>
+    </>
   );
 };
 
