@@ -10,18 +10,12 @@ import Card from "../card/Card";
 import SaveNewDeckModal from "../modals/specific-modals/SaveNewDeckModal";
 
 const NewDeck: React.FC = () => {
-  const [confirmationModalVisible, setConfirmationModalVisible] =
-    useState(false);
-  const {
-    cardsInNewDeck,
-    addCardToNewDeck,
-    removeCardFromNewDeck,
-    clearNewDeck,
-  } = useNewDeckStore();
+  const [confirmationModalVisible, setConfirmationModalVisible] = useState(false);
+  const { cardsInNewDeck, addCardToNewDeck, removeCardFromNewDeck, clearNewDeck } =
+    useNewDeckStore();
   const { saveDeckToState } = useSavedDeckStore();
   const countOfCardsInNewDeck: number = cardsInNewDeck.length;
-  const isMinimumCardsInDeckReached: boolean =
-    countOfCardsInNewDeck >= MINIMUM_CARDS_IN_NEW_DECK;
+  const isMinimumCardsInDeckReached: boolean = countOfCardsInNewDeck >= MINIMUM_CARDS_IN_NEW_DECK;
 
   const handleClearNewDeck = () => {
     clearNewDeck();
@@ -42,9 +36,7 @@ const NewDeck: React.FC = () => {
     },
     newDeckContainer: {
       borderWidth: 1,
-      borderColor: isMinimumCardsInDeckReached
-        ? defaultColors.green
-        : defaultColors.red,
+      borderColor: isMinimumCardsInDeckReached ? defaultColors.green : defaultColors.red,
       borderRadius: defaultBorderRadius,
       margin: 10,
       padding: 5,
@@ -60,10 +52,7 @@ const NewDeck: React.FC = () => {
       padding: 5,
     },
     text: {
-      color:
-        countOfCardsInNewDeck < MINIMUM_CARDS_IN_NEW_DECK
-          ? defaultColors.red
-          : "#42b883",
+      color: countOfCardsInNewDeck < MINIMUM_CARDS_IN_NEW_DECK ? defaultColors.red : "#42b883",
       fontSize: 18,
     },
     invalidButton: {
@@ -82,11 +71,7 @@ const NewDeck: React.FC = () => {
               disabled={!isMinimumCardsInDeckReached}
               onPress={() => setConfirmationModalVisible(true)}
             />
-            <CustomButton
-              text="CLEAR DECK"
-              type={"neutral"}
-              onPress={handleClearNewDeck}
-            />
+            <CustomButton text="CLEAR DECK" type={"neutral"} onPress={handleClearNewDeck} />
           </View>
           <View style={styles.newDeckContainer}>
             <View style={styles.cards}>
