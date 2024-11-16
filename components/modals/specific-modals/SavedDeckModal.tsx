@@ -1,15 +1,15 @@
 import CustomButton from "@/components/button/CustomButton";
 import Card from "@/components/card/Card";
+import Filter from "@/components/card/filter/Filter";
+import PulseWrapper from "@/components/style-elements/PulseWrapper";
 import { defaultColors } from "@/constants/Colors";
+import { defaultBorderRadius } from "@/constants/styles";
+import { MAX_DECK_NAME_LENGTH, MINIMUM_CARDS_IN_NEW_DECK } from "@/constants/values";
 import { SavedDeck, useCardStore } from "@/store/store";
 import { ScryfallCard } from "@scryfall/api-types";
-import { Fragment, useEffect, useState } from "react";
-import { View, StyleSheet, Text, TextInput } from "react-native";
-import { MINIMUM_CARDS_IN_NEW_DECK } from "@/constants/values";
-import Filter from "@/components/card/Filter";
-import PulseWrapper from "@/components/style-elements/PulseWrapper";
+import { useEffect, useState } from "react";
+import { StyleSheet, Text, TextInput, View } from "react-native";
 import CustomModal from "../CustomModal";
-import { defaultBorderRadius } from "@/constants/styles";
 
 interface InputProps {
   modalVisible: boolean;
@@ -18,23 +18,14 @@ interface InputProps {
   updateDeck: (deck: SavedDeck, newDeckName?: string) => void;
 }
 
-const SavedDeckModal: React.FC<InputProps> = ({
-  modalVisible,
-  setVisible,
-  deck,
-  updateDeck,
-}) => {
+const SavedDeckModal: React.FC<InputProps> = ({ modalVisible, setVisible, deck, updateDeck }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [newDeckName, setNewDeckName] = useState<string>("");
   const { cardsInStore } = useCardStore();
-  const [deepCopyOfDeck, setDeepCopyOfDeck] = useState<SavedDeck>(
-    JSON.parse(JSON.stringify(deck)),
-  );
-  const [displayedCards, setDisplayedCards] =
-    useState<ScryfallCard.Scheme[]>(cardsInStore);
+  const [deepCopyOfDeck, setDeepCopyOfDeck] = useState<SavedDeck>(JSON.parse(JSON.stringify(deck)));
+  const [displayedCards, setDisplayedCards] = useState<ScryfallCard.Scheme[]>(cardsInStore);
   const [deckCardNames, setDeckCardNames] = useState<Set<string>>(new Set());
-  const [filteredCards, setFilteredCards] =
-    useState<ScryfallCard.Scheme[]>(cardsInStore);
+  const [filteredCards, setFilteredCards] = useState<ScryfallCard.Scheme[]>(cardsInStore);
 
   const cardsInDeck: number = deepCopyOfDeck ? deepCopyOfDeck.cards.length : 0;
   const correctAmountOfCardsInDeck: boolean = cardsInDeck
@@ -44,23 +35,17 @@ const SavedDeckModal: React.FC<InputProps> = ({
   useEffect(() => {
     if (!deepCopyOfDeck) return;
 
-    const namesOfCardInDeck = new Set(
-      deepCopyOfDeck.cards.map((el) => el.name),
-    );
+    const namesOfCardInDeck = new Set(deepCopyOfDeck.cards.map((el) => el.name));
     const namesOfFilteredCards = new Set(filteredCards.map((el) => el.name));
     setDeckCardNames(namesOfCardInDeck);
 
     // Separate existing and new cards
-    const newCards = filteredCards.filter(
-      (card) => !namesOfCardInDeck.has(card.name),
-    );
+    const newCards = filteredCards.filter((card) => !namesOfCardInDeck.has(card.name));
     const existingCards = deepCopyOfDeck.cards;
     const fullDeck = [...existingCards, ...newCards];
 
     // Combine existing and new cards, with new cards appended at the end
-    setDisplayedCards(
-      fullDeck.filter((el) => (namesOfFilteredCards.has(el.name) ? el : null)),
-    );
+    setDisplayedCards(fullDeck.filter((el) => (namesOfFilteredCards.has(el.name) ? el : null)));
   }, [deepCopyOfDeck, cardsInStore, isEditing, filteredCards]);
 
   const resetDeepCopyOfDeck = () => {
@@ -142,19 +127,11 @@ const SavedDeckModal: React.FC<InputProps> = ({
   });
 
   const content = deck != null && (
-    <CustomModal
-      visible={modalVisible}
-      setVisible={setVisible}
-      scrollEnabled={true}
-    >
-      <Fragment>
+    <CustomModal visible={modalVisible} setVisible={setVisible} scrollEnabled={true}>
+      <>
         <View style={styles.buttonContainer}>
           {!isEditing && (
-            <CustomButton
-              type="neutral"
-              text="EDIT"
-              onPress={() => setIsEditing(true)}
-            />
+            <CustomButton type="neutral" text="EDIT" onPress={() => setIsEditing(true)} />
           )}
           {isEditing && (
             <CustomButton
@@ -164,7 +141,7 @@ const SavedDeckModal: React.FC<InputProps> = ({
               disabled={!correctAmountOfCardsInDeck}
             />
           )}
-          <PulseWrapper newDeckCardCount={cardsInDeck}>
+          <PulseWrapper pulseEffectOnValueChange={cardsInDeck}>
             <Text style={styles.cardCountText}>
               {`${cardsInDeck}${isEditing ? ` / ${MINIMUM_CARDS_IN_NEW_DECK}` : ""}`}{" "}
             </Text>
@@ -188,7 +165,7 @@ const SavedDeckModal: React.FC<InputProps> = ({
           style={styles.modalInput}
           value={newDeckName || deck.deckName || ""}
           multiline={true}
-          maxLength={60}
+          maxLength={MAX_DECK_NAME_LENGTH}
           autoCorrect={false}
           onChangeText={setNewDeckName}
           editable={isEditing}
@@ -224,11 +201,11 @@ const SavedDeckModal: React.FC<InputProps> = ({
             return null;
           })}
         </View>
-      </Fragment>
+      </>
     </CustomModal>
   );
 
-  return <Fragment>{content}</Fragment>;
+  return <>{content}</>;
 };
 
 export default SavedDeckModal;

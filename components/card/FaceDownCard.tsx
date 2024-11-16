@@ -1,5 +1,5 @@
 import { Image } from "expo-image";
-import React, { Fragment } from "react";
+import React from "react";
 import { Dimensions, Pressable, StyleSheet, View } from "react-native";
 
 interface InputProps {
@@ -42,7 +42,7 @@ const FaceDownCard: React.FC<InputProps> = ({
   });
 
   return (
-    <Fragment>
+    <>
       <Pressable onPressOut={() => revealCard && revealCard()}>
         <View style={[styles.imageContainer, isInPlayDeck && styles.isInPlayDeckStyle]}>
           <Image
@@ -55,7 +55,7 @@ const FaceDownCard: React.FC<InputProps> = ({
           />
         </View>
       </Pressable>
-    </Fragment>
+    </>
   );
 };
 

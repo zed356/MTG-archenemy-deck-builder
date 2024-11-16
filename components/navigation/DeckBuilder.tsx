@@ -3,10 +3,10 @@ import { globalStyles } from "@/constants/styles";
 import { MINIMUM_CARDS_IN_NEW_DECK } from "@/constants/values";
 import { useCardStore, useNewDeckStore } from "@/store/store";
 import { ScryfallCard } from "@scryfall/api-types";
-import { Fragment, useState } from "react";
+import { useState } from "react";
 import { FlatList, StyleSheet, Text, View } from "react-native";
 import Card from "../card/Card";
-import Filter from "../card/Filter";
+import Filter from "../card/filter/Filter";
 import NewDeck from "../decks/NewDeck";
 import ErrorModal from "../modals/specific-modals/ErrorModal";
 import PulseWrapper from "../style-elements/PulseWrapper";
@@ -60,15 +60,15 @@ const DeckBuilder: React.FC = () => {
   );
 
   const headerComponent = (
-    <Fragment>
+    <>
       <NewDeck />
       <Filter cards={cardsInStore} setFilteredCards={setDisplayedCards} />
-    </Fragment>
+    </>
   );
 
   return (
     <View style={styles.scrollContainer}>
-      <PulseWrapper count={cardsInNewDeck.length}>
+      <PulseWrapper pulseEffectOnValueChange={cardsInNewDeck.length}>
         <Text style={[globalStyles.text, styles.text]}>
           {cardsInNewDeck.length}/{MINIMUM_CARDS_IN_NEW_DECK}
         </Text>

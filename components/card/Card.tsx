@@ -1,16 +1,10 @@
 import { defaultColors } from "@/constants/Colors";
+import { FontAwesome } from "@expo/vector-icons";
 import { ScryfallCard } from "@scryfall/api-types";
 import { Image } from "expo-image";
-import React, { Fragment, useState } from "react";
-import {
-  ActivityIndicator,
-  Dimensions,
-  Pressable,
-  StyleSheet,
-  View,
-} from "react-native";
+import React, { useState } from "react";
+import { ActivityIndicator, Dimensions, Pressable, StyleSheet, View } from "react-native";
 import SelectedCardModal from "../modals//specific-modals/SelectedCardModal";
-import { FontAwesome } from "@expo/vector-icons";
 
 interface InputProps {
   card: ScryfallCard.Scheme;
@@ -94,10 +88,7 @@ const Card: React.FC<InputProps> = ({
     isInPlayDeckStyle: {
       top: "0%",
       left: "50%",
-      transform: [
-        { translateX: -cardSize!.width / 2 },
-        { translateY: cardSize!.height / 2 },
-      ],
+      transform: [{ translateX: -cardSize!.width / 2 }, { translateY: cardSize!.height / 2 }],
     },
     card: {
       width: cardSize?.width,
@@ -125,19 +116,10 @@ const Card: React.FC<InputProps> = ({
   });
 
   return (
-    <Fragment>
-      <View
-        style={[
-          styles.imageContainer,
-          isInPlayDeck && styles.isInPlayDeckStyle,
-        ]}
-      >
+    <>
+      <View style={[styles.imageContainer, isInPlayDeck && styles.isInPlayDeckStyle]}>
         {loading && showLoadingSpinner && (
-          <ActivityIndicator
-            style={styles.loadingSpinner}
-            size="large"
-            color="#FFD700"
-          />
+          <ActivityIndicator style={styles.loadingSpinner} size="large" color="#FFD700" />
         )}
         <Pressable
           onPress={() => {
@@ -161,10 +143,7 @@ const Card: React.FC<InputProps> = ({
             }}
           />
         </Pressable>
-        <Pressable
-          style={styles.operatorButtonContainer}
-          onPress={handleAddRemoveCardToNewDeck}
-        >
+        <Pressable style={styles.operatorButtonContainer} onPress={handleAddRemoveCardToNewDeck}>
           {showAddRemoveOperator && (
             <FontAwesome
               name={displayPlusMinusCardButton}
@@ -180,16 +159,12 @@ const Card: React.FC<InputProps> = ({
         existsInDeck={existsInDeck}
         isSelected={isSelected && !isInPlayDeck}
         setIsSelected={setIsSelected}
-        showAddRemoveOperator={
-          showAddRemoveOperator || showAddRemoveOperatorOnSelectedCard
-        }
+        showAddRemoveOperator={showAddRemoveOperator || showAddRemoveOperatorOnSelectedCard}
         addRemoveCardToDeck={handleAddRemoveCardToNewDeck}
         displayPlusMinusCardButton={displayPlusMinusCardButton}
-        displayDiscardButtonInsteadOfOperator={
-          displayDiscardButtonInsteadOfOperator
-        }
+        displayDiscardButtonInsteadOfOperator={displayDiscardButtonInsteadOfOperator}
       />
-    </Fragment>
+    </>
   );
 };
 
