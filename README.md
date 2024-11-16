@@ -3,9 +3,9 @@
 Welcome to the **Magic the Gathering: Archenemy Deck Builder** app! This application allows players to build and manage their Archenemy decks, enhancing the gameplay experience with user-friendly features.
 
 ## Current Downloadable Version
-[Download Here](https://expo.dev/accounts/ztamoa/projects/mtg-archenemy-deckbuilder/builds/0970c219-5380-450f-8edb-163a561a7b13)
+[Download Here](https://expo.dev/accounts/ztamoa/projects/mtg-archenemy-deckbuilder/builds/78ffbee2-9e25-4f90-a5e9-d5a6e9030df9)
 
-**Dated:** 03/11/24
+**Dated:** 16/11/24
 
 ## Features
 - Save and load Archenemy decks for easy access
