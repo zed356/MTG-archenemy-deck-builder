@@ -1,18 +1,20 @@
 import { defaultColors } from "@/constants/Colors";
-import { View, Text, StyleSheet, Pressable } from "react-native";
 import { globalStyles } from "@/constants/styles";
-import { router } from "expo-router";
-import CustomButton from "../button/CustomButton";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { SavedDeck, useSavedDeckStore } from "@/store/store";
-import { useState } from "react";
-import { removeDeckFromStorage, updateDeckInStorage } from "@/helpers/savedDeckManager";
-import { FontAwesome6 } from "@expo/vector-icons";
-import AnimatedIcon from "../button/AnimatedIcon";
 import { SAVED_DECKS_PER_PAGE } from "@/constants/values";
-import SavedDeckModal from "../modals/specific-modals/SavedDeckModal";
+import { removeDeckFromStorage, updateDeckInStorage } from "@/helpers/savedDeckManager";
+import { SavedDeck, useSavedDeckStore } from "@/store/store";
+import { FontAwesome6 } from "@expo/vector-icons";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { router } from "expo-router";
+import { useState } from "react";
+import { Pressable, StyleSheet, Text, View } from "react-native";
+import AnimatedIcon from "../button/AnimatedIcon";
+import CustomButton from "../button/CustomButton";
 import ConfirmationModal from "../modals/specific-modals/ConfirmationModal";
+import SavedDeckModal from "../modals/specific-modals/SavedDeckModal";
+import BlurredBackground from "../style-elements/BlurredBackground";
 import Spacer from "../style-elements/Spacer";
+import TabsIcon from "../style-elements/TabsIcon";
 
 interface SavedDecksProps {
   canDeleteDeck?: boolean;
@@ -75,52 +77,67 @@ const SavedDecks: React.FC<SavedDecksProps> = ({
           index >= (currentPage - 1) * SAVED_DECKS_PER_PAGE
         ) {
           return (
-            <View key={Math.random()} style={styles.deckContainer}>
-              <SavedDeckModal
-                modalVisible={deckListModalIsVisible}
-                setVisible={() => setDeckListModalIsVisible(false)}
-                deck={selectedDeck}
-                updateDeck={handleUpdateDeck}
-              />
-              {!canDeleteDeck && (
-                <CustomButton
-                  type="positive"
-                  text="Select"
-                  onPress={() => {
-                    onDeckSelectedForPlay && onDeckSelectedForPlay(deck);
-                  }}
+            <View key={Math.random()} style={styles.decksContainer}>
+              <BlurredBackground>
+                <SavedDeckModal
+                  modalVisible={deckListModalIsVisible}
+                  setVisible={() => setDeckListModalIsVisible(false)}
+                  deck={selectedDeck}
+                  updateDeck={handleUpdateDeck}
                 />
-              )}
-              <CustomButton
-                type="neutral"
-                text={`${deck.deckName} : ${deck.cards.length}`}
-                onPress={() => {
-                  handleDeckListModal(deck);
-                }}
-              />
-
-              {canDeleteDeck && (
-                <CustomButton
-                  type="negative"
-                  text="Delete"
-                  onPress={() => {
-                    setDeckToDelete(deck);
+                <View style={styles.deck}>
+                  <Pressable
+                    onPress={() => {
+                      handleDeckListModal(deck);
+                    }}
+                  >
+                    <Text style={[globalStyles.text, styles.deckText]}>
+                      {deck.deckName}
+                      {
+                        <View>
+                          <TabsIcon
+                            source={require("../../assets/tab-icons/cards-icon.svg")}
+                            focused={true}
+                            top={8}
+                          />
+                        </View>
+                      }
+                      {deck.cards.length}
+                    </Text>
+                  </Pressable>
+                </View>
+                {canDeleteDeck ? (
+                  <FontAwesome6
+                    name="trash-alt"
+                    size={24}
+                    color={defaultColors.red}
+                    onPress={() => {
+                      setDeckToDelete(deck);
+                    }}
+                  />
+                ) : (
+                  <CustomButton
+                    type="positive"
+                    text="Select"
+                    onPress={() => {
+                      onDeckSelectedForPlay && onDeckSelectedForPlay(deck);
+                    }}
+                  />
+                )}
+                <ConfirmationModal
+                  isVisible={deckToDelete != null}
+                  text={`Are you sure you want to delete ${deckToDelete?.deckName}?`}
+                  onConfirm={() => {
+                    if (deckToDelete) {
+                      handleDeleteDeck(deckToDelete);
+                      setDeckToDelete(null);
+                    }
                   }}
-                />
-              )}
-              <ConfirmationModal
-                isVisible={deckToDelete != null}
-                text={`Are you sure you want to delete ${deckToDelete?.deckName}?`}
-                onConfirm={() => {
-                  if (deckToDelete) {
-                    handleDeleteDeck(deckToDelete);
+                  onCancel={() => {
                     setDeckToDelete(null);
-                  }
-                }}
-                onCancel={() => {
-                  setDeckToDelete(null);
-                }}
-              />
+                  }}
+                />
+              </BlurredBackground>
             </View>
           );
         }
@@ -181,21 +198,26 @@ const styles = StyleSheet.create({
     marginBottom: 70,
   },
   allDecksContainer: {
-    width: "90%",
-    borderColor: defaultColors.gold,
-    borderRadius: 20,
-    borderWidth: 1,
     padding: 10,
     flex: 0.5,
     justifyContent: "center",
     alignItems: "center",
   },
-  deckContainer: {
-    flex: 1,
-    flexDirection: "row",
+  decksContainer: {
+    flex: 0.25,
     marginBottom: 10,
+    flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
+  },
+  deck: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  deckText: {
+    color: defaultColors.gold,
+    fontSize: 20,
   },
   paginationContainer: {
     flexDirection: "row",

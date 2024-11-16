@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Modal, StyleSheet, View, TextInput } from "react-native";
 import CustomButton from "../../button/CustomButton";
+import { MAX_DECK_NAME_LENGTH } from "@/constants/values";
 
 interface InputProps {
   modalVisible: boolean;
@@ -8,11 +9,7 @@ interface InputProps {
   confirmSaveDeck: (deckName: string) => void;
 }
 
-const SaveNewDeckModal: React.FC<InputProps> = ({
-  modalVisible,
-  setVisible,
-  confirmSaveDeck,
-}) => {
+const SaveNewDeckModal: React.FC<InputProps> = ({ modalVisible, setVisible, confirmSaveDeck }) => {
   const [userInputValue, setUserInputValue] = useState("");
   const isSaveEnabled: boolean = userInputValue.trim().length > 0;
 
@@ -37,7 +34,7 @@ const SaveNewDeckModal: React.FC<InputProps> = ({
               placeholder="Deck Name"
               multiline={true}
               numberOfLines={4}
-              maxLength={80}
+              maxLength={MAX_DECK_NAME_LENGTH}
               autoCorrect={false}
               autoFocus={true}
               onChangeText={setUserInputValue}
@@ -67,7 +64,7 @@ const SaveNewDeckModal: React.FC<InputProps> = ({
     //     placeholder="Deck Name"
     //     multiline={true}
     //     numberOfLines={4}
-    //     maxLength={80}
+    //     maxLength={MAX_DECK_NAME_LENGTH}
     //     autoCorrect={false}
     //     autoFocus={true}
     //     onChangeText={setUserInputValue}

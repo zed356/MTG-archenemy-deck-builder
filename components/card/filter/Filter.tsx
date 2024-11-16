@@ -1,12 +1,13 @@
-import { useEffect, useMemo, useState } from "react";
-import { View, TextInput, StyleSheet } from "react-native";
 import { defaultColors } from "@/constants/Colors";
-import { ScryfallCard } from "@scryfall/api-types";
-import CheckBoxButton from "../button/CheckBoxButton";
-import { FontAwesome } from "@expo/vector-icons";
-import CustomButton from "../button/CustomButton";
-import Spacer from "../style-elements/Spacer";
 import { defaultBorderRadius } from "@/constants/styles";
+import { FontAwesome } from "@expo/vector-icons";
+import { ScryfallCard } from "@scryfall/api-types";
+import { useEffect, useMemo, useState } from "react";
+import { StyleSheet, View } from "react-native";
+import CheckBoxButton from "../../button/CheckBoxButton";
+import CustomButton from "../../button/CustomButton";
+import Spacer from "../../style-elements/Spacer";
+import FilterTextInput from "./FilterTextInput";
 
 interface FilterProps {
   cards: ScryfallCard.Scheme[];
@@ -69,23 +70,15 @@ const Filter: React.FC<FilterProps> = ({
   const content = filtersAreShown ? (
     <>
       <View style={styles.filterWrapper}>
-        <TextInput
-          style={styles.textInput}
-          value={cardNameFilter}
-          onChangeText={(text) => setCardNameFilter(text)}
-          placeholder="Search name"
-          placeholderTextColor={defaultColors.grey}
-          multiline={true}
-          maxLength={85}
+        <FilterTextInput
+          textInputName="Search name"
+          textInputOnChange={setCardNameFilter}
+          textInputValue={cardNameFilter}
         />
-        <TextInput
-          style={styles.textInput}
-          value={cardOracleTextFilter}
-          onChangeText={(text) => setCardOracleTextFilter(text)}
-          placeholder="Search description"
-          placeholderTextColor={defaultColors.grey}
-          multiline={true}
-          maxLength={85}
+        <FilterTextInput
+          textInputName="Search description"
+          textInputOnChange={setCardOracleTextFilter}
+          textInputValue={cardOracleTextFilter}
         />
       </View>
       <View style={styles.checkBoxButtonContainer}>
@@ -163,6 +156,11 @@ const styles = StyleSheet.create({
     alignItems: "center",
     padding: 10,
   },
+  inputContainer: {
+    flex: 1,
+    width: "96%",
+    position: "relative",
+  },
   textInput: {
     flex: 1,
     borderWidth: 1,
@@ -172,9 +170,24 @@ const styles = StyleSheet.create({
     padding: 10,
     marginRight: 10,
     color: defaultColors.gold,
-    width: "96%",
     marginVertical: 5,
     fontFamily: "Beleren",
+  },
+  clearFilterIcon: {
+    color: defaultColors.red,
+    fontSize: 20,
+    // padding: 20,
+    // position: "absolute",
+    // right: 15,
+    // top: 15,
+  },
+  pressableWrapper: {
+    position: "absolute",
+    right: 10, // Keeps the position of the icon intact
+    top: 10, // Keeps the position of the icon intact
+    // padding: 15, // Larger clickable area
+    justifyContent: "center", // Vertically centers the icon inside the pressable
+    alignItems: "center", // Horizontally centers the icon inside the pressable
   },
   checkBoxButtonContainer: {
     flexDirection: "row",

@@ -1,10 +1,10 @@
 import CustomButton from "@/components/button/CustomButton";
 import Card from "@/components/card/Card";
-import Filter from "@/components/card/Filter";
+import Filter from "@/components/card/filter/Filter";
 import PulseWrapper from "@/components/style-elements/PulseWrapper";
 import { defaultColors } from "@/constants/Colors";
 import { defaultBorderRadius } from "@/constants/styles";
-import { MINIMUM_CARDS_IN_NEW_DECK } from "@/constants/values";
+import { MAX_DECK_NAME_LENGTH, MINIMUM_CARDS_IN_NEW_DECK } from "@/constants/values";
 import { SavedDeck, useCardStore } from "@/store/store";
 import { ScryfallCard } from "@scryfall/api-types";
 import { useEffect, useState } from "react";
@@ -165,7 +165,7 @@ const SavedDeckModal: React.FC<InputProps> = ({ modalVisible, setVisible, deck, 
           style={styles.modalInput}
           value={newDeckName || deck.deckName || ""}
           multiline={true}
-          maxLength={60}
+          maxLength={MAX_DECK_NAME_LENGTH}
           autoCorrect={false}
           onChangeText={setNewDeckName}
           editable={isEditing}

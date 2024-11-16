@@ -2,20 +2,13 @@ import Card from "./Card";
 import { ScryfallCard } from "@scryfall/api-types";
 import FaceDownCard from "./FaceDownCard";
 import { useState } from "react";
-import Animated, {
-  useAnimatedStyle,
-  useSharedValue,
-  withTiming,
-} from "react-native-reanimated";
+import Animated, { useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
 import { Dimensions } from "react-native";
 
 interface CardInPlayDeckProps {
   card: ScryfallCard.Scheme;
   addToOnGoingSchemes: (card: ScryfallCard.Scheme) => void;
-  removeCardFromDeck?: (
-    card: ScryfallCard.Scheme,
-    discardCard: boolean,
-  ) => void;
+  removeCardFromDeck?: (card: ScryfallCard.Scheme, discardCard: boolean) => void;
 }
 
 const CardInPlayDeck: React.FC<CardInPlayDeckProps> = ({
