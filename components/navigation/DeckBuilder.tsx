@@ -6,7 +6,7 @@ import { ScryfallCard } from "@scryfall/api-types";
 import { useState } from "react";
 import { FlatList, StyleSheet, Text, View } from "react-native";
 import Card from "../card/Card";
-import Filter from "../card/Filter";
+import Filter from "../card/filter/Filter";
 import NewDeck from "../decks/NewDeck";
 import ErrorModal from "../modals/specific-modals/ErrorModal";
 import PulseWrapper from "../style-elements/PulseWrapper";

@@ -1,6 +1,6 @@
 import CustomButton from "@/components/button/CustomButton";
 import Card from "@/components/card/Card";
-import Filter from "@/components/card/Filter";
+import Filter from "@/components/card/filter/Filter";
 import PulseWrapper from "@/components/style-elements/PulseWrapper";
 import { defaultColors } from "@/constants/Colors";
 import { defaultBorderRadius } from "@/constants/styles";
