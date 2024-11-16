@@ -9,10 +9,10 @@ import Animated, {
 
 interface PulseWrapperProps {
   children: React.ReactNode;
-  count: number;
+  pulseEffectOnValueChange: number;
 }
 
-const PulseWrapper: React.FC<PulseWrapperProps> = ({ children, count }) => {
+const PulseWrapper: React.FC<PulseWrapperProps> = ({ children, pulseEffectOnValueChange }) => {
   const scale = useSharedValue(1);
 
   const animatedStyle = useAnimatedStyle(() => ({
@@ -20,7 +20,7 @@ const PulseWrapper: React.FC<PulseWrapperProps> = ({ children, count }) => {
   }));
 
   useEffect(() => {
-    if (count > 0) {
+    if (pulseEffectOnValueChange > 0) {
       scale.value = withTiming(1.1, {
         duration: 100,
         easing: Easing.out(Easing.exp),
@@ -33,7 +33,7 @@ const PulseWrapper: React.FC<PulseWrapperProps> = ({ children, count }) => {
 
       return () => clearTimeout(timeout); // Cleanup on unmount
     }
-  }, [count, scale]);
+  }, [pulseEffectOnValueChange, scale]);
 
   return (
     <View>

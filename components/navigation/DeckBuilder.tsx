@@ -68,7 +68,7 @@ const DeckBuilder: React.FC = () => {
 
   return (
     <View style={styles.scrollContainer}>
-      <PulseWrapper count={cardsInNewDeck.length}>
+      <PulseWrapper pulseEffectOnValueChange={cardsInNewDeck.length}>
         <Text style={[globalStyles.text, styles.text]}>
           {cardsInNewDeck.length}/{MINIMUM_CARDS_IN_NEW_DECK}
         </Text>

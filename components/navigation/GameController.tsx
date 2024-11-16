@@ -100,7 +100,7 @@ const GameController: React.FC<GameControllerProps> = () => {
             />
           ))}
           <View style={styles.cardCountInShuffledDeckContainer}>
-            <PulseWrapper count={shuffledDeck.cards.length}>
+            <PulseWrapper pulseEffectOnValueChange={shuffledDeck.cards.length}>
               <Text style={[globalStyles.text, styles.cardCountText]}>
                 {shuffledDeck.cards.length}
               </Text>

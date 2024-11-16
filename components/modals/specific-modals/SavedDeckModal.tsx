@@ -141,7 +141,7 @@ const SavedDeckModal: React.FC<InputProps> = ({ modalVisible, setVisible, deck, 
               disabled={!correctAmountOfCardsInDeck}
             />
           )}
-          <PulseWrapper newDeckCardCount={cardsInDeck}>
+          <PulseWrapper pulseEffectOnValueChange={cardsInDeck}>
             <Text style={styles.cardCountText}>
               {`${cardsInDeck}${isEditing ? ` / ${MINIMUM_CARDS_IN_NEW_DECK}` : ""}`}{" "}
             </Text>
