@@ -10,7 +10,7 @@ import CardInPlayDeck from "../card/CardInPlayDeck";
 import OnGoingScheme from "../card/OnGoingScheme";
 import FadeIn from "../style-elements/FadeIn";
 import PulseWrapper from "../style-elements/PulseWrapper";
-import SavedDecks from "./SavedDecks";
+import SavedDecks from "../decks/SavedDecks";
 
 const GAME_STATES = {
   DECK_SELECTION: "DECK_SELECTION",
