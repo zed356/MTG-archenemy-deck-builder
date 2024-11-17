@@ -77,7 +77,7 @@ const SavedDecks: React.FC<SavedDecksProps> = ({
           index >= (currentPage - 1) * SAVED_DECKS_PER_PAGE
         ) {
           return (
-            <View key={Math.random()} style={styles.decksContainer}>
+            <View key={Math.random()} style={styles.deckContainer}>
               <BlurredBackground>
                 <SavedDeckModal
                   modalVisible={deckListModalIsVisible}
@@ -88,7 +88,7 @@ const SavedDecks: React.FC<SavedDecksProps> = ({
                 <View style={styles.deck}>
                   <Pressable
                     onPress={() => {
-                      handleDeckListModal(deck);
+                      onDeckSelectedForPlay && onDeckSelectedForPlay(deck);
                     }}
                   >
                     <Text style={[globalStyles.text, styles.deckText]}>
@@ -118,9 +118,9 @@ const SavedDecks: React.FC<SavedDecksProps> = ({
                 ) : (
                   <CustomButton
                     type="positive"
-                    text="Select"
+                    text="View"
                     onPress={() => {
-                      onDeckSelectedForPlay && onDeckSelectedForPlay(deck);
+                      handleDeckListModal(deck);
                     }}
                   />
                 )}
@@ -198,14 +198,14 @@ const styles = StyleSheet.create({
     marginBottom: 70,
   },
   allDecksContainer: {
-    padding: 10,
+    width: "96%",
     flex: 0.5,
     justifyContent: "center",
     alignItems: "center",
   },
-  decksContainer: {
+  deckContainer: {
     flex: 0.25,
-    marginBottom: 10,
+    marginVertical: 5,
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
