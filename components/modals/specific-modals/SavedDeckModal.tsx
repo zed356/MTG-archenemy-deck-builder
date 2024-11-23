@@ -2,6 +2,7 @@ import CustomButton from "@/components/button/CustomButton";
 import Card from "@/components/card/Card";
 import Filter from "@/components/card/filter/Filter";
 import PulseWrapper from "@/components/style-elements/PulseWrapper";
+import TabsIcon from "@/components/style-elements/TabsIcon";
 import { defaultColors } from "@/constants/Colors";
 import { defaultBorderRadius } from "@/constants/styles";
 import { MAX_DECK_NAME_LENGTH, MINIMUM_CARDS_IN_NEW_DECK } from "@/constants/values";
@@ -10,18 +11,27 @@ import { ScryfallCard } from "@scryfall/api-types";
 import { useEffect, useState } from "react";
 import { StyleSheet, Text, TextInput, View } from "react-native";
 import CustomModal from "../CustomModal";
+import { LinearGradient } from "expo-linear-gradient";
 
 interface InputProps {
   modalVisible: boolean;
   setVisible: (value: boolean) => void;
   deck: SavedDeck | null;
   updateDeck: (deck: SavedDeck, newDeckName?: string) => void;
+  selectDeckForPlay: (deck: SavedDeck) => void;
 }
 
-const SavedDeckModal: React.FC<InputProps> = ({ modalVisible, setVisible, deck, updateDeck }) => {
+const SavedDeckModal: React.FC<InputProps> = ({
+  modalVisible,
+  deck,
+  setVisible,
+  updateDeck,
+  selectDeckForPlay,
+}) => {
   const [isEditing, setIsEditing] = useState(false);
   const [newDeckName, setNewDeckName] = useState<string>("");
   const { cardsInStore } = useCardStore();
+  const [deckAfterSaveEdit, setDeckAfterSaveEdit] = useState<SavedDeck | null>(null);
   const [deepCopyOfDeck, setDeepCopyOfDeck] = useState<SavedDeck>(JSON.parse(JSON.stringify(deck)));
   const [displayedCards, setDisplayedCards] = useState<ScryfallCard.Scheme[]>(cardsInStore);
   const [deckCardNames, setDeckCardNames] = useState<Set<string>>(new Set());
@@ -71,10 +81,11 @@ const SavedDeckModal: React.FC<InputProps> = ({ modalVisible, setVisible, deck, 
     });
   };
 
-  const handleEditing = () => {
+  const handleSaveEdit = () => {
     updateDeck(deepCopyOfDeck, newDeckName);
+    setDeckAfterSaveEdit(deepCopyOfDeck);
+    setFilteredCards(cardsInStore);
     setIsEditing(false);
-    setVisible(false);
   };
 
   const calcCorrectTextColor = () => {
@@ -90,26 +101,34 @@ const SavedDeckModal: React.FC<InputProps> = ({ modalVisible, setVisible, deck, 
   const styles = StyleSheet.create({
     buttonContainer: {
       flexDirection: "row",
+      width: "100%",
+      position: "relative",
       justifyContent: "space-between",
       alignItems: "center",
-      marginBottom: 15,
-      width: "100%", // Ensure buttons take full width
+    },
+    cardCountTextContainer: {
+      marginVertical: 5,
+      padding: 5,
+      flexDirection: "row",
+      alignItems: "center",
+      alignSelf: "center",
     },
     cardCountText: {
-      backgroundColor: defaultColors.purple,
-      borderRadius: defaultBorderRadius,
-      paddingLeft: 6, // impossible to center text. its always a bit off to the left.
-      color: calcCorrectTextColor(), // Assuming you want white text
+      paddingLeft: 15, // impossible to center text. its always a bit off to the left.
+      color: calcCorrectTextColor(),
       fontSize: 25,
     },
     modalInput: {
       borderWidth: 1,
+      opacity: 0.8,
       borderRadius: defaultBorderRadius,
+      borderColor: defaultColors.grey,
       width: "96%",
       textAlign: "center",
       fontFamily: "Beleren",
+      color: defaultColors.gold,
       fontSize: 20,
-      marginBottom: 10,
+      marginBottom: 5,
       padding: 5,
     },
     filterContainer: {
@@ -137,15 +156,18 @@ const SavedDeckModal: React.FC<InputProps> = ({ modalVisible, setVisible, deck, 
             <CustomButton
               type="positive"
               text="SAVE"
-              onPress={handleEditing}
+              onPress={handleSaveEdit}
               disabled={!correctAmountOfCardsInDeck}
             />
           )}
-          <PulseWrapper pulseEffectOnValueChange={cardsInDeck}>
-            <Text style={styles.cardCountText}>
-              {`${cardsInDeck}${isEditing ? ` / ${MINIMUM_CARDS_IN_NEW_DECK}` : ""}`}{" "}
-            </Text>
-          </PulseWrapper>
+          <CustomButton
+            type="positive"
+            text="PLAY"
+            onPress={() => {
+              selectDeckForPlay && selectDeckForPlay(deepCopyOfDeck);
+            }}
+            disabled={isEditing}
+          />
           <CustomButton
             type="negative"
             text={isEditing ? "CANCEL" : "CLOSE"}
@@ -153,7 +175,11 @@ const SavedDeckModal: React.FC<InputProps> = ({ modalVisible, setVisible, deck, 
               setNewDeckName("");
               resetDisplayedCards();
               if (isEditing) {
-                resetDeepCopyOfDeck();
+                if (deckAfterSaveEdit) {
+                  setDeepCopyOfDeck(deckAfterSaveEdit);
+                } else {
+                  resetDeepCopyOfDeck();
+                }
                 setIsEditing(false);
               } else {
                 setVisible(false);
@@ -161,6 +187,18 @@ const SavedDeckModal: React.FC<InputProps> = ({ modalVisible, setVisible, deck, 
             }}
           />
         </View>
+        <PulseWrapper pulseEffectOnValueChange={cardsInDeck}>
+          <View style={styles.cardCountTextContainer}>
+            <Text style={styles.cardCountText}>
+              {`${cardsInDeck}${isEditing ? ` / ${MINIMUM_CARDS_IN_NEW_DECK}` : ""}`}{" "}
+            </Text>
+            <TabsIcon
+              source={require("./../../../assets/tab-icons/cards-icon.svg")}
+              color={calcCorrectTextColor()}
+            />
+            <View style={{ marginHorizontal: 4 }}></View>
+          </View>
+        </PulseWrapper>
         <TextInput
           style={styles.modalInput}
           value={newDeckName || deck.deckName || ""}
