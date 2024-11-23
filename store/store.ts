@@ -28,15 +28,17 @@ interface SavedDeckState {
   clearDecks: () => void;
 }
 
+interface GameScreenDeckState {
+  gameScreenDeck: SavedDeck;
+  setGameScreenDeck: (deck: SavedDeck) => void;
+}
+
 export const useNewDeckStore = create<NewDeckState>((set) => ({
   cardsInNewDeck: [],
-  addCardToNewDeck: (card) =>
-    set((state) => ({ cardsInNewDeck: [...state.cardsInNewDeck, card] })),
+  addCardToNewDeck: (card) => set((state) => ({ cardsInNewDeck: [...state.cardsInNewDeck, card] })),
   removeCardFromNewDeck: (card) =>
     set((state) => ({
-      cardsInNewDeck: state.cardsInNewDeck.filter(
-        (el) => el.name !== card.name,
-      ),
+      cardsInNewDeck: state.cardsInNewDeck.filter((el) => el.name !== card.name),
     })),
   clearNewDeck: () => set({ cardsInNewDeck: [] }),
 }));
@@ -56,13 +58,13 @@ export const useSavedDeckStore = create<SavedDeckState>((set) => ({
         const updatedDeck = { deckName: newDeckName, cards: deck.cards };
         return {
           savedDecksInState: state.savedDecksInState.map((el) =>
-            el.deckName === deck.deckName ? updatedDeck : el,
+            el.deckName === deck.deckName ? updatedDeck : el
           ),
         };
       } else {
         return {
           savedDecksInState: state.savedDecksInState.map((el) =>
-            el.deckName === deck.deckName ? deck : el,
+            el.deckName === deck.deckName ? deck : el
           ),
         };
       }
@@ -73,10 +75,14 @@ export const useSavedDeckStore = create<SavedDeckState>((set) => ({
 
 export const useCardStore = create<CardsInStore>((set) => ({
   cardsInStore: [],
-  loadCardsIntoStore: (cards: ScryfallCard.Scheme[]) =>
-    set({ cardsInStore: cards }),
+  loadCardsIntoStore: (cards: ScryfallCard.Scheme[]) => set({ cardsInStore: cards }),
   loading: false,
   setLoading: (loading) => set({ loading }),
   error: null,
   setError: (error) => set({ error }),
+}));
+
+export const useGameScreenDeckStore = create<GameScreenDeckState>((set) => ({
+  gameScreenDeck: { deckName: "", cards: [] },
+  setGameScreenDeck: (deck) => set({ gameScreenDeck: deck }),
 }));
