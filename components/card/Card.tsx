@@ -48,7 +48,7 @@ const Card: React.FC<InputProps> = ({
     "|rF?hV%2WCj[ayj[a|j[az_NaeWBj@ayfRayfQfQM{M|azj[azf6fQfQfQIpWXofj[ayj[j[fQayWCoeoeaya}j[ayfQa{oLj?j[WVj[ayayj[fQoff7azayj[ayj[j[ayofayayayj[fQj[ayayj[ayfjj[j[ayjuayj[";
 
   const displayPlusMinusCardButton = !existsInDeck ? "plus" : "minus";
-  const { width, height } = Dimensions.get("window");
+  const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
 
   let cardSize;
   let operatorSize;
@@ -59,7 +59,7 @@ const Card: React.FC<InputProps> = ({
     cardSize = { width: 160, height: 230 };
     operatorSize = { fontSize: 25 };
   } else if (size === "large") {
-    cardSize = { width: width * 0.9, height: height * 0.625 };
+    cardSize = { width: screenWidth * 0.9, height: screenHeight * 0.625 };
     operatorSize = { fontSize: 30 };
   }
 
@@ -88,7 +88,10 @@ const Card: React.FC<InputProps> = ({
     isInPlayDeckStyle: {
       top: "0%",
       left: "50%",
-      transform: [{ translateX: -cardSize!.width / 2 }, { translateY: cardSize!.height / 2 - 50 }],
+      transform: [
+        { translateX: -cardSize!.width / 2 },
+        { translateY: cardSize!.height / 2 - screenHeight * 0.01 },
+      ],
     },
     card: {
       width: cardSize?.width,
