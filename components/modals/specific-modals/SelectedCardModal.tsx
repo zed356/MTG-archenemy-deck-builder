@@ -3,7 +3,7 @@ import { defaultColors } from "@/constants/Colors";
 import { FontAwesome } from "@expo/vector-icons";
 import { ScryfallCard } from "@scryfall/api-types";
 import { Image } from "expo-image";
-import { Pressable, StyleSheet, View } from "react-native";
+import { Dimensions, Pressable, StyleSheet, View } from "react-native";
 import CustomModal from "../CustomModal";
 
 interface InputProps {
@@ -32,6 +32,8 @@ const SelectedCardModal: React.FC<InputProps> = ({
   addRemoveCardToDeck,
   displayDiscardButtonInsteadOfOperator,
 }) => {
+  const window = Dimensions.get("window");
+
   const styles = StyleSheet.create({
     imageContainer: {
       position: "relative",
@@ -44,28 +46,25 @@ const SelectedCardModal: React.FC<InputProps> = ({
       borderColor: existsInDeck && border ? defaultColors.border : undefined,
     },
     cardIsSelected: {
-      width: 335,
-      height: 490,
       opacity: 1,
+      flex: 1,
+      width: window.width,
     },
     operatorButtonContainer: {
       position: "absolute",
     },
     operatorButton: {
-      marginLeft: 20,
       marginBottom: 20,
       backgroundColor: "rgba(0, 0, 0, 0.55)",
-      paddingLeft: 5,
+      paddingLeft: 8,
       borderBottomLeftRadius: 20,
+      top: "90%", // can't get the operator to be at the top right naturally
+      left: "-10%", //
     },
   });
 
   return (
-    <CustomModal
-      visible={isSelected}
-      setVisible={setIsSelected}
-      transparentBackground={true}
-    >
+    <CustomModal visible={isSelected} setVisible={setIsSelected} showBackgroundColor={false}>
       <Pressable onPress={() => setIsSelected(false)}>
         <View style={styles.imageContainer}>
           <Image
@@ -73,30 +72,24 @@ const SelectedCardModal: React.FC<InputProps> = ({
             source={card.image_uris?.border_crop}
             contentFit="contain"
           />
-          <Pressable
-            style={styles.operatorButtonContainer}
-            onPress={() => addRemoveCardToDeck()}
-          >
-            {showAddRemoveOperator &&
-              !displayDiscardButtonInsteadOfOperator && (
-                <FontAwesome
-                  name={
-                    displayPlusMinusCardButton === "plus" ? "plus" : "minus"
-                  } // does not work on its own..
-                  size={45}
-                  color={!existsInDeck ? defaultColors.green : "red"}
-                  style={styles.operatorButton}
-                />
-              )}
-          </Pressable>
+
+          {showAddRemoveOperator && !displayDiscardButtonInsteadOfOperator && (
+            <Pressable style={styles.operatorButtonContainer} onPress={() => addRemoveCardToDeck()}>
+              <FontAwesome
+                name={displayPlusMinusCardButton === "plus" ? "plus" : "minus"} // does not work on its own..
+                size={45}
+                color={!existsInDeck ? defaultColors.green : "red"}
+                style={styles.operatorButton}
+              />
+            </Pressable>
+          )}
+
+          {displayDiscardButtonInsteadOfOperator && (
+            <View style={{ width: "100%", top: "-5%" }}>
+              <CustomButton type="negative" text="Discard" onPress={() => addRemoveCardToDeck()} />
+            </View>
+          )}
         </View>
-        {displayDiscardButtonInsteadOfOperator && (
-          <CustomButton
-            type="negative"
-            text="Discard"
-            onPress={() => addRemoveCardToDeck()}
-          />
-        )}
       </Pressable>
     </CustomModal>
   );

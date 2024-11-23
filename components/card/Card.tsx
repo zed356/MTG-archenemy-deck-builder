@@ -88,7 +88,7 @@ const Card: React.FC<InputProps> = ({
     isInPlayDeckStyle: {
       top: "0%",
       left: "50%",
-      transform: [{ translateX: -cardSize!.width / 2 }, { translateY: cardSize!.height / 2 }],
+      transform: [{ translateX: -cardSize!.width / 2 }, { translateY: cardSize!.height / 2 - 50 }],
     },
     card: {
       width: cardSize?.width,
