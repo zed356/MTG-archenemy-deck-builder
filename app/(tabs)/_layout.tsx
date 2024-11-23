@@ -6,7 +6,7 @@ import TabsIcon from "@/components/style-elements/TabsIcon";
 const TabsLayout = () => {
   return (
     <Tabs
-      initialRouteName="playmode"
+      initialRouteName="play"
       screenOptions={{
         tabBarStyle: {
           position: "absolute",
@@ -14,6 +14,7 @@ const TabsLayout = () => {
           left: 0,
           right: 0,
           borderTopWidth: 0,
+          // display: "none", // hide bottom tabs
         },
         headerTintColor: defaultColors.gold,
         headerBackground() {
@@ -28,25 +29,7 @@ const TabsLayout = () => {
       }}
     >
       <Tabs.Screen
-        name="decks/index"
-        options={{
-          headerShown: false,
-          headerTitleAlign: "center",
-          title: "Decks",
-          tabBarIcon: ({ focused }) => (
-            <TabsIcon
-              source={require("../../assets/tab-icons/decks-button.svg")}
-              focused={focused}
-              right={1.5}
-              width={35}
-              height={35}
-              top={2}
-            />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="playmode/index"
+        name="play/index"
         options={{
           headerShown: false,
           headerTitleAlign: "center",

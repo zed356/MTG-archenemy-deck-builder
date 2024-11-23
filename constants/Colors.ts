@@ -7,4 +7,5 @@ export const defaultColors = {
   grey: "#B0B0B0",
   purple: "#590080",
   mainGradient: ["#2E0054", "#000000"],
+  secondaryGradient: ["#111111", "#1D1F36"],
 };

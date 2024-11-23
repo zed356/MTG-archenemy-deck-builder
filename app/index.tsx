@@ -16,7 +16,7 @@ export default function HomeScreen() {
 
   return (
     <GradientBackground>
-      <Redirect href="/(tabs)/playmode" />
+      <Redirect href="/(tabs)/play" />
     </GradientBackground>
   );
 }

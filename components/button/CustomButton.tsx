@@ -2,11 +2,7 @@ import { defaultColors } from "@/constants/Colors";
 import { globalStyles, defaultBorderRadius } from "@/constants/styles";
 import { LinearGradient } from "expo-linear-gradient";
 import { Pressable, StyleSheet, Text, View } from "react-native";
-import Animated, {
-  useAnimatedStyle,
-  useSharedValue,
-  withTiming,
-} from "react-native-reanimated";
+import Animated, { useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
 
 interface InputProps {
   text?: string;
@@ -77,15 +73,11 @@ const CustomButton: React.FC<InputProps> = ({
         style={styles.container}
       >
         <View>
-          <LinearGradient
-            colors={getButtonColors()}
-            style={styles.gradientBackground}
-          >
+          <LinearGradient colors={getButtonColors()} style={styles.gradientBackground}>
             <Text
               style={[
                 globalStyles.text,
-                type === "positive" &&
-                  !disabled && { color: defaultColors.gold },
+                type === "positive" && !disabled && { color: defaultColors.gold },
               ]}
             >
               {text || children}
