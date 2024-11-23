@@ -1,7 +1,11 @@
-import React, { useState } from "react";
-import { Modal, StyleSheet, View, TextInput } from "react-native";
-import CustomButton from "../../button/CustomButton";
+import Spacer from "@/components/style-elements/Spacer";
+import { defaultColors } from "@/constants/Colors";
+import { defaultBorderRadius } from "@/constants/styles";
 import { MAX_DECK_NAME_LENGTH } from "@/constants/values";
+import React, { useState } from "react";
+import { StyleSheet, TextInput, View } from "react-native";
+import CustomButton from "../../button/CustomButton";
+import CustomModal from "../CustomModal";
 
 interface InputProps {
   modalVisible: boolean;
@@ -20,114 +24,60 @@ const SaveNewDeckModal: React.FC<InputProps> = ({ modalVisible, setVisible, conf
   };
 
   return (
-    <View style={styles.centeredView}>
-      <Modal
-        animationType="none"
-        transparent={true}
-        visible={modalVisible}
-        onRequestClose={() => {}}
-      >
-        <View style={styles.centeredView}>
-          <View style={styles.modalView}>
-            <TextInput
-              style={styles.modalInput}
-              placeholder="Deck Name"
-              multiline={true}
-              numberOfLines={4}
-              maxLength={MAX_DECK_NAME_LENGTH}
-              autoCorrect={false}
-              autoFocus={true}
-              onChangeText={setUserInputValue}
-            />
-            <View style={styles.buttonContainer}>
-              <CustomButton
-                type="positive"
-                text="SAVE"
-                onPress={handleConfirmSaveDeck}
-                disabled={!isSaveEnabled}
-              />
-              <CustomButton
-                type="negative"
-                text="CLOSE"
-                onPress={() => {
-                  setVisible(false);
-                }}
-              />
-            </View>
-          </View>
+    <CustomModal visible={modalVisible} setVisible={setVisible}>
+      <View style={styles.container}>
+        <TextInput
+          style={styles.modalInput}
+          placeholder="Deck Name"
+          placeholderTextColor={defaultColors.grey}
+          multiline={true}
+          numberOfLines={4}
+          maxLength={MAX_DECK_NAME_LENGTH}
+          autoCorrect={false}
+          autoFocus={true}
+          onChangeText={setUserInputValue}
+        />
+        <View style={styles.buttonContainer}>
+          <CustomButton
+            type="positive"
+            text="SAVE"
+            onPress={handleConfirmSaveDeck}
+            disabled={!isSaveEnabled}
+          />
+          <Spacer width={20} />
+          <CustomButton
+            type="negative"
+            text="CLOSE"
+            onPress={() => {
+              setVisible(false);
+            }}
+          />
         </View>
-      </Modal>
-    </View>
-    // <CustomModal visible={modalVisible} setVisible={setVisible}>
-    //   <TextInput
-    //     style={styles.modalInput}
-    //     placeholder="Deck Name"
-    //     multiline={true}
-    //     numberOfLines={4}
-    //     maxLength={MAX_DECK_NAME_LENGTH}
-    //     autoCorrect={false}
-    //     autoFocus={true}
-    //     onChangeText={setUserInputValue}
-    //   />
-    //   <View style={styles.buttonContainer}>
-    //     <CustomButton
-    //       type="positive"
-    //       text="SAVE"
-    //       onPress={handleConfirmSaveDeck}
-    //       disabled={!isSaveEnabled}
-    //     />
-    //     <CustomButton
-    //       type="negative"
-    //       text="CLOSE"
-    //       onPress={() => {
-    //         setVisible(false);
-    //       }}
-    //     />
-    //   </View>
-    // </CustomModal>
+      </View>
+    </CustomModal>
   );
 };
 
 const styles = StyleSheet.create({
-  centeredView: {
-    minHeight: 200,
-    maxWidth: 250,
-    position: "absolute",
-    top: "20%",
-    left: "17%",
-  },
-  modalView: {
-    flex: 1,
+  container: {
+    width: "100%",
     alignItems: "center",
     justifyContent: "center",
-    margin: 20,
-    backgroundColor: "lightgray",
-    borderRadius: 20,
-    padding: 35,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 5,
-  },
-  modalText: {
-    marginBottom: 15,
-    textAlign: "center",
+    padding: 20,
   },
   modalInput: {
     borderWidth: 1,
-    width: "100%",
+    width: "70%",
     textAlign: "center",
     padding: 5,
     fontFamily: "Beleren",
+    fontSize: 20,
+    color: defaultColors.gold,
+    borderColor: defaultColors.grey,
+    borderRadius: defaultBorderRadius,
   },
   buttonContainer: {
-    flex: 1,
     flexDirection: "row",
-    maxHeight: "40%",
     marginTop: 20,
   },
 });

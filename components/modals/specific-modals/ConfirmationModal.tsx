@@ -1,12 +1,15 @@
 import CustomButton from "@/components/button/CustomButton";
+import Spacer from "@/components/style-elements/Spacer";
 import { defaultColors } from "@/constants/Colors";
-import { Modal, Text, StyleSheet, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
+import CustomModal from "../CustomModal";
 
 interface InputProps {
   isVisible: boolean;
   text: string;
   onConfirm: () => void;
   onCancel: () => void;
+  backgroundColor?: string;
 }
 
 const ConfirmationModal: React.FC<InputProps> = ({
@@ -14,49 +17,35 @@ const ConfirmationModal: React.FC<InputProps> = ({
   text,
   onConfirm,
   onCancel,
+  backgroundColor,
 }) => {
   return (
-    <Modal visible={isVisible} transparent={true} animationType="fade">
-      <View style={styles.centeredView}>
-        <View style={styles.modalContainer}>
-          <Text style={styles.text}>{text}</Text>
-          <View style={styles.buttonContainer}>
-            <CustomButton type="positive" text="CONFIRM" onPress={onConfirm} />
-            <CustomButton type="negative" text="CANCEL" onPress={onCancel} />
-          </View>
+    <CustomModal visible={isVisible} setVisible={() => {}} backgroundColor={backgroundColor}>
+      <View style={styles.container}>
+        <Text style={styles.text}>{text}</Text>
+        <View style={styles.buttonContainer}>
+          <CustomButton type="positive" text="CONFIRM" onPress={onConfirm} />
+          <Spacer width={20} />
+          <CustomButton type="negative" text="CANCEL" onPress={onCancel} />
         </View>
       </View>
-    </Modal>
+    </CustomModal>
   );
 };
 
 export default ConfirmationModal;
 
 const styles = StyleSheet.create({
-  centeredView: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "rgba(0,0,0,0.1)",
-  },
-  modalContainer: {
-    maxHeight: 200,
-    flex: 1,
-    width: "90%",
-    alignSelf: "center",
-    alignItems: "center",
-    justifyContent: "flex-end",
-    backgroundColor: defaultColors.grey,
-    borderRadius: 20,
-  },
+  container: { justifyContent: "center", alignItems: "center", padding: 20 },
   buttonContainer: {
-    flex: 0.5,
     flexDirection: "row",
     alignItems: "center",
-    margin: 10,
   },
   text: {
     fontSize: 18,
     textAlign: "center",
+    fontFamily: "Beleren",
+    color: defaultColors.grey,
+    marginBottom: 10,
   },
 });

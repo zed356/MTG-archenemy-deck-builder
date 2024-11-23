@@ -8,6 +8,7 @@ import { StyleSheet, View } from "react-native";
 import CustomButton from "../button/CustomButton";
 import Card from "../card/Card";
 import SaveNewDeckModal from "../modals/specific-modals/SaveNewDeckModal";
+import { router } from "expo-router";
 
 const NewDeck: React.FC = () => {
   const [confirmationModalVisible, setConfirmationModalVisible] = useState(false);
@@ -27,6 +28,7 @@ const NewDeck: React.FC = () => {
     saveDeckToState(payload);
     clearNewDeck();
     setConfirmationModalVisible(false);
+    router.push("/(tabs)/play");
   };
 
   const styles = StyleSheet.create({

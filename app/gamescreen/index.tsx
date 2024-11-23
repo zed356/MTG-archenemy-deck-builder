@@ -4,6 +4,7 @@ import { router, useNavigation } from "expo-router";
 import GameController from "@/components/navigation/GameController";
 import ConfirmationModal from "@/components/modals/specific-modals/ConfirmationModal";
 import { useSavedDeckStore } from "@/store/store";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const GameScreen = () => {
   const navigation = useNavigation();
@@ -33,13 +34,15 @@ const GameScreen = () => {
       style={{ flex: 1 }}
       contentFit="cover"
     >
-      <GameController />
-      <ConfirmationModal
-        isVisible={isModalVisible}
-        text={"Do you want to quit the game?"}
-        onConfirm={handleQuitGame}
-        onCancel={() => setModalVisible(false)}
-      />
+      <SafeAreaView style={{ flex: 1, marginBottom: 0 }}>
+        <GameController />
+        <ConfirmationModal
+          isVisible={isModalVisible}
+          text={"Do you want to quit the game?"}
+          onConfirm={handleQuitGame}
+          onCancel={() => setModalVisible(false)}
+        />
+      </SafeAreaView>
     </ImageBackground>
   );
 };

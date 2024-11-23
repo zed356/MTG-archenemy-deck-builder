@@ -27,12 +27,11 @@ const FaceDownCard: React.FC<InputProps> = ({
   const styles = StyleSheet.create({
     imageContainer: {
       position: "absolute",
-      alignItems: "flex-end",
     },
     isInPlayDeckStyle: {
-      top: "50%",
+      top: "0%",
       left: "50%",
-      transform: [{ translateX: -cardSize!.width / 2 }, { translateY: cardSize!.height / 2 }],
+      transform: [{ translateX: -cardSize!.width / 2 }, { translateY: cardSize!.height / 2 - 50 }],
     },
     card: {
       width: cardSize?.width,

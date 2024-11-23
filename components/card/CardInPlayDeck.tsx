@@ -69,8 +69,9 @@ const CardInPlayDeck: React.FC<CardInPlayDeckProps> = ({
         removeCardFromDeck && removeCardFromDeck(card, true);
       }, 300);
     } else if (card.type_line === "Ongoing Scheme") {
-      translateY.value = withTiming(-screenHeight * 0.25, { duration: 300 });
+      translateY.value = withTiming(-screenHeight * 0.2, { duration: 300 });
       scale.value = withTiming(0.33, { duration: 300 });
+      opacity.value = withTiming(0, { duration: 1000 });
       setTimeout(() => {
         addToOnGoingSchemes(card);
         removeCardFromDeck && removeCardFromDeck(card, false);
@@ -79,7 +80,7 @@ const CardInPlayDeck: React.FC<CardInPlayDeckProps> = ({
   };
 
   return (
-    <Animated.View style={animatedStyle}>
+    <Animated.View style={[animatedStyle]}>
       {!cardIsRevealed ? (
         <FaceDownCard revealCard={handleRevealCard} />
       ) : (

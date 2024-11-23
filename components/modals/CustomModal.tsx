@@ -1,5 +1,6 @@
 import { defaultColors } from "@/constants/Colors";
 import { defaultBorderRadius } from "@/constants/styles";
+import { LinearGradient } from "expo-linear-gradient";
 import { Modal, ModalProps, ScrollView, StyleSheet, View } from "react-native";
 
 interface CustomModalProps extends ModalProps {
@@ -7,7 +8,8 @@ interface CustomModalProps extends ModalProps {
   setVisible: (value: boolean) => void;
   children: React.ReactNode;
   scrollEnabled?: boolean;
-  transparentBackground?: boolean;
+  showBackgroundColor?: boolean;
+  backgroundColor?: string;
 }
 
 const CustomModal: React.FC<CustomModalProps> = ({
@@ -15,21 +17,20 @@ const CustomModal: React.FC<CustomModalProps> = ({
   setVisible,
   children,
   scrollEnabled,
-  transparentBackground,
+  showBackgroundColor = true,
+  backgroundColor,
 }) => {
   const styles = StyleSheet.create({
     centeredView: {
       flex: 1,
       justifyContent: "center",
       alignItems: "center",
-      backgroundColor: "rgba(0,0,0,0.5)", // Optional: adds a backdrop
+      backgroundColor: backgroundColor ? backgroundColor : "rgba(0,0,0,0.5)", // Optional: adds a backdrop
     },
     modalContainer: {
-      width: "97%", // Modal width
+      width: "96%", // Modal width
       maxHeight: "80%", // Maximum height to prevent overflow
-      backgroundColor: !transparentBackground ? defaultColors.grey : "none",
       borderRadius: defaultBorderRadius,
-      elevation: 5,
       overflow: "hidden",
     },
     modalView: {
@@ -44,10 +45,7 @@ const CustomModal: React.FC<CustomModalProps> = ({
   });
 
   const content = scrollEnabled ? (
-    <ScrollView
-      contentContainerStyle={styles.contentContainer}
-      keyboardShouldPersistTaps="handled"
-    >
+    <ScrollView contentContainerStyle={styles.contentContainer} keyboardShouldPersistTaps="handled">
       <View style={styles.modalView}>{children}</View>
     </ScrollView>
   ) : (
@@ -65,7 +63,13 @@ const CustomModal: React.FC<CustomModalProps> = ({
       }}
     >
       <View style={styles.centeredView}>
-        <View style={styles.modalContainer}>{content}</View>
+        <View style={styles.modalContainer}>
+          {showBackgroundColor ? (
+            <LinearGradient colors={defaultColors.secondaryGradient}>{content}</LinearGradient>
+          ) : (
+            content
+          )}
+        </View>
       </View>
     </Modal>
   );

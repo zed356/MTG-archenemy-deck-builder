@@ -1,16 +1,14 @@
 import { defaultColors } from "@/constants/Colors";
-import { defaultBorderRadius, globalStyles } from "@/constants/styles";
+import { globalStyles } from "@/constants/styles";
 import { cardShuffler } from "@/helpers/cardShuffler";
-import { SavedDeck } from "@/store/store";
+import { SavedDeck, useGameScreenDeckStore } from "@/store/store";
 import { ScryfallCard } from "@scryfall/api-types";
-import { useState } from "react";
-import { ScrollView, StyleSheet, Text, View } from "react-native";
+import { useCallback, useEffect, useState } from "react";
+import { StyleSheet, Text, View } from "react-native";
 import ShatterButton from "../button/ShatterButton";
 import CardInPlayDeck from "../card/CardInPlayDeck";
-import OnGoingScheme from "../card/OnGoingScheme";
-import FadeIn from "../style-elements/FadeIn";
+import OnGoingSchemeDeck from "../decks/OnGoingSchemeDeck";
 import PulseWrapper from "../style-elements/PulseWrapper";
-import SavedDecks from "../decks/SavedDecks";
 
 const GAME_STATES = {
   DECK_SELECTION: "DECK_SELECTION",
@@ -25,6 +23,19 @@ const GameController: React.FC<GameControllerProps> = () => {
   const [shuffledDeck, setShuffledDeck] = useState<SavedDeck | null>(null);
   const [onGoingSchemes, setOnGoingSchemes] = useState<ScryfallCard.Scheme[]>([]);
   const [discardedCards, setDiscardedCards] = useState<ScryfallCard.Scheme[]>([]);
+  const { gameScreenDeck } = useGameScreenDeckStore();
+
+  const handleDeckSelected = useCallback((deck: SavedDeck) => {
+    setGameState(GAME_STATES.GAME_START);
+    setSelectedDeck(deck);
+    handleShuffleDeck(deck);
+  }, []);
+
+  useEffect(() => {
+    if (gameScreenDeck) {
+      handleDeckSelected(gameScreenDeck);
+    }
+  }, [gameScreenDeck, handleDeckSelected]);
 
   const handleShuffleDeck = (deck: SavedDeck) => {
     if (deck) {
@@ -42,12 +53,6 @@ const GameController: React.FC<GameControllerProps> = () => {
         setDiscardedCards((prevDiscardedCards) => [...prevDiscardedCards, card]);
       }
     }
-  };
-
-  const handleDeckSelected = (deck: SavedDeck) => {
-    setGameState(GAME_STATES.GAME_START);
-    setSelectedDeck(deck);
-    handleShuffleDeck(deck);
   };
 
   const handleAddOnGoingScheme = (card: ScryfallCard.Scheme) => {
@@ -72,23 +77,14 @@ const GameController: React.FC<GameControllerProps> = () => {
     setDiscardedCards([]);
   };
 
-  const onGoingSchemesContent = (
-    <View style={styles.onGoingSchemeContainer}>
-      <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
-        {onGoingSchemes.map((card) => (
-          <OnGoingScheme
-            key={card.name}
-            card={card}
-            removeOnGoingScheme={() => handleRemoveOnGoingScheme(card)}
-          />
-        ))}
-      </ScrollView>
-    </View>
-  );
-
   const playDeckContent = (
     <View style={styles.playCardContainer}>
-      {onGoingSchemes.length > 0 && onGoingSchemesContent}
+      {onGoingSchemes.length > 0 && (
+        <OnGoingSchemeDeck
+          onGoingSchemes={onGoingSchemes}
+          removeOnGoingScheme={handleRemoveOnGoingScheme}
+        />
+      )}
       {shuffledDeck && shuffledDeck.cards.length > 0 ? (
         <>
           {shuffledDeck.cards.map((card: ScryfallCard.Scheme) => (
@@ -113,20 +109,7 @@ const GameController: React.FC<GameControllerProps> = () => {
     </View>
   );
 
-  return (
-    <View style={styles.container}>
-      {gameState === "DECK_SELECTION" && (
-        <FadeIn>
-          <SavedDecks
-            canDeleteDeck={false}
-            canClearDeckList={false}
-            onDeckSelectedForPlay={handleDeckSelected}
-          />
-        </FadeIn>
-      )}
-      {gameState === "GAME_START" && playDeckContent}
-    </View>
-  );
+  return <View style={styles.container}>{gameState === "GAME_START" && playDeckContent}</View>;
 };
 
 const styles = StyleSheet.create({
@@ -141,18 +124,7 @@ const styles = StyleSheet.create({
     width: "100%",
     height: "100%",
   },
-  onGoingSchemeContainer: {
-    borderWidth: 2,
-    borderColor: defaultColors.gold,
-    borderRadius: defaultBorderRadius,
-    width: "95%",
-    paddingVertical: 10,
-    marginTop: 30,
-    position: "absolute",
-    flexDirection: "row",
-    alignSelf: "center",
-    overflow: "hidden",
-  },
+
   cardCountInShuffledDeckContainer: {
     flex: 1,
     alignItems: "center",

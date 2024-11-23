@@ -4,7 +4,8 @@ import { Image } from "expo-image";
 
 interface InputProps {
   source: string;
-  focused: boolean;
+  focused?: boolean;
+  color?: string;
   width?: number;
   height?: number;
   top?: number;
@@ -14,6 +15,7 @@ interface InputProps {
 const TabsIcon: React.FC<InputProps> = ({
   source,
   focused,
+  color,
   height = 35,
   width = 45,
   top = 0,
@@ -42,7 +44,7 @@ const TabsIcon: React.FC<InputProps> = ({
     image: {
       width: originalDimensions.width,
       height: originalDimensions.height,
-      tintColor: focused ? defaultColors.gold : defaultColors.grey,
+      tintColor: focused ? defaultColors.gold : color || defaultColors.grey,
       fontSize: 30,
     },
   });
