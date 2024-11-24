@@ -4,6 +4,7 @@ import { FlatList, StyleSheet, View } from "react-native";
 import Card from "@/components/card/Card";
 import { ScryfallCard } from "@scryfall/api-types";
 import CustomButton from "@/components/button/CustomButton";
+import Spacer from "@/components/style-elements/Spacer";
 
 interface CardsInDeckModalProps {
   deck: SavedDeck;
@@ -33,16 +34,18 @@ const CardsInDeckModal: React.FC<CardsInDeckModalProps> = ({
 
   return (
     <CustomModal visible={modalVisible} setVisible={setModalVisible}>
-      <View style={styles.buttonContainer}>
-        <CustomButton
-          type="negative"
-          text="Close"
-          onPress={() => {
-            setModalVisible(false);
-          }}
-        />
+      <View style={styles.container}>
+        <View style={styles.buttonContainer}>
+          <CustomButton
+            type="negative"
+            text="Close"
+            onPress={() => {
+              setModalVisible(false);
+            }}
+          />
+        </View>
+        <FlatList data={deck.cards} renderItem={flatListRenderItem} numColumns={columns} />
       </View>
-      <FlatList data={deck.cards} renderItem={flatListRenderItem} numColumns={columns} />
     </CustomModal>
   );
 };
@@ -50,5 +53,9 @@ const CardsInDeckModal: React.FC<CardsInDeckModalProps> = ({
 export default CardsInDeckModal;
 
 const styles = StyleSheet.create({
-  buttonContainer: { alignItems: "flex-end", width: "100%" },
+  container: {
+    height: "100%",
+    alignItems: "flex-end",
+  },
+  buttonContainer: { width: "100%" },
 });
