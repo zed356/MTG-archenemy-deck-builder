@@ -25,9 +25,11 @@ const FilterTextInput: React.FC<FilterTextInputProps> = ({
         maxLength={85}
       />
       <Pressable style={styles.pressableWrapper}>
-        <Text style={styles.clearFilterIcon} onPress={() => textInputOnChange("")}>
-          ✖️
-        </Text>
+        {textInputValue.length > 0 && (
+          <Text style={styles.clearFilterIcon} onPress={() => textInputOnChange("")}>
+            ✖️
+          </Text>
+        )}
       </Pressable>
     </View>
   );
