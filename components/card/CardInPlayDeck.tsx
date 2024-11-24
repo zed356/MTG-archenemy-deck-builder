@@ -1,7 +1,7 @@
 import { ScryfallCard } from "@scryfall/api-types";
 import _ from "lodash";
 import { useMemo, useState } from "react";
-import { Dimensions, StyleSheet, View } from "react-native";
+import { Dimensions } from "react-native";
 import Animated, { useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
 import Card from "./Card";
 import FaceDownCard from "./FaceDownCard";
@@ -13,6 +13,10 @@ interface CardInPlayDeckProps {
   discardPileLayout: { x: number; y: number; width: number; height: number };
 }
 
+interface ICardNextPhaseRevealOrDiscard {
+  phase: "reveal" | "discard" | "pause";
+}
+
 const CardInPlayDeck: React.FC<CardInPlayDeckProps> = ({
   card,
   addToOnGoingSchemes,
@@ -20,6 +24,8 @@ const CardInPlayDeck: React.FC<CardInPlayDeckProps> = ({
   discardPileLayout,
 }) => {
   const [cardIsRevealed, setCardIsRevealed] = useState(false);
+  const [cardNextPhaseRevealOrDiscard, setCardBeingRevealedOrDiscardedPhase] =
+    useState<ICardNextPhaseRevealOrDiscard>({ phase: "reveal" });
   const scale = useSharedValue(1);
   const translateX = useSharedValue(0);
   const translateY = useSharedValue(0);
@@ -45,6 +51,9 @@ const CardInPlayDeck: React.FC<CardInPlayDeckProps> = ({
   const debouncedRevealCard = useMemo(() => {
     return _.debounce(
       () => {
+        // Set the next phase to pause: not allowed to reveal or discard the card
+        setCardBeingRevealedOrDiscardedPhase({ phase: "pause" });
+
         // Animate the card upwards and scale it up
         scale.value = withTiming(1.15, { duration: 100 });
         translateY.value = withTiming(-90, { duration: 100 });
@@ -57,6 +66,9 @@ const CardInPlayDeck: React.FC<CardInPlayDeckProps> = ({
           // Reveal the card once the flip reaches halfway
           setCardIsRevealed(true);
 
+          // Set the next phase to discard the card: now allowed to discard the card
+          setCardBeingRevealedOrDiscardedPhase({ phase: "discard" });
+
           // Flip to reset position, starting at -90 degrees to correct orientation
           flipAnimation.value = -0.5;
 
@@ -64,8 +76,8 @@ const CardInPlayDeck: React.FC<CardInPlayDeckProps> = ({
           flipAnimation.value = withTiming(0, { duration: 300 });
 
           // Animate back the scale and translate to their original states
-          scale.value = withTiming(1, { duration: 500 });
-          translateY.value = withTiming(0, { duration: 500 });
+          scale.value = withTiming(1, { duration: 300 });
+          translateY.value = withTiming(0, { duration: 300 });
         }, 300); // Ensure the timeout matches the first flip animation's duration
       },
       // how long to wait (in ms) before allowing subsequent touches
@@ -75,6 +87,10 @@ const CardInPlayDeck: React.FC<CardInPlayDeckProps> = ({
   }, [flipAnimation, scale, translateY]);
 
   const handleRevealCard = () => {
+    // check if the next phase is to reveal the card, if not stop execution
+    if (cardNextPhaseRevealOrDiscard.phase !== "reveal") {
+      return;
+    }
     debouncedRevealCard();
   };
 
@@ -82,6 +98,9 @@ const CardInPlayDeck: React.FC<CardInPlayDeckProps> = ({
   const debouncedDiscardCard = useMemo(() => {
     return _.debounce(
       () => {
+        // Set the next phase to pause: not allowed to reveal or discard the card
+        setCardBeingRevealedOrDiscardedPhase({ phase: "pause" });
+
         if (card.type_line === "Scheme") {
           // translateX.value = withTiming(discardPileLayout.x * 2, { duration: 500 });
           translateY.value = withTiming(-300, { duration: 300 });
@@ -89,14 +108,16 @@ const CardInPlayDeck: React.FC<CardInPlayDeckProps> = ({
           opacity.value = withTiming(0, { duration: 300 });
           setTimeout(() => {
             removeCardFromDeck && removeCardFromDeck(card, true);
-          }, 300);
+            setCardBeingRevealedOrDiscardedPhase({ phase: "reveal" }); // set the phase to allow users to reveal the next card
+          }, 400);
         } else if (card.type_line === "Ongoing Scheme") {
           translateY.value = withTiming(-screenHeight * 0.2, { duration: 300 });
           scale.value = withTiming(0.33, { duration: 300 });
-          opacity.value = withTiming(0, { duration: 1000 });
+          opacity.value = withTiming(0, { duration: 300 });
           setTimeout(() => {
             addToOnGoingSchemes(card);
             removeCardFromDeck && removeCardFromDeck(card, false);
+            setCardBeingRevealedOrDiscardedPhase({ phase: "reveal" }); // set the phase to allow users to reveal the next card
           }, 300);
         }
       },
@@ -107,39 +128,31 @@ const CardInPlayDeck: React.FC<CardInPlayDeckProps> = ({
   }, [addToOnGoingSchemes, card, , removeCardFromDeck, scale, translateY, opacity, screenHeight]);
 
   const handleDiscardCard = () => {
+    // check if the next phase is to discard the phase, if not stop execution
+    if (cardNextPhaseRevealOrDiscard.phase !== "discard") {
+      return;
+    }
     debouncedDiscardCard();
   };
 
   return (
-    // touchblockingoverlay necessary for preventing users from interacting
-    // with the cards below while the top one is mid-animation
-    <View style={styles.touchBlockingOverlay}>
-      <Animated.View style={[animatedStyle]}>
-        {!cardIsRevealed ? (
-          <FaceDownCard revealCard={handleRevealCard} />
-        ) : (
-          <Card
-            card={card}
-            size={"large"}
-            existsInDeck={false}
-            isOpacityControlled={false}
-            showAddRemoveOperator={false}
-            isInPlayDeck={true}
-            position="absolute"
-            onCardInPlayPress={handleDiscardCard}
-          />
-        )}
-      </Animated.View>
-    </View>
+    <Animated.View style={[animatedStyle]}>
+      {!cardIsRevealed ? (
+        <FaceDownCard revealCard={handleRevealCard} />
+      ) : (
+        <Card
+          card={card}
+          size={"large"}
+          existsInDeck={false}
+          isOpacityControlled={false}
+          showAddRemoveOperator={false}
+          isInPlayDeck={true}
+          position="absolute"
+          onCardInPlayPress={handleDiscardCard}
+        />
+      )}
+    </Animated.View>
   );
 };
 
 export default CardInPlayDeck;
-
-const styles = StyleSheet.create({
-  touchBlockingOverlay: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: "rgba(0, 0, 0, 0)",
-    zIndex: 100,
-  },
-});
