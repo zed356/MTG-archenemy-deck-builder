@@ -110,7 +110,7 @@ const GameController: React.FC<GameControllerProps> = () => {
             />
           ))}
           <View style={styles.cardCountInShuffledDeckContainer}>
-            <Spacer width={30} />
+            <Spacer width={35} />
             <PulseWrapper pulseEffectOnValueChange={shuffledDeck.cards.length}>
               <Text style={[globalStyles.text, styles.cardCountText]}>
                 {shuffledDeck.cards.length}
@@ -134,19 +134,22 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: "center",
-    // alignItems: "center",
+    alignItems: "center",
   },
 
   playDeckContainer: {
     position: "relative",
     height: "100%",
+    width: "100%",
   },
   cardCountInShuffledDeckContainer: {
     flex: 1,
     flexDirection: "row",
     alignItems: "flex-end",
-    justifyContent: "space-around",
+    justifyContent: "space-between",
+    width: "100%",
     marginBottom: 5,
+    paddingHorizontal: 20,
   },
   cardCountText: {
     fontSize: 25,

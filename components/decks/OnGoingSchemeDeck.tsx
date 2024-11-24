@@ -128,7 +128,7 @@ const OnGoingSchemeDeck: React.FC<OnGoingSchemeDeckProps> = ({
 export default OnGoingSchemeDeck;
 
 const styles = StyleSheet.create({
-  arrow: { alignSelf: "center", marginHorizontal: 5, transform: [{ scaleY: 4 }] },
+  arrow: { marginHorizontal: 5, transform: [{ scaleY: 4 }] },
 
   onGoingSchemeContainer: {
     borderWidth: 2,
@@ -136,10 +136,11 @@ const styles = StyleSheet.create({
     borderRadius: defaultBorderRadius,
     width: "96%",
     paddingVertical: 10,
-    marginTop: 30,
+    marginTop: 20,
+    overflow: "hidden",
     position: "absolute",
     flexDirection: "row",
     alignSelf: "center",
-    overflow: "hidden",
+    alignItems: "center",
   },
 });

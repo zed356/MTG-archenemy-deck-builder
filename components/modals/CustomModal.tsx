@@ -36,6 +36,7 @@ const CustomModal: React.FC<CustomModalProps> = ({
     modalView: {
       width: "100%", // Modal width
       alignItems: "center",
+      padding: 5,
     },
     contentContainer: {
       justifyContent: "center",

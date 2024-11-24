@@ -1,10 +1,9 @@
-import { SavedDeck } from "@/store/store";
-import CustomModal from "../CustomModal";
-import { FlatList, StyleSheet, View } from "react-native";
-import Card from "@/components/card/Card";
-import { ScryfallCard } from "@scryfall/api-types";
 import CustomButton from "@/components/button/CustomButton";
-import Spacer from "@/components/style-elements/Spacer";
+import Card from "@/components/card/Card";
+import { SavedDeck } from "@/store/store";
+import { ScryfallCard } from "@scryfall/api-types";
+import { FlatList, StyleSheet, View } from "react-native";
+import CustomModal from "../CustomModal";
 
 interface CardsInDeckModalProps {
   deck: SavedDeck;
@@ -44,7 +43,9 @@ const CardsInDeckModal: React.FC<CardsInDeckModalProps> = ({
             }}
           />
         </View>
-        <FlatList data={deck.cards} renderItem={flatListRenderItem} numColumns={columns} />
+        <View style={styles.flatListContainer}>
+          <FlatList data={deck.cards} renderItem={flatListRenderItem} numColumns={columns} />
+        </View>
       </View>
     </CustomModal>
   );
@@ -55,7 +56,13 @@ export default CardsInDeckModal;
 const styles = StyleSheet.create({
   container: {
     height: "100%",
-    alignItems: "flex-end",
+    width: "100%",
   },
-  buttonContainer: { width: "100%" },
+  flatListContainer: {
+    height: "100%",
+    width: "100%",
+    alignItems: "center",
+    paddingBottom: 50, // potentially problematic? TODO: testing different devices
+  },
+  buttonContainer: { alignSelf: "flex-end" },
 });
