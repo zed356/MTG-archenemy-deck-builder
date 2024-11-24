@@ -1,14 +1,16 @@
-import { defaultColors } from "@/constants/Colors";
 import { globalStyles } from "@/constants/styles";
 import { cardShuffler } from "@/helpers/cardShuffler";
 import { SavedDeck, useGameScreenDeckStore } from "@/store/store";
 import { ScryfallCard } from "@scryfall/api-types";
 import { useCallback, useEffect, useState } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { LayoutChangeEvent, NativeSyntheticEvent, StyleSheet, Text, View } from "react-native";
 import ShatterButton from "../button/ShatterButton";
 import CardInPlayDeck from "../card/CardInPlayDeck";
 import OnGoingSchemeDeck from "../decks/OnGoingSchemeDeck";
 import PulseWrapper from "../style-elements/PulseWrapper";
+import TabsIcon from "../style-elements/TabsIcon";
+import Spacer from "../style-elements/Spacer";
+import DiscardedCardPile from "../decks/DiscardedCardPile";
 
 const GAME_STATES = {
   DECK_SELECTION: "DECK_SELECTION",
@@ -24,6 +26,12 @@ const GameController: React.FC<GameControllerProps> = () => {
   const [onGoingSchemes, setOnGoingSchemes] = useState<ScryfallCard.Scheme[]>([]);
   const [discardedCards, setDiscardedCards] = useState<ScryfallCard.Scheme[]>([]);
   const { gameScreenDeck } = useGameScreenDeckStore();
+  const [discardPileLayout, setDiscardPileLayout] = useState({
+    x: 0,
+    y: 0,
+    width: 0,
+    height: 0,
+  });
 
   const handleDeckSelected = useCallback((deck: SavedDeck) => {
     setGameState(GAME_STATES.GAME_START);
@@ -77,8 +85,13 @@ const GameController: React.FC<GameControllerProps> = () => {
     setDiscardedCards([]);
   };
 
+  const handleDiscardPileLayout = (e: LayoutChangeEvent) => {
+    const { x, y, width, height } = e.nativeEvent.layout;
+    setDiscardPileLayout({ x, y, width, height }); // more explicit
+  };
+
   const playDeckContent = (
-    <View style={styles.playCardContainer}>
+    <View>
       {onGoingSchemes.length > 0 && (
         <OnGoingSchemeDeck
           onGoingSchemes={onGoingSchemes}
@@ -86,23 +99,28 @@ const GameController: React.FC<GameControllerProps> = () => {
         />
       )}
       {shuffledDeck && shuffledDeck.cards.length > 0 ? (
-        <>
+        <View style={styles.playDeckContainer}>
           {shuffledDeck.cards.map((card: ScryfallCard.Scheme) => (
             <CardInPlayDeck
               key={card.name}
               card={card}
               addToOnGoingSchemes={handleAddOnGoingScheme}
               removeCardFromDeck={handleRemoveCardFromShuffledDeck}
+              discardPileLayout={discardPileLayout}
             />
           ))}
           <View style={styles.cardCountInShuffledDeckContainer}>
+            <Spacer width={30} />
             <PulseWrapper pulseEffectOnValueChange={shuffledDeck.cards.length}>
               <Text style={[globalStyles.text, styles.cardCountText]}>
                 {shuffledDeck.cards.length}
               </Text>
             </PulseWrapper>
+            <View onLayout={handleDiscardPileLayout}>
+              {<DiscardedCardPile cards={discardedCards} isVisible={discardedCards.length > 0} />}
+            </View>
           </View>
-        </>
+        </View>
       ) : (
         <ShatterButton buttonName={"Reshuffle"} onPlayPress={handleResetGame} />
       )}
@@ -115,25 +133,24 @@ const GameController: React.FC<GameControllerProps> = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    position: "relative",
     justifyContent: "center",
-    alignItems: "center",
-  },
-  playCardContainer: {
-    position: "relative",
-    width: "100%",
-    height: "100%",
+    // alignItems: "center",
   },
 
+  playDeckContainer: {
+    position: "relative",
+    height: "100%",
+  },
   cardCountInShuffledDeckContainer: {
     flex: 1,
-    alignItems: "center",
-    justifyContent: "flex-end",
-    marginBottom: 20,
+    flexDirection: "row",
+    alignItems: "flex-end",
+    justifyContent: "space-around",
+    marginBottom: 5,
   },
   cardCountText: {
     fontSize: 25,
-    color: defaultColors.grey,
+    color: "white",
   },
 });
 
