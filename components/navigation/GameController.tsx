@@ -3,14 +3,13 @@ import { cardShuffler } from "@/helpers/cardShuffler";
 import { SavedDeck, useGameScreenDeckStore } from "@/store/store";
 import { ScryfallCard } from "@scryfall/api-types";
 import { useCallback, useEffect, useState } from "react";
-import { LayoutChangeEvent, NativeSyntheticEvent, StyleSheet, Text, View } from "react-native";
+import { LayoutChangeEvent, StyleSheet, Text, View } from "react-native";
 import ShatterButton from "../button/ShatterButton";
 import CardInPlayDeck from "../card/CardInPlayDeck";
+import DiscardedCardPile from "../decks/DiscardedCardPile";
 import OnGoingSchemeDeck from "../decks/OnGoingSchemeDeck";
 import PulseWrapper from "../style-elements/PulseWrapper";
-import TabsIcon from "../style-elements/TabsIcon";
 import Spacer from "../style-elements/Spacer";
-import DiscardedCardPile from "../decks/DiscardedCardPile";
 
 const GAME_STATES = {
   DECK_SELECTION: "DECK_SELECTION",
@@ -100,15 +99,19 @@ const GameController: React.FC<GameControllerProps> = () => {
       )}
       {shuffledDeck && shuffledDeck.cards.length > 0 ? (
         <View style={styles.playDeckContainer}>
-          {shuffledDeck.cards.map((card: ScryfallCard.Scheme) => (
-            <CardInPlayDeck
-              key={card.name}
-              card={card}
-              addToOnGoingSchemes={handleAddOnGoingScheme}
-              removeCardFromDeck={handleRemoveCardFromShuffledDeck}
-              discardPileLayout={discardPileLayout}
-            />
-          ))}
+          {shuffledDeck.cards.map(
+            (card: ScryfallCard.Scheme, index: number, array: ScryfallCard.Scheme[]) => (
+              <CardInPlayDeck
+                key={card.name}
+                card={card}
+                addToOnGoingSchemes={handleAddOnGoingScheme}
+                removeCardFromDeck={handleRemoveCardFromShuffledDeck}
+                discardPileLayout={discardPileLayout}
+                indexInDeck={index}
+                totalCardsInDeck={array.length}
+              />
+            )
+          )}
           <View style={styles.cardCountInShuffledDeckContainer}>
             <Spacer width={35} />
             <PulseWrapper pulseEffectOnValueChange={shuffledDeck.cards.length}>

@@ -11,10 +11,8 @@ interface CardInPlayDeckProps {
   addToOnGoingSchemes: (card: ScryfallCard.Scheme) => void;
   removeCardFromDeck?: (card: ScryfallCard.Scheme, discardCard: boolean) => void;
   discardPileLayout: { x: number; y: number; width: number; height: number };
-}
-
-interface ICardNextPhaseRevealOrDiscard {
-  phase: "reveal" | "discard" | "pause";
+  indexInDeck: number;
+  totalCardsInDeck: number;
 }
 
 const CardInPlayDeck: React.FC<CardInPlayDeckProps> = ({
@@ -22,10 +20,11 @@ const CardInPlayDeck: React.FC<CardInPlayDeckProps> = ({
   addToOnGoingSchemes,
   removeCardFromDeck,
   discardPileLayout,
+  indexInDeck,
+  totalCardsInDeck,
 }) => {
   const [cardIsRevealed, setCardIsRevealed] = useState(false);
-  const [cardNextPhaseRevealOrDiscard, setCardBeingRevealedOrDiscardedPhase] =
-    useState<ICardNextPhaseRevealOrDiscard>({ phase: "reveal" });
+
   const scale = useSharedValue(1);
   const translateX = useSharedValue(0);
   const translateY = useSharedValue(0);
@@ -51,9 +50,6 @@ const CardInPlayDeck: React.FC<CardInPlayDeckProps> = ({
   const debouncedRevealCard = useMemo(() => {
     return _.debounce(
       () => {
-        // Set the next phase to pause: not allowed to reveal or discard the card
-        setCardBeingRevealedOrDiscardedPhase({ phase: "pause" });
-
         // Animate the card upwards and scale it up
         scale.value = withTiming(1.15, { duration: 100 });
         translateY.value = withTiming(-90, { duration: 100 });
@@ -65,9 +61,6 @@ const CardInPlayDeck: React.FC<CardInPlayDeckProps> = ({
         setTimeout(() => {
           // Reveal the card once the flip reaches halfway
           setCardIsRevealed(true);
-
-          // Set the next phase to discard the card: now allowed to discard the card
-          setCardBeingRevealedOrDiscardedPhase({ phase: "discard" });
 
           // Flip to reset position, starting at -90 degrees to correct orientation
           flipAnimation.value = -0.5;
@@ -81,26 +74,24 @@ const CardInPlayDeck: React.FC<CardInPlayDeckProps> = ({
         }, 300); // Ensure the timeout matches the first flip animation's duration
       },
       // how long to wait (in ms) before allowing subsequent touches
-      1500,
+      1000,
       { leading: true, trailing: false }
     );
   }, [flipAnimation, scale, translateY]);
 
   const handleRevealCard = () => {
-    // check if the next phase is to reveal the card, if not stop execution
-    if (cardNextPhaseRevealOrDiscard.phase !== "reveal") {
+    // check if the card is not the next one on top
+    if (indexInDeck !== totalCardsInDeck - 1) {
       return;
+    } else {
+      debouncedRevealCard();
     }
-    debouncedRevealCard();
   };
 
   // Debounce the discard card function to prevent multiple touches
   const debouncedDiscardCard = useMemo(() => {
     return _.debounce(
       () => {
-        // Set the next phase to pause: not allowed to reveal or discard the card
-        setCardBeingRevealedOrDiscardedPhase({ phase: "pause" });
-
         if (card.type_line === "Scheme") {
           // translateX.value = withTiming(discardPileLayout.x * 2, { duration: 500 });
           translateY.value = withTiming(-300, { duration: 300 });
@@ -108,7 +99,6 @@ const CardInPlayDeck: React.FC<CardInPlayDeckProps> = ({
           opacity.value = withTiming(0, { duration: 300 });
           setTimeout(() => {
             removeCardFromDeck && removeCardFromDeck(card, true);
-            setCardBeingRevealedOrDiscardedPhase({ phase: "reveal" }); // set the phase to allow users to reveal the next card
           }, 400);
         } else if (card.type_line === "Ongoing Scheme") {
           translateY.value = withTiming(-screenHeight * 0.2, { duration: 300 });
@@ -117,22 +107,22 @@ const CardInPlayDeck: React.FC<CardInPlayDeckProps> = ({
           setTimeout(() => {
             addToOnGoingSchemes(card);
             removeCardFromDeck && removeCardFromDeck(card, false);
-            setCardBeingRevealedOrDiscardedPhase({ phase: "reveal" }); // set the phase to allow users to reveal the next card
           }, 300);
         }
       },
       // how long to wait (in ms) before allowing subsequent touches
-      1500,
+      1000,
       { leading: true, trailing: false }
     );
   }, [addToOnGoingSchemes, card, , removeCardFromDeck, scale, translateY, opacity, screenHeight]);
 
   const handleDiscardCard = () => {
-    // check if the next phase is to discard the phase, if not stop execution
-    if (cardNextPhaseRevealOrDiscard.phase !== "discard") {
+    // check if the card is not the next one on top
+    if (indexInDeck !== totalCardsInDeck - 1) {
       return;
+    } else {
+      debouncedDiscardCard();
     }
-    debouncedDiscardCard();
   };
 
   return (
