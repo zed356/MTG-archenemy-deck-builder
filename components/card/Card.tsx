@@ -2,7 +2,7 @@ import { defaultColors } from "@/constants/Colors";
 import { FontAwesome } from "@expo/vector-icons";
 import { ScryfallCard } from "@scryfall/api-types";
 import { Image } from "expo-image";
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { ActivityIndicator, Dimensions, Pressable, StyleSheet, View } from "react-native";
 import SelectedCardModal from "../modals//specific-modals/SelectedCardModal";
 
@@ -43,6 +43,14 @@ const Card: React.FC<InputProps> = ({
 }) => {
   const [loading, setLoading] = useState(true);
   const [isSelected, setIsSelected] = useState(false);
+  const addRemoveCardFunctionCoolDownRef = useRef(false);
+
+  const setAddRemoveCardFunctionCoolDown = () => {
+    addRemoveCardFunctionCoolDownRef.current = true;
+    setTimeout(() => {
+      addRemoveCardFunctionCoolDownRef.current = false;
+    }, 1000);
+  };
 
   const blurhash =
     "|rF?hV%2WCj[ayj[a|j[az_NaeWBj@ayfRayfQfQM{M|azj[azf6fQfQfQIpWXofj[ayj[j[fQayWCoeoeaya}j[ayfQa{oLj?j[WVj[ayayj[fQoff7azayj[ayj[j[ayofayayayj[fQj[ayayj[ayfjj[j[ayjuayj[";
@@ -71,6 +79,13 @@ const Card: React.FC<InputProps> = ({
   };
 
   const handleAddRemoveCardToNewDeck = () => {
+    // check if the function has recently been called and if so, return
+    // otherwise start the cooldown and call the function
+    if (addRemoveCardFunctionCoolDownRef.current) {
+      return;
+    } else {
+      setAddRemoveCardFunctionCoolDown();
+    }
     if (existsInDeck && removeFromDeck) {
       removeFromDeck(card);
       setIsSelected(false);
