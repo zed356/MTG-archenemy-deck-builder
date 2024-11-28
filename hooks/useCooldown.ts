@@ -1,18 +1,26 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const useCooldown = (duration: number) => {
-  const cooldownRef = useRef(false);
+  const [isOnCooldown, setIsOnCooldown] = useState(false);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  const startCooldown = () => {
-    cooldownRef.current = true;
+  // can specify a custom duration during runtime, otherwise use default on creation of the hook
+  const startCooldown = (customDuration = duration, onCooldownEnd?: () => void) => {
+    if (isOnCooldown) return;
+
+    setIsOnCooldown(true);
     timeoutRef.current = setTimeout(() => {
-      cooldownRef.current = false;
-    }, duration);
+      setIsOnCooldown(false);
+
+      // If a callback is provided, call it
+      if (onCooldownEnd) {
+        onCooldownEnd();
+      }
+    }, customDuration);
   };
 
   const resetCooldown = () => {
-    cooldownRef.current = false;
+    setIsOnCooldown(false);
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current);
     }
@@ -26,7 +34,7 @@ const useCooldown = (duration: number) => {
     };
   }, []);
 
-  return { isOnCooldown: cooldownRef.current, startCooldown, resetCooldown };
+  return { isOnCooldown, startCooldown, resetCooldown };
 };
 
 export default useCooldown;
