@@ -5,7 +5,13 @@ const useCooldown = (duration: number) => {
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // can specify a custom duration during runtime, otherwise use default on creation of the hook
-  const startCooldown = (customDuration = duration, onCooldownEnd?: () => void) => {
+  const startCooldown = ({
+    customDuration = duration,
+    onCooldownEnd,
+  }: {
+    customDuration?: number;
+    onCooldownEnd?: () => void;
+  } = {}) => {
     if (isOnCooldown) return;
 
     setIsOnCooldown(true);
