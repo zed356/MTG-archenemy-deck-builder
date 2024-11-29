@@ -58,8 +58,8 @@ const SelectedCardModal: React.FC<InputProps> = ({
       backgroundColor: "rgba(0, 0, 0, 0.55)",
       paddingLeft: 8,
       borderBottomLeftRadius: 20,
-      top: "90%", // can't get the operator to be at the top right naturally
-      left: "-10%", //
+      top: "80%", // can't get the operator to be at the top right naturally
+      left: "-20%", //
     },
   });
 
