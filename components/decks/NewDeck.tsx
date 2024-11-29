@@ -4,13 +4,17 @@ import { MINIMUM_CARDS_IN_NEW_DECK } from "@/constants/values";
 import { saveDeckToStorage } from "@/helpers/savedDeckManager";
 import { useNewDeckStore, useSavedDeckStore } from "@/store/store";
 import { useState } from "react";
-import { StyleSheet, View } from "react-native";
+import { LayoutChangeEvent, StyleSheet, View } from "react-native";
 import CustomButton from "../button/CustomButton";
 import Card from "../card/Card";
 import SaveNewDeckModal from "../modals/specific-modals/SaveNewDeckModal";
 import { router } from "expo-router";
 
-const NewDeck: React.FC = () => {
+interface NewDeckProps {
+  onLayoutChange: (layout: LayoutChangeEvent) => void;
+}
+
+const NewDeck: React.FC<NewDeckProps> = ({ onLayoutChange }) => {
   const [confirmationModalVisible, setConfirmationModalVisible] = useState(false);
   const { cardsInNewDeck, addCardToNewDeck, removeCardFromNewDeck, clearNewDeck } =
     useNewDeckStore();
@@ -63,7 +67,7 @@ const NewDeck: React.FC = () => {
   });
 
   return (
-    <>
+    <View onLayout={onLayoutChange}>
       {countOfCardsInNewDeck > 0 && (
         <>
           <View style={styles.buttonContainer}>
@@ -100,7 +104,7 @@ const NewDeck: React.FC = () => {
           </View>
         </>
       )}
-    </>
+    </View>
   );
 };
 
