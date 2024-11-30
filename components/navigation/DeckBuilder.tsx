@@ -10,6 +10,7 @@ import {
   LayoutChangeEvent,
   NativeScrollEvent,
   NativeSyntheticEvent,
+  Pressable,
   StyleSheet,
   Text,
   View,
@@ -32,7 +33,7 @@ const DeckBuilder: React.FC = () => {
   const [displayedCards, setDisplayedCards] = useState<ScryfallCard.Scheme[]>([]);
   const [currentScrollPositionY, setCurrentScrollPositionY] = useState(0);
   const [upArrowToTopOfScreenWidth, setUpArrowToTopOfScreenWidth] = useState(0);
-  const [initialNewDeckContainerHeight, setInitialNewDeckContainerHeight] = useState(0);
+  const [prevNewDeckContainerHeight, setPrevNewDeckContainerHeight] = useState(0);
   const cardFlatListRef = useRef<FlatList<ScryfallCard.Scheme>>(null);
   const arrowToTopOfScreenOpacity = useSharedValue(1);
 
@@ -59,28 +60,28 @@ const DeckBuilder: React.FC = () => {
 
   const handleNewDeckLayout = (layout: LayoutChangeEvent) => {
     const { height } = layout.nativeEvent.layout;
-    // Set the initial height of the new deck container for use when it is empty and need to deduct its height from the scroll position
-    if (initialNewDeckContainerHeight === 0) {
-      setInitialNewDeckContainerHeight(height);
-    }
+    const calcNewDeckContainerHeightDiffFromPrev = Math.abs(height - prevNewDeckContainerHeight);
 
     if (cardFlatListRef.current) {
-      if (height === 0) {
+      if (height > prevNewDeckContainerHeight) {
         // If the new deck container is empty, deduct its 'first' height after appearing, from the scroll position
         cardFlatListRef.current.scrollToOffset({
-          offset: currentScrollPositionY - initialNewDeckContainerHeight,
+          offset: currentScrollPositionY + calcNewDeckContainerHeightDiffFromPrev,
           animated: true,
         });
+        // if height is lesser than the prevHeight remove the difference from scroll position
       } else {
         cardFlatListRef.current.scrollToOffset({
-          offset: currentScrollPositionY + height,
+          offset: currentScrollPositionY - calcNewDeckContainerHeightDiffFromPrev,
           animated: true,
         });
       }
     }
+
+    setPrevNewDeckContainerHeight(height);
   };
 
-  const renderItem = ({ item }: { item: ScryfallCard.Scheme }) => (
+  const flatListRenderItem = ({ item, index }: { item: ScryfallCard.Scheme; index: number }) => (
     <View style={styles.cardWrapper}>
       <Card
         card={item}
@@ -96,10 +97,10 @@ const DeckBuilder: React.FC = () => {
   );
 
   const headerComponent = (
-    <>
-      <NewDeck onLayoutChange={handleNewDeckLayout} />
+    <View onLayout={handleNewDeckLayout}>
+      <NewDeck />
       <Filter cards={cardsInStore} setFilteredCards={setDisplayedCards} />
-    </>
+    </View>
   );
 
   const styles = StyleSheet.create({
@@ -135,17 +136,20 @@ const DeckBuilder: React.FC = () => {
 
   return (
     <View style={styles.scrollContainer}>
-      <PulseWrapper pulseEffectOnValueChange={cardsInNewDeck.length}>
-        <Text style={[globalStyles.text, styles.text]}>
-          {cardsInNewDeck.length}/{MINIMUM_CARDS_IN_NEW_DECK}
-        </Text>
-      </PulseWrapper>
+      <Pressable onPress={handleScrollToTopOfScreen}>
+        <PulseWrapper pulseEffectOnValueChange={cardsInNewDeck.length}>
+          <Text style={[globalStyles.text, styles.text]}>
+            {cardsInNewDeck.length}/{MINIMUM_CARDS_IN_NEW_DECK}
+          </Text>
+        </PulseWrapper>
+      </Pressable>
+
       <FlatList
         ref={cardFlatListRef}
         ListHeaderComponent={headerComponent}
         data={displayedCards}
-        renderItem={renderItem}
-        keyExtractor={(item) => item.name} // Assuming `name` is unique
+        renderItem={flatListRenderItem}
+        keyExtractor={(item, index) => item.name}
         numColumns={2} // This sets the number of columns to 2
         initialNumToRender={4} // Reduce the number of items to render initially
         windowSize={21}

@@ -3,18 +3,14 @@ import { defaultBorderRadius } from "@/constants/styles";
 import { MINIMUM_CARDS_IN_NEW_DECK } from "@/constants/values";
 import { saveDeckToStorage } from "@/helpers/savedDeckManager";
 import { useNewDeckStore, useSavedDeckStore } from "@/store/store";
+import { router } from "expo-router";
 import { useState } from "react";
-import { LayoutChangeEvent, StyleSheet, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import CustomButton from "../button/CustomButton";
 import Card from "../card/Card";
 import SaveNewDeckModal from "../modals/specific-modals/SaveNewDeckModal";
-import { router } from "expo-router";
 
-interface NewDeckProps {
-  onLayoutChange: (layout: LayoutChangeEvent) => void;
-}
-
-const NewDeck: React.FC<NewDeckProps> = ({ onLayoutChange }) => {
+const NewDeck: React.FC = () => {
   const [confirmationModalVisible, setConfirmationModalVisible] = useState(false);
   const { cardsInNewDeck, addCardToNewDeck, removeCardFromNewDeck, clearNewDeck } =
     useNewDeckStore();
@@ -67,7 +63,7 @@ const NewDeck: React.FC<NewDeckProps> = ({ onLayoutChange }) => {
   });
 
   return (
-    <View onLayout={onLayoutChange}>
+    <>
       {countOfCardsInNewDeck > 0 && (
         <>
           <View style={styles.buttonContainer}>
@@ -79,7 +75,7 @@ const NewDeck: React.FC<NewDeckProps> = ({ onLayoutChange }) => {
             />
             <CustomButton text="CLEAR DECK" type={"neutral"} onPress={handleClearNewDeck} />
           </View>
-          <View style={styles.newDeckContainer}>
+          <View style={[styles.newDeckContainer]}>
             <View style={styles.cards}>
               {cardsInNewDeck.map((el) => (
                 <View style={styles.cardWrapper} key={el.name}>
@@ -104,7 +100,7 @@ const NewDeck: React.FC<NewDeckProps> = ({ onLayoutChange }) => {
           </View>
         </>
       )}
-    </View>
+    </>
   );
 };
 
